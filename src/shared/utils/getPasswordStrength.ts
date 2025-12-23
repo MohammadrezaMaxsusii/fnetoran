@@ -12,23 +12,23 @@ export const getPasswordStrength = (password: string) => {
 
 export const getPasswordStyles = [
   {
-    color: "#dc2626",
+    color: "bg-red",
     width: "w-1/5",
   },
   {
-    color: "#ea580c",
+    color: "bg-red",
     width: "w-2/5",
   },
   {
-    color: "#ca8a04",
+    color: "bg-yellow-500",
     width: "w-3/5",
   },
   {
-    color: "#16a34a",
+    color: "bg-green",
     width: "w-4/5",
   },
   {
-    color: "#15803d",
+    color: "bg-green",
     width: "w-full",
   },
 ];

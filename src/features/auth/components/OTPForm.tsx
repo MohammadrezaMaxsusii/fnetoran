@@ -13,7 +13,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import type { UseFormReturn } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import * as z from "zod";
 import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
@@ -41,12 +41,10 @@ export const OTPForm = ({ form, setMode }: Props) => {
         Receive Verification Code
       </h1>
 
+      {/* Header of card */}
       <div className="flex items-center justify-between">
         <span className="text-orange">Check Your Phone</span>
-        <Button
-          variant="secondary"
-          onClick={() => navigate(-1)}
-        >
+        <Button variant="secondary" onClick={() => navigate(-1)}>
           <img src="/icons/back.svg" alt="back icon" className="size-6" />
           Back
         </Button>
@@ -69,22 +67,10 @@ export const OTPForm = ({ form, setMode }: Props) => {
                   <FormControl className="bg-gray-darker">
                     <InputOTP maxLength={4} {...field}>
                       <InputOTPGroup className="w-full flex justify-between items-center">
-                        <InputOTPSlot
-                          index={0}
-                          className="w-20 h-10"
-                        />
-                        <InputOTPSlot
-                          index={1}
-                          className="w-20 h-10"
-                        />
-                        <InputOTPSlot
-                          index={2}
-                          className="w-20 h-10"
-                        />
-                        <InputOTPSlot
-                          index={3}
-                          className="w-20 h-10"
-                        />
+                        <InputOTPSlot index={0} className="w-20 h-10" />
+                        <InputOTPSlot index={1} className="w-20 h-10" />
+                        <InputOTPSlot index={2} className="w-20 h-10" />
+                        <InputOTPSlot index={3} className="w-20 h-10" />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
@@ -93,6 +79,7 @@ export const OTPForm = ({ form, setMode }: Props) => {
               )}
             />
 
+            {/* Resenc code section */}
             <div className="grid place-content-center my-2">
               <Button type="button" variant="link" onClick={resendHandler}>
                 <img
@@ -105,10 +92,7 @@ export const OTPForm = ({ form, setMode }: Props) => {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full mt-4"
-          >
+          <Button type="submit" className="w-full mt-4">
             {false ? <Spinner /> : "Code Verification"}
           </Button>
         </form>

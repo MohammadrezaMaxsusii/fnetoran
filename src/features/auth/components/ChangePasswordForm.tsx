@@ -16,7 +16,7 @@ import { getPasswordStrength } from "@/shared/utils/getPasswordStrength";
 import { recoverySchema } from "../schemas";
 import { useRecoveryAction } from "../hooks";
 import type { Recovery } from "../types";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 interface Props {
   setMode: (mode: "otp" | "password") => void;

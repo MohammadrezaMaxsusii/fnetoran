@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import * as z from "zod";
 import { userInfoSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,12 +38,10 @@ export const UserInfoForm = () => {
     <div className="p-10 bg-card rounded-4xl w-110">
       <h1 className="font-bold text-2xl text-center mb-9">Forgot password?</h1>
 
+      {/* Header of card */}
       <div className="flex items-center justify-between">
         <span className="text-orange">Enter your info account</span>
-        <Button
-          variant="secondary"
-          onClick={() => navigate(-1)}
-        >
+        <Button variant="secondary" onClick={() => navigate(-1)}>
           <img src="/icons/back.svg" alt="back icon" className="size-6" />
           Back
         </Button>
@@ -73,6 +71,7 @@ export const UserInfoForm = () => {
             )}
           />
 
+          {/* Error section */}
           {userInfoAction.isError && (
             <div className="flex items-center gap-2">
               <img src="/icons/error.svg" alt="error icon" className="size-5" />

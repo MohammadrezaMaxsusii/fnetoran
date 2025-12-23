@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import type { Login } from "../types";
 import { login } from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const useLoginAction = () => {
   const navigate = useNavigate();

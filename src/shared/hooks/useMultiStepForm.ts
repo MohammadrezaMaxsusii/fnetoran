@@ -7,14 +7,17 @@ export const useMultiStepForm = (
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [data, setData] = useState<Record<string, any>>(initialData);
 
+  // Next handler
   const next = () => {
     setCurrentStepIndex((i) => Math.min(i + 1, steps.length - 1));
   };
 
+  // Back handler
   const back = () => {
     setCurrentStepIndex((i) => Math.max(i - 1, 0));
   };
 
+  // destanition handler
   const goTo = (index: number) => {
     if (index >= 0 && index < steps.length) {
       setCurrentStepIndex(index);

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 import { Toaster } from "sonner";
 import { QueryProvider } from "./QueryProvider";
 
@@ -8,10 +8,13 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     <BrowserRouter>
       <QueryProvider>
         {children}
+
+        {/* Toast section */}
         <Toaster
           position="top-center"
           toastOptions={{
-            className: "bg-gray-darker! border-default! flex! items-center! gap-20! px-4! py-0! w-70! h-17! overflow-hidden! rounded-lg!",
+            className:
+              "bg-gray-darker! border-default! flex! items-center! gap-20! px-4! py-0! w-70! h-17! overflow-hidden! rounded-lg!",
           }}
           icons={{
             success: (

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { userInfo } from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const useUserInfoAction = () => {
   const navigate = useNavigate();

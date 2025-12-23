@@ -15,7 +15,7 @@ import type { Login } from "../types";
 import { loginSchema } from "../schemas";
 import { useLoginAction } from "../hooks";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
 
 export const LoginForm = () => {
@@ -81,6 +81,7 @@ export const LoginForm = () => {
 
         <Separator />
 
+        {/* Error section */}
         {loginAction.isError && (
           <div className="flex items-center gap-2">
             <img src="/icons/error.svg" alt="error icon" className="size-5" />
