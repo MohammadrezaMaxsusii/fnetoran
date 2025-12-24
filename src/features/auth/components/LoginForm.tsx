@@ -47,7 +47,7 @@ export const LoginForm = () => {
               <FormLabel className="col-span-1 text-gray-lighter">
                 Username
               </FormLabel>
-              <FormControl className="bg-gray-darker">
+              <FormControl className="bg-gray-darker" autoFocus>
                 <Input
                   className="col-span-2 w-full"
                   placeholder="Enter your username"

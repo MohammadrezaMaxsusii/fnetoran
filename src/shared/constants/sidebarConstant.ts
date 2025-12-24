@@ -1,0 +1,9 @@
+export const sidebarItems = [
+  { title: "Dashboard", url: "/dashboard", icon: "/icons/dashboard.svg" },
+  { title: "Users", url: "/users", icon: "/icons/users.svg" },
+  { title: "Roles", url: "/roles", icon: "/icons/roles.svg" },
+  { title: "Permission", url: "/permission", icon: "/icons/permission.svg" },
+  { title: "Devices", url: "/devices", icon: "/icons/devices.svg" },
+  { title: "Firewall", url: "/firewall", icon: "/icons/firewall.svg" },
+  { title: "Retrofit", url: "/retrofit", icon: "/icons/retrofit.svg" },
+];

@@ -6,19 +6,17 @@ export const LoginPage = () => {
       {/* left section */}
       <div className="grow grid place-content-center">
         <div>
-          <div>
-            <div className="w-80 h-22">
-              <img
-                src="/images/logo.webp"
-                alt="logo"
-                className="w-full h-auto object-cover object-center"
-              />
-            </div>
-            <h1 className="text-2xl mt-10">Login to your account</h1>
+          <div className="w-80 h-22">
+            <img
+              src="/images/logo.webp"
+              alt="logo"
+              className="w-full h-auto object-cover object-center"
+            />
           </div>
-
-          <LoginForm />
+          <h1 className="text-2xl mt-10">Login to your account</h1>
         </div>
+
+        <LoginForm />
       </div>
 
       {/* right section */}

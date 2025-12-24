@@ -7,7 +7,6 @@ export const useLoginAction = () => {
   const navigate = useNavigate();
 
   const loginAction = useMutation({
-    mutationKey: ["login"],
     mutationFn: (input: Login) => login(input),
     onSuccess: () => {
       navigate("/", { replace: true });

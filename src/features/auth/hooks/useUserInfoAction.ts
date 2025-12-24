@@ -6,7 +6,6 @@ export const useUserInfoAction = () => {
   const navigate = useNavigate();
 
   const userInfoAction = useMutation({
-    mutationKey: ["user-info"],
     mutationFn: userInfo,
     onSuccess: (data, variable) => {
       navigate("/change-password", {

@@ -60,7 +60,7 @@ export const UserInfoForm = () => {
                 <FormLabel className="text-sm text-gray-lighter ms-3">
                   Username
                 </FormLabel>
-                <FormControl className="bg-gray-darker">
+                <FormControl className="bg-gray-darker" autoFocus>
                   <Input
                     placeholder="Enter your username or email or phone"
                     {...field}

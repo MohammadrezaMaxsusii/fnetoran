@@ -1,0 +1,96 @@
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { Separator } from "@radix-ui/react-separator";
+import { Collapse } from "./Collapse";
+import { Link } from "react-router";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { sidebarItems } from "@/shared/constants/sidebarConstant";
+
+export const AppSidebar = () => {
+  const { open } = useSidebar();
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center gap-5 p-6",
+        open && "items-start"
+      )}
+    >
+      {/* Logo */}
+      <div
+        className={cn(
+          "flex place-content-center border-e border-default w-3/5 px-5 py-1",
+          !open && "w-full border-0"
+        )}
+      >
+        {open ? (
+          <img src="/images/logo.webp" alt="Logo" />
+        ) : (
+          <img src="/icons/minimalLogo.svg" alt="Logo" />
+        )}
+      </div>
+
+      <Sidebar
+        collapsible="icon"
+        className="border-0 rounded-4xl overflow-hidden relative grow"
+      >
+        <SidebarContent className="overflow-x-hidden">
+          {/* Menu */}
+          <SidebarGroup className="p-4">
+            <SidebarGroupLabel>Direction</SidebarGroupLabel>
+
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {sidebarItems.map(({ title, url, icon }) => (
+                  <SidebarMenuItem
+                    key={title}
+                    className="has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
+                  >
+                    <SidebarMenuButton asChild>
+                      <Link to={url} className="flex items-center gap-2">
+                        <img src={icon} alt={title} />
+                        <span>{title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        {/* Footer */}
+        <SidebarFooter className={cn("p-6", !open && "mx-auto p-0 pb-4")}>
+          {open && <Separator className="h-px w-full bg-gray-lighter" />}
+          <div className="flex items-center justify-between mt-2.5">
+            <Collapse />
+            {open && (
+              <Button
+                variant="secondary"
+                size="icon-sm"
+                className="border-2 border-primary bg-[#0E1332] size-9"
+              >
+                <img
+                  src="/icons/guide.svg"
+                  alt="guide icon"
+                  className="size-5"
+                />
+              </Button>
+            )}
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+    </div>
+  );
+};

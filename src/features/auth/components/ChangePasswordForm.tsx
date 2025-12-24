@@ -12,11 +12,16 @@ import * as z from "zod";
 import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
-import { getPasswordStrength } from "@/shared/utils/getPasswordStrength";
+import {
+  getPasswordStrength,
+  getPasswordStyles,
+} from "@/shared/utils/getPasswordStrength";
 import { recoverySchema } from "../schemas";
 import { useRecoveryAction } from "../hooks";
 import type { Recovery } from "../types";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   setMode: (mode: "otp" | "password") => void;
@@ -25,7 +30,20 @@ interface Props {
 
 export const ChangePasswordForm = ({ form, setMode }: Props) => {
   const { recoveryAction } = useRecoveryAction();
-  // const [progress, setProgress] = useState(0);
+  const [strengthStyle, setStengthStyle] = useState<{
+    width: string;
+    color: string;
+  } | null>(null);
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      const strength = getPasswordStrength(value.newPassword || "");
+      const strengthStyle = getPasswordStyles[strength - 1];
+      setStengthStyle(strengthStyle);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const location = useLocation();
 
   const onSubmit = (input: Recovery) => {
@@ -39,6 +57,7 @@ export const ChangePasswordForm = ({ form, setMode }: Props) => {
     };
 
     recoveryAction.mutate(newInput);
+    form.reset();
   };
 
   return (
@@ -63,22 +82,28 @@ export const ChangePasswordForm = ({ form, setMode }: Props) => {
               control={form.control}
               name="newPassword"
               render={({ field }) => (
-                <FormItem className="w-full!">
+                <FormItem className="w-full! gap-1">
                   <FormLabel className="text-sm text-gray-lighter ms-3">
                     New Password
                   </FormLabel>
-                  <FormControl className="bg-gray-darker">
+
+                  <FormControl className="bg-gray-darker" autoFocus>
                     <Input placeholder="Enter your password" {...field} />
                   </FormControl>
+
+                  <div className="mx-4">
+                    <Progress
+                      className={cn(
+                        "w-full h-1 bg-gray-darker [&>div]:rounded-full rounded-full transition-all duration-300",
+                        strengthStyle?.color,
+                        strengthStyle?.width
+                      )}
+                    />
+                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-
-            <Progress
-              value={100}
-              className="h-3 bg-gray-darker [&>div]:bg-linear-to-r! [&>div]:from-blue-darker! [&>div]:to-blue-lighter! [&>div]:rounded-full [&>div]:border-2 [&>div]:border-gray-darker rounded-full border-2 border-default! w-11/12 mx-auto"
-            />
-            <FormMessage />
           </div>
 
           <div>
@@ -93,15 +118,10 @@ export const ChangePasswordForm = ({ form, setMode }: Props) => {
                   <FormControl className="bg-gray-darker">
                     <Input placeholder="Enter your password" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-
-            <Progress
-              value={100}
-              className="h-3 bg-gray-darker [&>div]:bg-linear-to-r! [&>div]:from-blue-darker! [&>div]:to-blue-lighter! [&>div]:rounded-full [&>div]:border-2 [&>div]:border-gray-darker rounded-full border-2 border-default! w-11/12 mx-auto"
-            />
-            <FormMessage />
           </div>
 
           {recoveryAction.isError && (

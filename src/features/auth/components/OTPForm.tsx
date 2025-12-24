@@ -15,10 +15,10 @@ import {
 import type { UseFormReturn } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 import * as z from "zod";
-import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
 import type { recoverySchema } from "../schemas";
 import { useUserInfoAction } from "../hooks";
+import { useEffect, useState } from "react";
 
 interface Props {
   setMode: (mode: "otp" | "password") => void;
@@ -26,6 +26,7 @@ interface Props {
 }
 
 export const OTPForm = ({ form, setMode }: Props) => {
+  const [isDisabled, setIsDisabled] = useState(true);
   const { userInfoAction } = useUserInfoAction();
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,6 +35,16 @@ export const OTPForm = ({ form, setMode }: Props) => {
     const forgetPasswordField = location.state.forgetPasswordField;
     userInfoAction.mutate({ forgetPasswordField });
   };
+
+  useEffect(() => {
+    const otpValue = form.getValues("otp");
+
+    if (otpValue.length === 4) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [form.watch("otp")]);
 
   return (
     <div className="p-10 bg-card rounded-4xl w-110">
@@ -65,7 +76,7 @@ export const OTPForm = ({ form, setMode }: Props) => {
                     OTP Code
                   </FormLabel>
                   <FormControl className="bg-gray-darker">
-                    <InputOTP maxLength={4} {...field}>
+                    <InputOTP maxLength={4} {...field} autoFocus>
                       <InputOTPGroup className="w-full flex justify-between items-center">
                         <InputOTPSlot index={0} className="w-20 h-10" />
                         <InputOTPSlot index={1} className="w-20 h-10" />
@@ -92,8 +103,8 @@ export const OTPForm = ({ form, setMode }: Props) => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full mt-4">
-            {false ? <Spinner /> : "Code Verification"}
+          <Button type="submit" disabled={isDisabled} className="w-full mt-4">
+            Code Verification
           </Button>
         </form>
       </Form>

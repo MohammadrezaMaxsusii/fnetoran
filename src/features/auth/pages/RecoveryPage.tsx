@@ -7,11 +7,11 @@ import { recoverySchema } from "../schemas";
 
 export const RecoveryPage = () => {
   const [mode, setMode] = useState<"otp" | "password">("otp");
-
   const form = useForm<z.infer<typeof recoverySchema>>({
     resolver: zodResolver(recoverySchema),
     defaultValues: {
       newPassword: "",
+      repeatNewPassword: "",
       otp: "",
       uuid: "",
     },
