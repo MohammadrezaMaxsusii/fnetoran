@@ -20,13 +20,11 @@ export const LoginPage = () => {
       </div>
 
       {/* right section */}
-      <div className="w-1/2 h-full">
-        <img
-          src="/images/login.webp"
-          alt="login image"
-          className="w-full h-full"
-        />
-      </div>
+      <img
+        src="/images/login.webp"
+        alt="login image"
+        className="w-1/2 h-[calc(100vh-3rem)]"
+      />
     </div>
   );
 };

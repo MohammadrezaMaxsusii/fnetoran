@@ -41,7 +41,7 @@ export const UserInfoForm = () => {
       {/* Header of card */}
       <div className="flex items-center justify-between">
         <span className="text-orange">Enter your info account</span>
-        <Button variant="secondary" onClick={() => navigate(-1)}>
+        <Button variant="secondary" onClick={() => navigate('/login')}>
           <img src="/icons/back.svg" alt="back icon" className="size-6" />
           Back
         </Button>

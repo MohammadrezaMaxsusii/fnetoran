@@ -51,13 +51,13 @@
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover: #171717;
+  --popover-foreground: #ffffff;
   --primary: #344efe;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: #252525;
   --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: #171717;
   --muted-foreground: #525252;
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
@@ -65,8 +65,8 @@
   --border: #252525;
   --input: #383838;
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-1: #344EFE;
+  --chart-2: #F58220;
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
@@ -99,8 +99,8 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-1: #344EFE;
+  --chart-2: #F58220;
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
@@ -118,8 +118,22 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    @apply min-h-screen;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply min-h-screen bg-background text-foreground;
+  }
+
+  #root {
+    @apply h-full;
+  }
+
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
   }
 }
 
@@ -128,6 +142,7 @@
   --border-color-default: #383838;
   --color-placeholder: #525252;
   --color-gray-darker: #252525;
+  --color-gray-items: #323232;
   --color-gray-lighter: #949494;
   --color-whtie: #ffffff;
   --color-blue-darker: #344efe;
@@ -137,13 +152,6 @@
   --color-orange: #f58220;
   --color-card: #171717;
   --font-display: "rubik", sans-serif;
-}
-
-@layer base {
-  button:not([disabled]),
-  [role="button"]:not([disabled]) {
-    cursor: pointer;
-  }
 }
 
 [data-sonner-toast][data-type="success"] {
