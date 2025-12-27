@@ -26,7 +26,7 @@ export const AppSidebar = () => {
   return (
     <div
       className={cn(
-        "row-span-2 flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0",
+        "h-[calc(100vh-20px)] row-span-2 flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0",
         open && "items-start"
       )}
     >

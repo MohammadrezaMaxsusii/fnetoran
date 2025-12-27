@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { AccessStatistics, Activities, UsersStatistics } from "../components";
+import {
+  AccessStatistics,
+  Activities,
+  RolesAndDevicesStatistics,
+  UsersStatistics,
+  UserTable,
+} from "../components";
 
 export const DashboardPage = () => {
   return (
-    <div className="grid grid-cols-3 grid-rows-6 gap-6 pe-6">
+    <div className="grid grid-cols-3 gap-6 pe-6">
       {/* Banner section */}
       <div className="relative col-span-2 space-y-6">
         <div className="col-span-2">
@@ -25,11 +31,17 @@ export const DashboardPage = () => {
 
           {/* Users statistics section */}
           <UsersStatistics />
+
+          {/* Users table */}
+          <UserTable />
         </div>
       </div>
 
       {/* Activities section */}
       <Activities />
+      
+      {/* Roles and devices statistics section */}
+      <RolesAndDevicesStatistics />
     </div>
   );
 };

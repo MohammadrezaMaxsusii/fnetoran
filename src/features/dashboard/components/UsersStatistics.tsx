@@ -1,36 +1,36 @@
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+} from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { date: "10/17", active: 186, inactive: 300 },
-  { date: "10/18", active: 305, inactive: 253 },
-  { date: "10/19", active: 237, inactive: 132 },
-  { date: "10/20", active: 73, inactive: 313 },
-  { date: "10/21", active: 209, inactive: 53 },
-  { date: "10/22", active: 214, inactive: 300 },
-  { date: "10/23", active: 210, inactive: 280 },
-];
+import { usersChartItems } from "../constants";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  date: {
+    label: "date",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
 export const UsersStatistics = () => {
   return (
-    <div className="col-span-1 bg-gray-darker p-6 rounded-2xl">
+    <div className="col-span-1 bg-gray-darker p-6 rounded-2xl h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
+        {/* Title of chart */}
         <p className="text-sm text-gray-lighter font-semibold">
           System user statistics
         </p>
 
+        {/* Data of chart */}
         <div className="text-xs">
           Active:
           <span className="text-green font-bold"> 20561</span>
@@ -41,39 +41,50 @@ export const UsersStatistics = () => {
         </div>
       </div>
 
-      <ChartContainer config={chartConfig}>
-        <LineChart
-          accessibilityLayer
-          data={chartData}
-        >
-          <CartesianGrid vertical={false} />
-          {/* <XAxis
-            dataKey="date"
-            tickLine={false}
-            tickMargin={8}
-            tickFormatter={(value) => value}
-            className="w-full"
-          /> */}
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent hideLabel />}
-          />
-          <Line
-            dataKey="active"
-            type="linear"
-            stroke="var(--color-green)"
-            strokeWidth={2}
-            dot={false}
-          />
-          <Line
-            dataKey="inactive"
-            type="linear"
-            stroke="var(--color-red)"
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ChartContainer>
+      {/* Line chart */}
+      <div className="flex-1">
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              accessibilityLayer
+              data={usersChartItems}
+              margin={{ top: 17, right: 17, left: 3, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} />
+
+              <XAxis
+                dataKey="date"
+                height={30}
+                tickLine={false}
+                tickMargin={8}
+              />
+
+              <YAxis width={32} tickLine={false} tickMargin={8} />
+
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+
+              <Line
+                dataKey="active"
+                type="linear"
+                stroke="var(--color-green)"
+                strokeWidth={2}
+                dot={false}
+              />
+
+              <Line
+                dataKey="inactive"
+                type="linear"
+                stroke="var(--color-red)"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </div>
     </div>
   );
 };

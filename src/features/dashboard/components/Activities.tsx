@@ -1,10 +1,13 @@
 import { isToday } from "@/shared/utils/isToday";
 import { activityItems } from "../constants";
 import { cn } from "@/lib/utils";
+import { useUserQuery } from "../hooks";
 
 export const Activities = () => {
+  // const { user, isLoading } = useUserQuery();
+  
   return (
-    <div className="bg-gray-darker p-6 rounded-2xl space-y-6">
+    <div className="bg-gray-darker p-6 rounded-2xl space-y-6 col-span-1">
       {/* Header section */}
       <div className="flex items-center justify-between">
         <span className="text-lg font-bold">Weekday activities</span>
