@@ -23,7 +23,7 @@ const chartConfig = {
 
 export const UsersStatistics = () => {
   return (
-    <div className="col-span-1 bg-gray-darker p-6 rounded-2xl h-full flex flex-col">
+    <div className="bg-gray-darker p-6 rounded-2xl h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
         {/* Title of chart */}
         <p className="text-sm text-gray-lighter font-semibold">
@@ -42,8 +42,8 @@ export const UsersStatistics = () => {
       </div>
 
       {/* Line chart */}
-      <div className="flex-1">
-        <ChartContainer config={chartConfig} className="h-full w-full">
+      <div className="flex-1 flex items-center justify-center">
+        <ChartContainer config={chartConfig} className="size-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               accessibilityLayer

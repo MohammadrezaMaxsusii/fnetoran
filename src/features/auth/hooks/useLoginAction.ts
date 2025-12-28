@@ -9,7 +9,7 @@ export const useLoginAction = () => {
   const loginAction = useMutation({
     mutationFn: (input: Login) => login(input),
     onSuccess: () => {
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     },
   });
 

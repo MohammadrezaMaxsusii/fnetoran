@@ -23,15 +23,15 @@ const chartConfig = {
 
 export const AccessStatistics = () => {
   return (
-    <div className="col-span-1 bg-gray-darker p-6 rounded-2xl">
+    <div className="bg-gray-darker p-6 rounded-2xl">
       {/* Title of chart */}
       <p className="text-sm text-gray-lighter font-semibold">
         Statistics of groups and their accesses
       </p>
 
-      <div className="grid grid-cols-2 pt-8">
+      <div className="grid grid-cols-2 place-content-center size-full">
         {/* Data of chart */}
-        <div className="space-y-6 border-e border-e-default">
+        <div className="space-y-6 border-e border-e-default grid items-center">
           <div className="flex flex-col border-l-4 border-primary ps-3">
             <span className="text-sm">Groups</span>
             <span className="text-5xl text-primary font-bold">1378</span>
@@ -45,7 +45,7 @@ export const AccessStatistics = () => {
         {/* Pie chart */}
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-62.5"
+          className="aspect-square ps-7"
         >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

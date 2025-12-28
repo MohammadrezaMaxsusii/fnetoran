@@ -12,28 +12,21 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import { Collapse } from "./Collapse";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { sidebarItems } from "@/shared/constants/sidebarConstant";
 
 export const AppSidebar = () => {
   const { open } = useSidebar();
-  const location = useLocation();
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div
-      className={cn(
-        "h-[calc(100vh-20px)] row-span-2 flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0",
-        open && "items-start"
-      )}
-    >
+      className="h-screen flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0 sticky inset-y-0 start-0 z-40">
       {/* Logo */}
       <div
         className={cn(
-          "flex place-content-center border-e border-default w-11/12 px-5 py-1",
+          "flex place-content-center border-e border-default w-full px-5 py-1",
           !open && "w-full border-0 p-0"
         )}
       >
@@ -44,9 +37,10 @@ export const AppSidebar = () => {
         )}
       </div>
 
+      {/* Sidebar section */}
       <Sidebar
         collapsible="icon"
-        className="border-0 rounded-4xl overflow-hidden relative flex flex-col min-h-0"
+        className="border-0 rounded-4xl overflow-hidden relative"
       >
         <SidebarContent className="overflow-x-hidden">
           {/* Menu */}
@@ -60,10 +54,7 @@ export const AppSidebar = () => {
                     {haveChilde ? (
                       <SidebarMenuItem
                         key={title}
-                        className={cn(
-                          isActive(url) &&
-                            "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
-                        )}
+                        className="has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
                       >
                         {/* <SidebarMenuButton asChild>
                           <Link to={url} className="flex items-center gap-2">
@@ -85,8 +76,7 @@ export const AppSidebar = () => {
                       <SidebarMenuItem
                         key={title}
                         className={cn(
-                          isActive(url) &&
-                            "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
+                          "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
                         )}
                       >
                         <SidebarMenuButton asChild>
@@ -106,7 +96,7 @@ export const AppSidebar = () => {
 
         {/* Footer */}
         <SidebarFooter className={cn("p-6", !open && "mx-auto p-0 pb-4")}>
-          {open && <Separator className="h-px w-full bg-gray-lighter" />}
+          {open && <Separator className="h-px w-full bg-[#414141]" />}
           <div className="flex items-center justify-between mt-2.5">
             <Collapse />
             {open && (

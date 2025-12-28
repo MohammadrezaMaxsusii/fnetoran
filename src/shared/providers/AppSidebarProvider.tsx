@@ -8,7 +8,7 @@ export const AppSidebarProvider = ({
   children: React.ReactNode;
 }) => {
   return (
-    <SidebarProvider className="h-full grid grid-cols-[1fr_10fr] grid-rows-[90px_1fr]">
+    <SidebarProvider className="h-full">
       <AppSidebar />
 
       {children}

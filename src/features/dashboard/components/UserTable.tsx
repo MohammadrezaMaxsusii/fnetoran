@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { useUsersQuery } from "../hooks";
+import { useUsersQuery } from "@/features/users/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/empty";
 
 export const UserTable = () => {
-  const { users, isLoading } = useUsersQuery();
+  const { users, usersIsLoading } = useUsersQuery();
   const navigate = useNavigate();
 
-  if (isLoading) {
+  if (usersIsLoading) {
     return (
       <section className="col-span-2 bg-gray-darker p-6 rounded-2xl space-y-2">
         <div className="flex items-center justify-between">

@@ -12,10 +12,11 @@ export const Collapse = () => {
       size="icon-sm"
       className="border-2 border-default size-9"
     >
-      <img src="/icons/collapse.svg" alt="collapse icon" className={cn(
-        "size-4",
-        !open && "rotate-180" 
-      )} />
+      <img
+        src="/icons/collapse.svg"
+        alt="collapse icon"
+        className={cn("size-4", !open && "rotate-180")}
+      />
     </Button>
   );
 };

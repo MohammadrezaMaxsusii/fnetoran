@@ -1,6 +1,6 @@
 export const RolesAndDevicesStatistics = () => {
   return (
-    <section className="relative col-start-3 col-span-1 p-6 rounded-2xl space-y-2 bg-linear-to-r from-60% from-gray-darker/5 to-gray-darker/75">
+    <section className="relative h-fit p-6 rounded-2xl space-y-2 bg-linear-to-r from-60% from-gray-darker/5 to-gray-darker/75">
       {/* Header */}
       <span className="text-sm font-semibold">
         Statistics of roles and devices
@@ -39,7 +39,7 @@ export const RolesAndDevicesStatistics = () => {
       <img
         src="/images/rolesAndDevices.png"
         alt="roles and devices image"
-        className="absolute inset-0 opacity-50"
+        className="size-full absolute inset-0 opacity-50"
       />
     </section>
   );

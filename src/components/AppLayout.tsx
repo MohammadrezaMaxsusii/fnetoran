@@ -4,7 +4,9 @@ import { AppHeader } from "./AppHeader";
 
 export const AppLayout = () => (
   <AppSidebarProvider>
-    <AppHeader />
-    <Outlet />
+    <div>
+      <AppHeader />
+      <Outlet />
+    </div>
   </AppSidebarProvider>
 );
