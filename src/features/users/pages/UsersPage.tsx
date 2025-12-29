@@ -1,5 +1,9 @@
+import { UserTable } from "../components";
+
 export const UsersPage = () => {
   return (
-    <div>Users</div>
-  )
-}
+    <div className="w-full pe-5">
+      <UserTable />
+    </div>
+  );
+};

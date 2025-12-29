@@ -10,12 +10,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Separator } from "@radix-ui/react-separator";
 import { Collapse } from "./Collapse";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { sidebarItems } from "@/shared/constants/sidebarConstant";
+import { Separator } from "./ui/separator";
 
 export const AppSidebar = () => {
   const { open } = useSidebar();
@@ -50,10 +50,9 @@ export const AppSidebar = () => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {sidebarItems.map(({ title, haveChilde, url, icon }) => (
-                  <>
+                  <div key={title}>
                     {haveChilde ? (
                       <SidebarMenuItem
-                        key={title}
                         className="has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
                       >
                         {/* <SidebarMenuButton asChild>
@@ -74,7 +73,6 @@ export const AppSidebar = () => {
                       </SidebarMenuItem>
                     ) : (
                       <SidebarMenuItem
-                        key={title}
                         className={cn(
                           "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
                         )}
@@ -87,7 +85,7 @@ export const AppSidebar = () => {
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     )}
-                  </>
+                  </div>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -96,7 +94,7 @@ export const AppSidebar = () => {
 
         {/* Footer */}
         <SidebarFooter className={cn("p-6", !open && "mx-auto p-0 pb-4")}>
-          {open && <Separator className="h-px w-full bg-[#414141]" />}
+          {open && <Separator className="h-px w-full bg-default" />}
           <div className="flex items-center justify-between mt-2.5">
             <Collapse />
             {open && (

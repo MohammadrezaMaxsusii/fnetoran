@@ -66,8 +66,8 @@
   --border: #252525;
   --input: #383838;
   --ring: oklch(0.708 0 0);
-  --chart-1: #344EFE;
-  --chart-2: #F58220;
+  --chart-1: #344efe;
+  --chart-2: #f58220;
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
@@ -100,8 +100,8 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: #344EFE;
-  --chart-2: #F58220;
+  --chart-1: #344efe;
+  --chart-2: #f58220;
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
@@ -117,15 +117,15 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50 scrollbar-thin scrollbar-thumb-primary scrollbar-track-neutral-700;
+    @apply border-border outline-ring/50 scrollbar-none;
   }
 
   html {
-    @apply min-h-screen;
+    @apply min-h-screen scrollbar-thin scrollbar-thumb-primary scrollbar-track-neutral-800 font-display;
   }
 
   body {
-    @apply min-h-screen bg-background text-foreground;
+    @apply min-h-screen bg-background font-display;
   }
 
   #root {
@@ -141,6 +141,7 @@
 @theme {
   --color-background-default: #171717;
   --border-color-default: #383838;
+  --color-default: #383838;
   --color-placeholder: #525252;
   --color-gray-darker: #252525;
   --color-gray-items: #323232;
@@ -148,7 +149,9 @@
   --color-whtie: #ffffff;
   --color-blue-darker: #344efe;
   --color-blue-lighter: #435cff;
+  --color-navy-blue: #0e1332;
   --color-red: #ca242c;
+  --color-red-darker: #2C0D11;
   --color-green: #109d35;
   --color-orange: #f58220;
   --color-card: #171717;

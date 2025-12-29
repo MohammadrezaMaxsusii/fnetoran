@@ -1,9 +1,9 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { BrowserRouter } from "react-router";
 import { Toaster } from "sonner";
 import { QueryProvider } from "./QueryProvider";
 
-export const Provider = ({ children }: { children: React.ReactNode }) => {
+export const Provider = ({ children }: { children: ReactNode }) => {
   return (
     <BrowserRouter>
       <QueryProvider>

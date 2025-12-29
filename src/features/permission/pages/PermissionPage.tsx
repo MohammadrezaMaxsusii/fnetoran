@@ -1,5 +1,7 @@
+import { Development } from "@/components/Development";
+
 export const PermissionPage = () => {
   return (
-    <div>PermissionPage</div>
+    <Development />
   )
 }

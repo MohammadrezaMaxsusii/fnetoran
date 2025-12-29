@@ -3,6 +3,8 @@ import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
+// To do refactor
+
 export const Notifications = () => {
   return (
     <Popover>

@@ -71,6 +71,7 @@ export const LoginForm = () => {
                 <Input
                   className="col-span-2"
                   placeholder="Enter your password"
+                  type="password"
                   {...field}
                 />
               </FormControl>

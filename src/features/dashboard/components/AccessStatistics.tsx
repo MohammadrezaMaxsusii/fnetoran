@@ -1,4 +1,4 @@
-import { Pie, PieChart, ResponsiveContainer, Sector } from "recharts";
+import { Pie, PieChart, Sector } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,31 +43,26 @@ export const AccessStatistics = () => {
         </div>
 
         {/* Pie chart */}
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-square ps-7"
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
+        <ChartContainer config={chartConfig} className="aspect-square ps-7">
+          <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
 
-              <Pie
-                data={accessChartItems}
-                dataKey="counts"
-                nameKey="category"
-                innerRadius={30}
-                outerRadius={60}
-                strokeWidth={5}
-                activeIndex={0}
-                activeShape={({ outerRadius = 0, ...props }) => (
-                  <Sector {...props} outerRadius={outerRadius + 10} />
-                )}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+            <Pie
+              data={accessChartItems}
+              dataKey="counts"
+              nameKey="category"
+              innerRadius={30}
+              outerRadius={60}
+              strokeWidth={5}
+              activeIndex={0}
+              activeShape={({ outerRadius = 0, ...props }) => (
+                <Sector {...props} outerRadius={outerRadius + 10} />
+              )}
+            />
+          </PieChart>
         </ChartContainer>
       </div>
     </div>

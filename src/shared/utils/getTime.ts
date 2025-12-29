@@ -1,11 +1,15 @@
-export const getDate = (date: string) => {
-  const dateObj = new Date(date);
-
-  return dateObj.toISOString().split("T")[0];
+export const getDate = (date: string | null) => {
+  return date?.split("T")[0];
 };
 
-export const getTime = (date: string) => {
-    const dateObj = new Date(date);
+export const getTime = (date: string | null) => {
+  return date?.split("T")[1].split(".")[0];
+};
 
-    return dateObj.toTimeString().split(" ")[0];
-}
+export const getStartTime = (date: string | null) => {
+  return date?.split("-")[0];
+};
+
+export const getEndTime = (date: string | null) => {
+  return date?.split("-")[1];
+};

@@ -4,7 +4,7 @@ import { AppHeader } from "./AppHeader";
 
 export const AppLayout = () => (
   <AppSidebarProvider>
-    <div>
+    <div className="w-full overflow-x-auto">
       <AppHeader />
       <Outlet />
     </div>

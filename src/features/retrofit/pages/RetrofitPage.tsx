@@ -1,5 +1,7 @@
+import { Development } from "@/components/Development";
+
 export const RetrofitPage = () => {
   return (
-    <div>RetrofitPage</div>
+    <Development />
   )
 }

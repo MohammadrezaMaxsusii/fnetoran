@@ -1,5 +1,5 @@
 import { dayItems } from "@/features/dashboard/constants";
-import type { WeekDay } from "../types/weekDay";
+import type { WeekDay } from "../types/weekDayType";
 
 const today = new Date().getDay() as WeekDay;
 

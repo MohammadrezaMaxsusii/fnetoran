@@ -1,5 +1,7 @@
+import { Development } from "@/components/Development";
+
 export const RolesPage = () => {
   return (
-    <div>RolesPage</div>
+    <Development />
   )
 }

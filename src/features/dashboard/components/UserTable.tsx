@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/empty";
 
 export const UserTable = () => {
-  const { users, usersIsLoading } = useUsersQuery();
+  const { users, usersIsLoading } = useUsersQuery({ list_limit: "3" });
   const navigate = useNavigate();
 
   if (usersIsLoading) {
@@ -28,7 +28,7 @@ export const UserTable = () => {
           <Button
             variant="secondary"
             className="border border-default"
-            onClick={() => navigate("users")}
+            onClick={() => navigate("/users")}
           >
             View All
           </Button>
@@ -113,23 +113,14 @@ export const UserTable = () => {
               {/* User info */}
               <TableCell className="px-4 py-2 rounded-l-lg">
                 <div className="flex items-center gap-4">
-                  {user.profileId ? (
-                    <div className="border-2 border-orange rounded-full w-8 h-8 grid place-content-center">
-                      <img
-                        src=""
-                        alt="placeholder image"
-                        className="w-8 h-8 rounded-full"
-                      />
-                    </div>
-                  ) : (
-                    <div className="border-2 border-orange rounded-full w-8 h-8 grid place-content-center">
-                      <img
-                        src="/icons/user.svg"
-                        alt="placeholder image"
-                        className="w-4 h-4"
-                      />
-                    </div>
-                  )}
+                  <div className="border-2 border-orange rounded-full size-8">
+                    {/* To do fetch user profile */}
+                    <img
+                      src={user.profileId ? "" : "/icons/user.svg"}
+                      alt="profile image"
+                      className="size-full rounded-full"
+                    />
+                  </div>
 
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">

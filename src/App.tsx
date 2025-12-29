@@ -8,12 +8,14 @@ import { PermissionRoutes } from "./features/permission/routes";
 import { DevicesRoutes } from "./features/devices/routes";
 import { FirewallRoutes } from "./features/firewall/routes";
 import { RetrofitRoutes } from "./features/retrofit/routes";
+import { NotFoundRoutes } from "./features/notFound/routes";
 
 export const App = () => {
   return (
-    <main className="h-full font-display bg-background-default text-white">
+    <main className="h-full bg-background-default text-white">
       <Routes>
         {AuthRoutes}
+        {NotFoundRoutes}
 
         <Route element={<AppLayout />}>
           {DashboardRoutes}
