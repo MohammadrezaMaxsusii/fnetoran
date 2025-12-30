@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "@/features/users/api";
 
-export const useUsersQuery = (filters: Record<string, string> = {}) => {
+export const useUsersQuery = (filters: Record<string, any> = {}) => {
   const {
     data: users,
     isLoading: usersIsLoading,

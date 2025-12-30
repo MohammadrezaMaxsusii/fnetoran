@@ -3,7 +3,7 @@ export const getDate = (date: string | null) => {
 };
 
 export const getTime = (date: string | null) => {
-  return date?.split("T")[1].split(".")[0];
+  return date?.split("T")[1].split(".")[0].slice(0, 5);
 };
 
 export const getStartTime = (date: string | null) => {

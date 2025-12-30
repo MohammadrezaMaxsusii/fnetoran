@@ -1,8 +1,14 @@
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useUsersQuery } from "@/features/users/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router";
 import type { User } from "@/features/users/types";
 import { getDate, getTime } from "@/shared/utils";
 import {
@@ -14,7 +20,6 @@ import {
 } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -32,13 +37,42 @@ import {
 } from "@/components/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { MultiSelect } from "@/components/ui/multiSelect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQueryClient } from "@tanstack/react-query";
+import { userTableItems } from "../constants";
+import { useUsersFilters } from "../hooks/useUsersFilters";
+
+type FilterFormValues = {
+  active: boolean;
+  inactive: boolean;
+  date?: Date;
+  role: string;
+  sort: string;
+};
 
 export const UserTable = () => {
-  const { users, usersIsLoading } = useUsersQuery();
-  const form = useForm();
+  const { filters, updateFilters } = useUsersFilters();
+  const { users, usersIsLoading } = useUsersQuery(filters);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const form = useForm<FilterFormValues>({
+    defaultValues: {
+      active: false,
+      inactive: false,
+      date: undefined,
+      role: "",
+    },
+  });
+  const { active, inactive, date, role, sort } = form.watch();
+
+  useEffect(() => {}, [active, inactive, date, role, sort]);
 
   if (usersIsLoading) {
     return (
@@ -55,7 +89,7 @@ export const UserTable = () => {
         {/* User table */}
         <Table>
           <TableBody className="flex flex-col gap-1">
-            {Array.from({ length: 3 }).map((_, index) => (
+            {Array.from({ length: 8 }).map((_, index) => (
               <TableRow
                 key={index}
                 className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items rounded-lg border border-default"
@@ -131,90 +165,223 @@ export const UserTable = () => {
       {/* Filter section */}
       <div className="p-7 flex items-center justify-between">
         <Form {...form}>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-lighter text-sm">User Status: </span>
-            <FormField
-              control={form.control}
-              name="active"
-              render={() => (
-                <FormItem className="flex items-center">
-                  <FormControl>
-                    <Checkbox id="active" />
-                  </FormControl>
-                  <FormLabel htmlFor="active">Active</FormLabel>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="inactive"
-              render={() => (
-                <FormItem className="flex items-center">
-                  <FormControl>
-                    <Checkbox id="inactive" />
-                  </FormControl>
-                  <FormLabel htmlFor="inactive">Inactive</FormLabel>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="date"
-            render={() => (
-              <FormItem className="flex items-center">
-                <FormLabel
-                  htmlFor="date"
-                  className="text-gray-lighter font-normal"
-                >
-                  Date:{" "}
-                </FormLabel>
-                <FormControl>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="date"
-                        className="bg-muted hover:bg-muted/75 border border-default w-48 justify-between font-normal"
-                      >
-                        <div>
-                          {date ? date.toLocaleDateString() : "Select date"}
-                        </div>
-                        <ChevronDownIcon />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto overflow-hidden p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        captionLayout="dropdown"
-                        onSelect={(date) => {
-                          setDate(date);
-                          setOpen(false);
+          <form
+            onSubmit={form.handleSubmit(() => console.log("sss"))}
+            className="flex justify-between items-center w-full"
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-gray-lighter text-sm">User Status: </span>
+              <FormField
+                control={form.control}
+                name="active"
+                render={({ field }) => (
+                  <FormItem className="flex items-center">
+                    <FormControl>
+                      <Checkbox
+                        id="active"
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (checked) {
+                            form.setValue("inactive", false);
+                          }
                         }}
                       />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                    </FormControl>
+                    <FormLabel htmlFor="active">Active</FormLabel>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="inactive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center">
+                    <FormControl>
+                      <Checkbox
+                        id="inactive"
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (checked) {
+                            form.setValue("active", false);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel htmlFor="inactive">Inactive</FormLabel>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="date"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Date:
+                  </FormLabel>
+                  <FormControl>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="date"
+                          className="bg-muted hover:bg-muted/75 border border-default w-48 justify-between font-normal"
+                        >
+                          {field.value ? (
+                            getDate(field.value.toISOString())
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Select date
+                            </span>
+                          )}
+                          <ChevronDownIcon />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto overflow-hidden p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          onSelect={(value) => {
+                            field.onChange(value);
+                            setOpen(false);
+                          }}
+                          classNames={{
+                            day_button: "hover:bg-primary hover:text-white",
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="role"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Role:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="role"
+                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="1"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          1
+                        </SelectItem>
+                        <SelectItem
+                          value="2"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          2
+                        </SelectItem>
+                        <SelectItem
+                          value="3"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          3
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sort"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="sort"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Sort By:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="sort"
+                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select sort" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="1"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          1
+                        </SelectItem>
+                        <SelectItem
+                          value="2"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          2
+                        </SelectItem>
+                        <SelectItem
+                          value="3"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          3
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
         </Form>
       </div>
 
       {/* User table */}
       <div className="px-7 pb-7">
         <Table>
+          {/* Table header */}
+          <TableHeader>
+            <TableRow className="hover:bg-secondary">
+              {userTableItems.map((userTableItem) => (
+                <TableHead className="text-center text-sm text-gray-lighter">{userTableItem}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+
+          {/* Table body */}
           <TableBody>
             {users.data.map((user: User, index: number) => (
               <TableRow
@@ -238,10 +405,10 @@ export const UserTable = () => {
                     </div>
 
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold">
+                      <span className="text-sm font-bold capitalize">
                         {user.firstName + " " + user.lastName}
                       </span>
-                      <span className="text-xs text-gray-lighter">
+                      <span className="text-xs text-gray-lighter lowercase">
                         {user.email}
                       </span>
                     </div>
