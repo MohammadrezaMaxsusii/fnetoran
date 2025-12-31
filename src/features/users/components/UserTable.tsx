@@ -38,7 +38,6 @@ import {
 import { ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
-import { MultiSelect } from "@/components/ui/multiSelect";
 import {
   Select,
   SelectContent,
@@ -46,14 +45,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryClient } from "@tanstack/react-query";
 import { userTableItems } from "../constants";
 import { useUsersFilters } from "../hooks/useUsersFilters";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from "@/components/ui/pagination";
+import { CustomPaginationPrevious } from "@/components/CustomPaginationPrevious";
+import { CustomPaginationNext } from "@/components/CustomPaginationNext";
+import { UserDetails } from "./UserDetails";
 
 type FilterFormValues = {
-  active: boolean;
-  inactive: boolean;
-  date?: Date;
+  status: "active" | "inactive";
+  date: string;
   role: string;
   sort: string;
 };
@@ -64,17 +71,17 @@ export const UserTable = () => {
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      active: false,
-      inactive: false,
-      date: undefined,
+      status: "active",
+      date: "",
       role: "",
+      sort: "",
     },
   });
-  const { active, inactive, date, role, sort } = form.watch();
+  const { status, date, role, sort } = form.watch();
 
-  useEffect(() => {}, [active, inactive, date, role, sort]);
+  useEffect(() => {}, [status, date, role, sort]);
 
-  if (usersIsLoading) {
+  if (true) {
     return (
       <section className="w-full bg-gray-darker p-6 rounded-2xl space-y-2">
         {/* Header of table */}
@@ -85,6 +92,8 @@ export const UserTable = () => {
             Add user
           </Button>
         </div>
+
+        <UserDetails />
 
         {/* User table */}
         <Table>
@@ -115,6 +124,34 @@ export const UserTable = () => {
             ))}
           </TableBody>
         </Table>
+
+        {/* <Pagination>
+          <PaginationContent className="[&_li_a]:hover:bg-blue-darker [&_li_a]:hover:text-foreground [&_li_a]:size-7! [&_li_a]:font-normal [&_li_a]:text-sm [&_li_a]:rounded-lg [&_li_a[data-active]]:bg-blue-darker">
+            <PaginationItem>
+              <CustomPaginationPrevious href="#"/>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" isActive>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">8</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">9</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <CustomPaginationNext href="#"/>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination> */}
       </section>
     );
   }
@@ -239,7 +276,7 @@ export const UserTable = () => {
                           className="bg-muted hover:bg-muted/75 border border-default w-48 justify-between font-normal"
                         >
                           {field.value ? (
-                            getDate(field.value.toISOString())
+                            getDate(field.value.toString())
                           ) : (
                             <span className="text-muted-foreground">
                               Select date
@@ -376,7 +413,12 @@ export const UserTable = () => {
           <TableHeader>
             <TableRow className="hover:bg-secondary">
               {userTableItems.map((userTableItem) => (
-                <TableHead className="text-center text-sm text-gray-lighter">{userTableItem}</TableHead>
+                <TableHead
+                  key={userTableItem}
+                  className="text-center text-sm text-gray-lighter"
+                >
+                  {userTableItem}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
