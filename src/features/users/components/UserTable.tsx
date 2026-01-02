@@ -57,31 +57,42 @@ import {
 import { CustomPaginationPrevious } from "@/components/CustomPaginationPrevious";
 import { CustomPaginationNext } from "@/components/CustomPaginationNext";
 import { UserDetails } from "./UserDetails";
+import { useRolesQuery } from "@/features/roles/hooks";
+import type { Role } from "@/features/roles/types";
+import { UserDelete } from "./UserDelete";
 
 type FilterFormValues = {
-  status: "active" | "inactive";
-  date: string;
-  role: string;
-  sort: string;
+  status?: string;
+  date?: string;
+  role?: string;
+  sort?: string;
+  list_page?: string;
 };
 
 export const UserTable = () => {
   const { filters, updateFilters } = useUsersFilters();
   const { users, usersIsLoading } = useUsersQuery(filters);
+  const { roles } = useRolesQuery();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      status: "active",
-      date: "",
-      role: "",
-      sort: "",
+      status: filters.status,
+      date: filters.date,
+      role: filters.role,
+      sort: filters.sort,
+      list_page: filters.list_page,
     },
   });
-  const { status, date, role, sort } = form.watch();
 
-  useEffect(() => {}, [status, date, role, sort]);
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      updateFilters(values);
+    });
 
-  if (true) {
+    return () => subscription.unsubscribe();
+  }, [form, updateFilters]);
+
+  if (usersIsLoading) {
     return (
       <section className="w-full bg-gray-darker p-6 rounded-2xl space-y-2">
         {/* Header of table */}
@@ -92,8 +103,6 @@ export const UserTable = () => {
             Add user
           </Button>
         </div>
-
-        <UserDetails />
 
         {/* User table */}
         <Table>
@@ -124,34 +133,6 @@ export const UserTable = () => {
             ))}
           </TableBody>
         </Table>
-
-        {/* <Pagination>
-          <PaginationContent className="[&_li_a]:hover:bg-blue-darker [&_li_a]:hover:text-foreground [&_li_a]:size-7! [&_li_a]:font-normal [&_li_a]:text-sm [&_li_a]:rounded-lg [&_li_a[data-active]]:bg-blue-darker">
-            <PaginationItem>
-              <CustomPaginationPrevious href="#"/>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">8</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">9</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <CustomPaginationNext href="#"/>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination> */}
       </section>
     );
   }
@@ -184,6 +165,9 @@ export const UserTable = () => {
     );
   }
 
+  console.log(users.count);
+
+  console.log(form.getFieldState("list_page"));
   return (
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
@@ -202,54 +186,36 @@ export const UserTable = () => {
       {/* Filter section */}
       <div className="p-7 flex items-center justify-between">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(() => console.log("sss"))}
-            className="flex justify-between items-center w-full"
-          >
+          <form className="flex justify-between items-center w-full">
             <div className="flex items-center gap-4">
               <span className="text-gray-lighter text-sm">User Status: </span>
               <FormField
                 control={form.control}
-                name="active"
+                name="status"
                 render={({ field }) => (
                   <FormItem className="flex items-center">
                     <FormControl>
                       <Checkbox
                         id="active"
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (checked) {
-                            form.setValue("inactive", false);
-                          }
+                        checked={field.value === "active"}
+                        onCheckedChange={() => {
+                          field.onChange("active");
                         }}
                       />
                     </FormControl>
                     <FormLabel htmlFor="active">Active</FormLabel>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="inactive"
-                render={({ field }) => (
-                  <FormItem className="flex items-center">
                     <FormControl>
                       <Checkbox
                         id="inactive"
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (checked) {
-                            form.setValue("active", false);
-                          }
+                        checked={field.value === "inactive"}
+                        onCheckedChange={() => {
+                          field.onChange("inactive");
                         }}
                       />
                     </FormControl>
                     <FormLabel htmlFor="inactive">Inactive</FormLabel>
+
                     <FormDescription />
                     <FormMessage />
                   </FormItem>
@@ -276,7 +242,7 @@ export const UserTable = () => {
                           className="bg-muted hover:bg-muted/75 border border-default w-48 justify-between font-normal"
                         >
                           {field.value ? (
-                            getDate(field.value.toString())
+                            <span>{field.value}</span>
                           ) : (
                             <span className="text-muted-foreground">
                               Select date
@@ -293,7 +259,10 @@ export const UserTable = () => {
                           mode="single"
                           captionLayout="dropdown"
                           onSelect={(value) => {
-                            field.onChange(value);
+                            if (value) {
+                              const date = getDate(value.toISOString());
+                              field.onChange(date);
+                            }
                             setOpen(false);
                           }}
                           classNames={{
@@ -326,27 +295,17 @@ export const UserTable = () => {
                         id="role"
                         className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
                       >
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder="Select role"/>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem
-                          value="1"
-                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                        >
-                          1
-                        </SelectItem>
-                        <SelectItem
-                          value="2"
-                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                        >
-                          2
-                        </SelectItem>
-                        <SelectItem
-                          value="3"
-                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                        >
-                          3
-                        </SelectItem>
+                        {roles?.data.map((role: Role) => (
+                          <SelectItem
+                            value={role.id}
+                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                          >
+                            {role.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -475,7 +434,10 @@ export const UserTable = () => {
                       <span>Active</span>
                     </div>
                   ) : (
-                    <span className="text-gray-lighter">Inactive</span>
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="w-3 h-3 bg-red rounded-full" />
+                      <span>Inactive</span>
+                    </div>
                   )}
                 </TableCell>
 
@@ -492,28 +454,42 @@ export const UserTable = () => {
                   </Button>
 
                   {/* delete user */}
-                  <Button className="bg-red-darker hover:bg-red-darker border border-red p-2.5!">
-                    <img
-                      src="/icons/delete.svg"
-                      alt="delete icon"
-                      className="size-5"
-                    />
-                  </Button>
+                  <UserDelete userId={user.id} />
 
                   {/* view user */}
-                  <Button className="p-2.5!">
-                    <img
-                      src="/icons/view.svg"
-                      alt="edit icon"
-                      className="size-5"
-                    />
-                  </Button>
+                  <UserDetails user={user} />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination section */}
+      {Math.ceil(users.count / 1) > 1 && (
+        <Pagination className="pb-7">
+          <PaginationContent className="[&_li_a]:hover:bg-blue-darker [&_li_a]:hover:text-foreground [&_li_a]:size-7! [&_li_a]:font-normal [&_li_a]:text-sm [&_li_a]:rounded-lg [&_li_a[data-active]]:bg-blue-darker">
+            <PaginationItem>
+              <CustomPaginationPrevious href="#" />
+            </PaginationItem>
+            {Array.from({ length: Math.ceil(users.count / 1) }).map(
+              (_, index: number) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    href={`/users?list_page=${index + 1}`}
+                    isActive
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
+            <PaginationItem>
+              <CustomPaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </section>
   );
 };

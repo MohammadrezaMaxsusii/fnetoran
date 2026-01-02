@@ -8,23 +8,28 @@ export const useUsersFilters = () => {
     date: searchParams.get("date") || "",
     role: searchParams.get("role") || "",
     sort: searchParams.get("sort") || "",
+    list_page: searchParams.get("list_page") || "",
   });
 
-  const { status, date, role, sort } = filters;
+  const { status, date, role, sort, list_page } = filters;
 
   useEffect(() => {
     const params: Record<string, any> = {};
 
-    if (filters.status) params.status = filters.status;
-    if (filters.date) params.date = filters.date;
-    if (filters.role) params.role = filters.role;
-    if (filters.sort) params.sort = filters.sort;
+    if (filters.status) params.status = status;
+    if (filters.date) params.date = date;
+    if (filters.role) params.role = role;
+    if (filters.sort) params.sort = sort;
+    if (filters.list_page) params.list_page = list_page;
 
     setSearchParams(params);
-  }, [status, date, role, sort]);
+  }, [status, date, role, sort, list_page]);
 
-  const updateFilters = (key: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const updateFilters = (next: Partial<typeof filters>) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...next,
+    }));
   };
 
   return {
