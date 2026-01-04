@@ -4,26 +4,31 @@ import { useSearchParams } from "react-router";
 export const useUsersFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({
-    status: searchParams.get("status") || "",
-    date: searchParams.get("date") || "",
-    role: searchParams.get("role") || "",
-    sort: searchParams.get("sort") || "",
-    list_page: searchParams.get("list_page") || "",
+    active:
+      searchParams.get("active") === "true"
+        ? true
+        : searchParams.get("active") === "false"
+        ? false
+        : undefined,
+    createdAt: searchParams.get("createdAt") || "",
+    roleId: searchParams.get("roleId") || "",
+    list_sort: searchParams.get("list_sort") || "",
+    list_page: Number(searchParams.get("list_page")) || 1,
   });
 
-  const { status, date, role, sort, list_page } = filters;
+  const { active, createdAt, roleId, list_sort, list_page } = filters;
 
   useEffect(() => {
     const params: Record<string, any> = {};
 
-    if (filters.status) params.status = status;
-    if (filters.date) params.date = date;
-    if (filters.role) params.role = role;
-    if (filters.sort) params.sort = sort;
-    if (filters.list_page) params.list_page = list_page;
+    if (active) params.active = active;
+    if (createdAt) params.createdAt = createdAt;
+    if (roleId) params.roleId = roleId;
+    if (list_sort) params.list_sort = list_sort;
+    if (list_page) params.list_page = list_page;
 
     setSearchParams(params);
-  }, [status, date, role, sort, list_page]);
+  }, [active, createdAt, roleId, list_sort, list_page]);
 
   const updateFilters = (next: Partial<typeof filters>) => {
     setFilters((prev) => ({

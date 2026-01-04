@@ -47,26 +47,21 @@ import {
 } from "@/components/ui/select";
 import { userTableItems } from "../constants";
 import { useUsersFilters } from "../hooks/useUsersFilters";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import { CustomPaginationPrevious } from "@/components/CustomPaginationPrevious";
-import { CustomPaginationNext } from "@/components/CustomPaginationNext";
 import { UserDetails } from "./UserDetails";
 import { useRolesQuery } from "@/features/roles/hooks";
 import type { Role } from "@/features/roles/types";
 import { UserDelete } from "./UserDelete";
+import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
+import { UserTablePagination } from "./UserTablePagination";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 type FilterFormValues = {
-  status?: string;
-  date?: string;
-  role?: string;
-  sort?: string;
-  list_page?: string;
+  active?: boolean;
+  createdAt?: string;
+  roleId?: string;
+  list_sort?: string;
+  list_page?: number;
 };
 
 export const UserTable = () => {
@@ -76,10 +71,10 @@ export const UserTable = () => {
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      status: filters.status,
-      date: filters.date,
-      role: filters.role,
-      sort: filters.sort,
+      active: filters.active,
+      createdAt: filters.createdAt,
+      roleId: filters.roleId,
+      list_sort: filters.list_sort,
       list_page: filters.list_page,
     },
   });
@@ -94,9 +89,9 @@ export const UserTable = () => {
 
   if (usersIsLoading) {
     return (
-      <section className="w-full bg-gray-darker p-6 rounded-2xl space-y-2">
+      <section className="w-full bg-gray-darker rounded-2xl">
         {/* Header of table */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between p-7">
           <span className="text-lg font-bold text-primary">Users List</span>
           <Button onClick={() => {}}>
             <img src="/icons/plus.svg" />
@@ -106,7 +101,7 @@ export const UserTable = () => {
 
         {/* User table */}
         <Table>
-          <TableBody className="flex flex-col gap-1">
+          <TableBody className="flex flex-col gap-1 px-7 pb-7">
             {Array.from({ length: 8 }).map((_, index) => (
               <TableRow
                 key={index}
@@ -137,9 +132,9 @@ export const UserTable = () => {
     );
   }
 
-  if (users.data.length === 0) {
+  if (users?.data.length === 0) {
     return (
-      <section className="w-full bg-gray-darker p-6 rounded-2xl space-y-2">
+      <section className="w-full bg-gray-darker rounded-2xl space-y-2">
         {/* Header */}
         <div className="flex items-center justify-between p-7">
           <span className="text-lg font-bold text-primary">Users List</span>
@@ -150,7 +145,7 @@ export const UserTable = () => {
         </div>
 
         {/* Empty section */}
-        <Empty className="py-3! gap-2">
+        <Empty className="pt-3! pb-7! gap-2">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <img src="/icons/user.svg" alt="user icon" className="size-5" />
@@ -165,9 +160,6 @@ export const UserTable = () => {
     );
   }
 
-  console.log(users.count);
-
-  console.log(form.getFieldState("list_page"));
   return (
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
@@ -191,31 +183,30 @@ export const UserTable = () => {
               <span className="text-gray-lighter text-sm">User Status: </span>
               <FormField
                 control={form.control}
-                name="status"
+                name="active"
                 render={({ field }) => (
-                  <FormItem className="flex items-center">
+                  <FormItem className="flex items-center space-x-6">
                     <FormControl>
-                      <Checkbox
-                        id="active"
-                        checked={field.value === "active"}
-                        onCheckedChange={() => {
-                          field.onChange("active");
+                      <RadioGroup
+                        value={
+                          field.value === undefined ? "" : String(field.value)
+                        }
+                        onValueChange={(value) => {
+                          field.onChange(value);
                         }}
-                      />
-                    </FormControl>
-                    <FormLabel htmlFor="active">Active</FormLabel>
+                        className="flex space-x-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="true" id="active-true" />
+                          <Label htmlFor="active-true">Active</Label>
+                        </div>
 
-                    <FormControl>
-                      <Checkbox
-                        id="inactive"
-                        checked={field.value === "inactive"}
-                        onCheckedChange={() => {
-                          field.onChange("inactive");
-                        }}
-                      />
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="false" id="active-false" />
+                          <Label htmlFor="active-false">Inactive</Label>
+                        </div>
+                      </RadioGroup>
                     </FormControl>
-                    <FormLabel htmlFor="inactive">Inactive</FormLabel>
-
                     <FormDescription />
                     <FormMessage />
                   </FormItem>
@@ -225,11 +216,11 @@ export const UserTable = () => {
 
             <FormField
               control={form.control}
-              name="date"
+              name="createdAt"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="date"
+                    htmlFor="createdAt"
                     className="text-gray-lighter font-normal"
                   >
                     Date:
@@ -258,10 +249,10 @@ export const UserTable = () => {
                         <Calendar
                           mode="single"
                           captionLayout="dropdown"
-                          onSelect={(value) => {
-                            if (value) {
-                              const date = getDate(value.toISOString());
-                              field.onChange(date);
+                          onSelect={(date) => {
+                            if (date) {
+                              const formatedDate = formatLocalDate(date);
+                              field.onChange(formatedDate);
                             }
                             setOpen(false);
                           }}
@@ -280,11 +271,11 @@ export const UserTable = () => {
 
             <FormField
               control={form.control}
-              name="role"
+              name="roleId"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="role"
+                    htmlFor="roleId"
                     className="text-gray-lighter font-normal"
                   >
                     Role:
@@ -295,12 +286,12 @@ export const UserTable = () => {
                         id="role"
                         className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
                       >
-                        <SelectValue placeholder="Select role"/>
+                        <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
                         {roles?.data.map((role: Role) => (
                           <SelectItem
-                            value={role.id}
+                            value={String(role.id)}
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             {role.name}
@@ -317,11 +308,11 @@ export const UserTable = () => {
 
             <FormField
               control={form.control}
-              name="sort"
+              name="list_sort"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="sort"
+                    htmlFor="list_sort"
                     className="text-gray-lighter font-normal"
                   >
                     Sort By:
@@ -336,22 +327,16 @@ export const UserTable = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          value="1"
+                          value="asc"
                           className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                         >
-                          1
+                          Asecending
                         </SelectItem>
                         <SelectItem
-                          value="2"
+                          value="desc"
                           className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                         >
-                          2
-                        </SelectItem>
-                        <SelectItem
-                          value="3"
-                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                        >
-                          3
+                          Descending
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -466,30 +451,7 @@ export const UserTable = () => {
       </div>
 
       {/* Pagination section */}
-      {Math.ceil(users.count / 1) > 1 && (
-        <Pagination className="pb-7">
-          <PaginationContent className="[&_li_a]:hover:bg-blue-darker [&_li_a]:hover:text-foreground [&_li_a]:size-7! [&_li_a]:font-normal [&_li_a]:text-sm [&_li_a]:rounded-lg [&_li_a[data-active]]:bg-blue-darker">
-            <PaginationItem>
-              <CustomPaginationPrevious href="#" />
-            </PaginationItem>
-            {Array.from({ length: Math.ceil(users.count / 1) }).map(
-              (_, index: number) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href={`/users?list_page=${index + 1}`}
-                    isActive
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            )}
-            <PaginationItem>
-              <CustomPaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      <UserTablePagination count={users.count} />
     </section>
   );
 };

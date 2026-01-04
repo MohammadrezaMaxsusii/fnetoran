@@ -2,7 +2,7 @@ export interface Role {
   active: boolean;
   createdAt: string;
   deletedAt: string;
-  id: string;
+  id: number;
   maxRequestPerMinute: number;
   name: string;
   order: string;

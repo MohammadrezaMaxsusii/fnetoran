@@ -1,15 +1,20 @@
+import { cn } from "@/lib/utils";
 import { PaginationItem, PaginationLink } from "./ui/pagination";
 
 interface Props {
-  href: string;
+  disable: boolean;
+  onClick: () => void;
 }
 
-export const CustomPaginationNext = ({ href }: Props) => {
+export const CustomPaginationNext = ({ disable, onClick }: Props) => {
   return (
     <PaginationItem>
       <PaginationLink
-        href={href}
-        className="bg-navy-blue hover:bg-navy-blue! border border-blue-darker"
+        onClick={onClick}
+        className={cn(
+          "bg-navy-blue hover:bg-navy-blue! border border-blue-darker",
+          !disable && "cursor-pointer"
+        )}
       >
         <img
           src="/icons/blueArrow.svg"
