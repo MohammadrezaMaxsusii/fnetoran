@@ -11,7 +11,7 @@ export const DashboardPage = () => {
   return (
     <div className="grid grid-cols-3 grid-rows-[repeat(3,auto)] gap-5 pe-5">
       {/* Banner section */}
-      <div className="relative col-span-2 space-y-6">
+      <div className="relative col-span-2 row-span-1 space-y-6">
         <img
           src="/images/dashboard.webp"
           alt="dashboard image"

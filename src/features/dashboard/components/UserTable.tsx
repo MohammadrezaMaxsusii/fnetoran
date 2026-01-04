@@ -148,10 +148,13 @@ export const UserTable = () => {
                 {user.active ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-3 h-3 bg-green rounded-full" />
-                    <span>Activity</span>
+                    <span>Active</span>
                   </div>
                 ) : (
-                  <span className="text-gray-lighter">No activity</span>
+                  <div className="flex items-center justify-center gap-1">
+                    <div className="w-3 h-3 bg-red rounded-full" />
+                    <span>Inactive</span>
+                  </div>
                 )}
               </TableCell>
             </TableRow>
