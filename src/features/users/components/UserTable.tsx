@@ -34,7 +34,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, FunnelX } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
 import {
@@ -92,7 +92,7 @@ export const UserTable = () => {
         {/* Header of table */}
         <div className="flex items-center justify-between p-7">
           <span className="text-lg font-bold text-primary">Users List</span>
-          <Button onClick={() => {}}>
+          <Button disabled>
             <img src="/icons/plus.svg" />
             Add user
           </Button>
@@ -345,6 +345,10 @@ export const UserTable = () => {
                 </FormItem>
               )}
             />
+
+            <Button variant="secondary" size="icon" className="border border-red bg-red-darker hover:bg-red-darker" onClick={() => form.reset()}>
+              <FunnelX className="text-red" />
+            </Button>
           </form>
         </Form>
       </div>
@@ -368,13 +372,13 @@ export const UserTable = () => {
 
           {/* Table body */}
           <TableBody>
-            {users.data.map((user: User, index: number) => (
+            {users.data.map((user: User) => (
               <TableRow
                 key={user.id}
                 className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
               >
                 <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold">
-                  {index}
+                  {user.id}
                 </TableCell>
 
                 {/* User info */}

@@ -26,7 +26,6 @@ interface Props {
 // To do dynamic
 
 export const UserDetails = ({ user }: Props) => {
-  console.log(user);
   return (
     <Dialog>
       <DialogTrigger asChild>

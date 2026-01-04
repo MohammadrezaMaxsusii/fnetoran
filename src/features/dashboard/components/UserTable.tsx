@@ -3,7 +3,7 @@ import { useUsersQuery } from "@/features/users/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import type { User } from "../types";
+import type { User } from "@/features/users/types";
 import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
