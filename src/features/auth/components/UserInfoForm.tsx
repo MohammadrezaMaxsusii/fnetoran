@@ -17,8 +17,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
 import { useUserInfoAction } from "../hooks";
 import type { UserInfo } from "../types";
+import { useState } from "react";
+import { getErrorMessage } from "@/shared/utils";
+import ErrorIcon from "@/shared/icons/error.svg?react";
+import BackIcon from "@/shared/icons/back.svg?react";
 
 export const UserInfoForm = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const { userInfoAction } = useUserInfoAction();
   const navigate = useNavigate();
 
@@ -29,9 +34,12 @@ export const UserInfoForm = () => {
     },
   });
 
-  const onSubmit = (input: UserInfo) => {
-    userInfoAction.mutate(input);
-    form.reset();
+  const onSubmit = async (input: UserInfo) => {
+    try {
+      await userInfoAction.mutateAsync(input);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    }
   };
 
   return (
@@ -41,8 +49,8 @@ export const UserInfoForm = () => {
       {/* Header of card */}
       <div className="flex items-center justify-between">
         <span className="text-orange">Enter your info account</span>
-        <Button variant="secondary" onClick={() => navigate('/login')}>
-          <img src="/icons/back.svg" alt="back icon" className="size-6" />
+        <Button variant="secondary" onClick={() => navigate("/login")}>
+          <BackIcon className="size-5"/>
           Back
         </Button>
       </div>
@@ -74,10 +82,8 @@ export const UserInfoForm = () => {
           {/* Error section */}
           {userInfoAction.isError && (
             <div className="flex items-center gap-2">
-              <img src="/icons/error.svg" alt="error icon" className="size-5" />
-              <span className="text-sm text-red">
-                The username or password you entered is invalid.
-              </span>
+              <ErrorIcon className="text-red" />
+              <span className="text-sm text-red">{errorMessage}</span>
             </div>
           )}
 

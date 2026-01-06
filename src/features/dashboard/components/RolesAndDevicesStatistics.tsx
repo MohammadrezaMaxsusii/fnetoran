@@ -29,8 +29,8 @@ export const RolesAndDevicesStatistics = () => {
             alt="identity card icon"
             className="size-18 mt-4"
           />
-          <p className="max-w-25 text-sm">
-            <span className="font-bold">Roles</span> in the entire system
+          <p className="max-w-30 text-sm">
+            <span className="font-bold">Device</span> statistics in the system
           </p>
         </div>
         <span className="text-6xl text-primary font-bold">31</span>

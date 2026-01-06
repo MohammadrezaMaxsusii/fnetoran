@@ -19,6 +19,8 @@ import { Progress } from "@/components/ui/progress";
 import type { recoverySchema } from "../schemas";
 import { useUserInfoAction } from "../hooks";
 import { useEffect, useState } from "react";
+import BackIcon from "@/shared/icons/back.svg?react";
+import ResendIcon from "@/shared/icons/resend.svg?react";
 
 interface Props {
   setMode: (mode: "otp" | "password") => void;
@@ -55,8 +57,11 @@ export const OTPForm = ({ form, setMode }: Props) => {
       {/* Header of card */}
       <div className="flex items-center justify-between">
         <span className="text-orange">Check Your Phone</span>
-        <Button variant="secondary" onClick={() => navigate("/forgot-password")}>
-          <img src="/icons/back.svg" alt="back icon" className="size-6" />
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/forgot-password")}
+        >
+          <BackIcon className="size-5" />
           Back
         </Button>
       </div>
@@ -93,11 +98,7 @@ export const OTPForm = ({ form, setMode }: Props) => {
             {/* Resenc code section */}
             <div className="grid place-content-center my-2">
               <Button type="button" variant="link" onClick={resendHandler}>
-                <img
-                  src="/icons/resend.svg"
-                  alt="resend icon"
-                  className="size-4"
-                />
+                <ResendIcon />
                 Resend Code
               </Button>
             </div>

@@ -54,6 +54,7 @@ import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { UserTablePagination } from "./UserTablePagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router";
 
 type FilterFormValues = {
   active?: boolean;
@@ -66,6 +67,7 @@ type FilterFormValues = {
 export const UserTable = () => {
   const { filters, updateFilters } = useUsersFilters();
   const { users, usersIsLoading } = useUsersQuery(filters);
+  const navigate = useNavigate();
   const { roles } = useRolesQuery();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
@@ -92,7 +94,7 @@ export const UserTable = () => {
         {/* Header of table */}
         <div className="flex items-center justify-between p-7">
           <span className="text-lg font-bold text-primary">Users List</span>
-          <Button disabled>
+          <Button disabled onClick={() => navigate("/users/create-or-update")}>
             <img src="/icons/plus.svg" />
             Add user
           </Button>
@@ -137,7 +139,11 @@ export const UserTable = () => {
         {/* Header */}
         <div className="flex items-center justify-between p-7">
           <span className="text-lg font-bold text-primary">Users List</span>
-          <Button onClick={() => {}}>
+          <Button
+            onClick={() => {
+              navigate("/users/create-or-update");
+            }}
+          >
             <img src="/icons/plus.svg" />
             Add user
           </Button>
@@ -164,7 +170,11 @@ export const UserTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Users List</span>
-        <Button onClick={() => {}}>
+        <Button
+          onClick={() => {
+            navigate("/users/create-or-update");
+          }}
+        >
           <img src="/icons/plus.svg" />
           Add user
         </Button>
@@ -346,7 +356,13 @@ export const UserTable = () => {
               )}
             />
 
-            <Button variant="secondary" size="icon" className="border border-red bg-red-darker hover:bg-red-darker" onClick={() => form.reset()}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              className="border border-red bg-red-darker hover:bg-red-darker"
+              onClick={() => form.reset()}
+            >
               <FunnelX className="text-red" />
             </Button>
           </form>
@@ -355,7 +371,7 @@ export const UserTable = () => {
 
       {/* User table */}
       <div className="px-7 pb-7">
-        <Table>
+        <Table className="border-separate border-spacing-y-1">
           {/* Table header */}
           <TableHeader>
             <TableRow className="hover:bg-secondary">
@@ -377,12 +393,12 @@ export const UserTable = () => {
                 key={user.id}
                 className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
               >
-                <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold">
+                <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
                   {user.id}
                 </TableCell>
 
                 {/* User info */}
-                <TableCell className="px-4 py-2">
+                <TableCell className="px-4 py-2 border-y border-default">
                   <div className="flex items-center gap-4">
                     <div className="border-2 border-orange rounded-full size-8">
                       {/* To do fetch user profile */}
@@ -405,17 +421,17 @@ export const UserTable = () => {
                 </TableCell>
 
                 {/* User role */}
-                <TableCell className="px-4 py-2 text-center">
+                <TableCell className="px-4 py-2 text-center border-y border-default">
                   {user.role.name}
                 </TableCell>
 
                 {/* User register time */}
-                <TableCell className="px-4 py-2 text-center">
+                <TableCell className="px-4 py-2 text-center border-y border-default">
                   {getDate(user.createdAt)} | {getTime(user.createdAt)}
                 </TableCell>
 
                 {/* User status */}
-                <TableCell className="px-4 py-2 text-center">
+                <TableCell className="px-4 py-2 text-center border-y border-default">
                   {user.active ? (
                     <div className="flex items-center justify-center gap-1">
                       <div className="w-3 h-3 bg-green rounded-full" />
@@ -430,7 +446,7 @@ export const UserTable = () => {
                 </TableCell>
 
                 {/* Operation section */}
-                <TableCell className="px-4 py-2 text-center rounded-r-lg space-x-1.5">
+                <TableCell className="px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                   {/* edit user */}
                   <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
                     <img

@@ -35,14 +35,14 @@ export const UserTable = () => {
         </div>
 
         {/* User table */}
-        <Table>
+        <Table className="border-separate border-spacing-y-1">
           <TableBody className="flex flex-col gap-1">
             {Array.from({ length: 3 }).map((_, index) => (
               <TableRow
                 key={index}
-                className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items rounded-lg border border-default"
+                className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items rounded-lg"
               >
-                <TableCell className="block rounded-lg overflow-hidden px-8">
+                <TableCell className="block rounded-lg overflow-hidden px-8 border border-default">
                   <div className="flex justify-between items-center space-x-4">
                     <Skeleton className="size-8 rounded-full" />
                     <div className="space-y-2">
@@ -103,7 +103,7 @@ export const UserTable = () => {
       </div>
 
       {/* User table */}
-      <Table>
+      <Table className="border-separate border-spacing-y-1">
         <TableBody>
           {users.data.map((user: User) => (
             <TableRow
@@ -111,7 +111,7 @@ export const UserTable = () => {
               className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
             >
               {/* User info */}
-              <TableCell className="px-4 py-2 rounded-l-lg">
+              <TableCell className="px-4 py-2 rounded-l-lg border-y border-s border-default">
                 <div className="flex items-center gap-4">
                   <div className="border-2 border-orange rounded-full size-8">
                     {/* To do fetch user profile */}
@@ -134,17 +134,17 @@ export const UserTable = () => {
               </TableCell>
 
               {/* User role */}
-              <TableCell className="px-4 py-2 text-center">
+              <TableCell className="px-4 py-2 text-center border-y border-default">
                 {user.role.name}
               </TableCell>
 
               {/* User register time */}
-              <TableCell className="px-4 py-2 text-center">
+              <TableCell className="px-4 py-2 text-center border-y border-default">
                 {getDate(user.createdAt)} | {getTime(user.createdAt)}
               </TableCell>
 
               {/* User status */}
-              <TableCell className="px-4 py-2 text-center rounded-r-lg">
+              <TableCell className="px-4 py-2 text-center rounded-r-lg border-y border-e border-default">
                 {user.active ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-3 h-3 bg-green rounded-full" />

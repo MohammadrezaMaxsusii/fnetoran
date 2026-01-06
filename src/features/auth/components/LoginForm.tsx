@@ -17,8 +17,12 @@ import { useLoginAction } from "../hooks";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
+import { useState } from "react";
+import { getErrorMessage } from "@/shared/utils";
+import ErrorIcon from "@/shared/icons/error.svg?react";
 
 export const LoginForm = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -29,8 +33,11 @@ export const LoginForm = () => {
   const { loginAction } = useLoginAction();
 
   const onSubmit = async (input: Login) => {
-    loginAction.mutate(input);
-    form.reset();
+    try {
+      await loginAction.mutateAsync(input);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    }
   };
 
   return (
@@ -85,10 +92,8 @@ export const LoginForm = () => {
         {/* Error section */}
         {loginAction.isError && (
           <div className="flex items-center gap-2">
-            <img src="/icons/error.svg" alt="error icon" className="size-5" />
-            <span className="text-sm text-red">
-              The username or password you entered is invalid.
-            </span>
+            <ErrorIcon className="text-red" />
+            <span className="text-sm text-red">{errorMessage}</span>
           </div>
         )}
 
@@ -100,8 +105,12 @@ export const LoginForm = () => {
             </Link>
           </div>
 
-          <Button type="submit" disabled={loginAction.isPending}>
-            {loginAction.isPending ? <Spinner /> : "Send Code"}
+          <Button
+            type="submit"
+            disabled={loginAction.isPending}
+            className="w-25"
+          >
+            {loginAction.isPending ? <Spinner /> : "Login"}
           </Button>
         </div>
       </form>

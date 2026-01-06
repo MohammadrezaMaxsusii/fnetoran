@@ -6,6 +6,7 @@ export const useUserQuery = () => {
     data: user,
     isLoading: userIsLoading,
     isError: userIsError,
+    error: userError,
   } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
@@ -15,5 +16,6 @@ export const useUserQuery = () => {
     user,
     userIsLoading,
     userIsError,
+    userError,
   };
 };

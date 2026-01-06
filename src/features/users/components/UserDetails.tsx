@@ -34,7 +34,7 @@ export const UserDetails = ({ user }: Props) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-background-default text-white p-8 h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8">
+      <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8">
         {/* Dialog header */}
         <DialogHeader>
           <DialogTitle className="text-lg font-bold">

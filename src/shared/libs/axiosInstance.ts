@@ -13,3 +13,8 @@ export const api = axios.create({
     },
   },
 });
+
+api.interceptors.request.use((config) => {
+  config.headers["Accept-language"] = "en";
+  return config;
+});

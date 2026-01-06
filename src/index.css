@@ -146,12 +146,14 @@
   --color-gray-darker: #252525;
   --color-gray-items: #323232;
   --color-gray-lighter: #949494;
+  --color-gray-light: #747474;
   --color-whtie: #ffffff;
+  --color-blue-darkest: #0e1332;
   --color-blue-darker: #344efe;
   --color-blue-lighter: #435cff;
   --color-navy-blue: #0e1332;
   --color-red: #ca242c;
-  --color-red-darker: #2C0D11;
+  --color-red-darker: #2c0d11;
   --color-green: #109d35;
   --color-orange: #f58220;
   --color-card: #171717;

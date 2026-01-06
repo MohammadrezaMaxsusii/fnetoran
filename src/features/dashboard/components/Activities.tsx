@@ -8,7 +8,6 @@ import {
   getTime,
   isToday,
 } from "@/shared/utils";
-import type { WeekDay } from "@/shared/types/weekDayType";
 import dayjs from "dayjs";
 
 export const Activities = () => {
@@ -17,7 +16,7 @@ export const Activities = () => {
   const monthYear = date.format("MMMM, YYYY");
 
   return (
-    <div className="row-span-2 bg-gray-darker p-6 rounded-2xl space-y-6">
+    <div className="row-span-2 bg-gray-darker p-6 rounded-2xl space-y-6 flex flex-col justify-between">
       {/* Header section */}
       <div className="flex items-center justify-between">
         <span className="text-lg font-bold">Weekday activities</span>
@@ -26,9 +25,9 @@ export const Activities = () => {
 
       {/* Activities section */}
       <ul>
-        {user?.data.workingDayLimit.map((day: WeekDay) => (
+        {dayItems.map((day) => (
           <li
-            key={day}
+            key={day.value}
             className="grid grid-cols-7 items-center p-1 rounded-xl even:bg-gray-items"
           >
             {/* Day section  */}
@@ -36,10 +35,10 @@ export const Activities = () => {
               <span
                 className={cn(
                   "px-3 py-2 inline-block",
-                  isToday(day) && "bg-primary px-3 py-2 rounded-xl font-bold"
+                  isToday(day.value) && "bg-primary px-3 py-2 rounded-xl font-bold"
                 )}
               >
-                {dayItems[day]}
+                {day.value}
               </span>
             </div>
 
@@ -48,9 +47,15 @@ export const Activities = () => {
               {user?.data.workingTimeLimit ? (
                 <p className="text-gray-lighter text-center">
                   From
-                  <span className="font-bold text-white"> {getStartTime(user.data.workingTimeLimit)} </span>
+                  <span className="font-bold text-white">
+                    {" "}
+                    {getStartTime(user.data.workingTimeLimit)}{" "}
+                  </span>
                   to
-                  <span className="font-bold text-white"> {getEndTime(user.data.workingTimeLimit)} </span>
+                  <span className="font-bold text-white">
+                    {" "}
+                    {getEndTime(user.data.workingTimeLimit)}{" "}
+                  </span>
                 </p>
               ) : (
                 <p className="text-center text-sm">Always</p>
@@ -59,15 +64,16 @@ export const Activities = () => {
 
             {/* Status section */}
             <div className="col-span-2 text-sm pe-1">
-              {user?.data.active ? (
-                <div className="flex items-center justify-end gap-1">
-                  <div className="size-3 bg-green rounded-full" />
-                  <span>Activity</span>
+              {user?.data?.workingDayLimit?.includes(day.item) ? (
+                <div className="flex items-center justify-center gap-1">
+                  <div className="w-3 h-3 bg-green rounded-full" />
+                  <span>Active</span>
                 </div>
               ) : (
-                <span className="text-gray-lighter block text-end">
-                  No activity
-                </span>
+                <div className="flex items-center justify-center gap-1">
+                  <div className="w-3 h-3 bg-red rounded-full" />
+                  <span>Inactive</span>
+                </div>
               )}
             </div>
           </li>

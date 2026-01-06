@@ -19,9 +19,11 @@ import {
 import { recoverySchema } from "../schemas";
 import { useRecoveryAction } from "../hooks";
 import type { Recovery } from "../types";
-import { useLocation, useNavigate } from "react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import ErrorIcon from "@/shared/icons/error.svg?react";
+import BackIcon from "@/shared/icons/back.svg?react";
 
 interface Props {
   setMode: (mode: "otp" | "password") => void;
@@ -67,7 +69,7 @@ export const ChangePasswordForm = ({ form, setMode }: Props) => {
       <div className="flex items-center justify-between">
         <span className="text-orange">Enter Your New Password.</span>
         <Button variant="secondary" onClick={() => setMode("otp")}>
-          <img src="/icons/back.svg" alt="back icon" className="size-6" />
+          <BackIcon className="size-5" />
           Back
         </Button>
       </div>
@@ -126,7 +128,7 @@ export const ChangePasswordForm = ({ form, setMode }: Props) => {
 
           {recoveryAction.isError && (
             <div className="flex items-center gap-2">
-              <img src="/icons/error.svg" alt="error icon" className="size-5" />
+              <ErrorIcon className="text-red" />
               <span className="text-sm text-red">password did not change.</span>
             </div>
           )}
