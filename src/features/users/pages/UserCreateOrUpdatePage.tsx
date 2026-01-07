@@ -3,7 +3,6 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,17 +35,28 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import PlusIcon from "@/shared/icons/plus.svg?react";
 import MinusIcon from "@/shared/icons/minus.svg?react";
 import WarningIcon from "@/shared/icons/error.svg?react";
-import { isOnlyNumber } from "@/shared/utils";
+import { getDate, getTargetDate, isOnlyNumber } from "@/shared/utils";
 import { Toggle } from "@/components/ui/toggle";
 import CalendarIcon from "@/shared/icons/calendar.svg?react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import DatePickerIcon from "@/shared/icons/datePicker.svg?react";
+import z from "zod";
+import { userCreateOrUpdateSchema } from "../schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
+import { useUserActions } from "../hooks";
+import { startOfDay } from "date-fns";
+import password from "secure-random-password";
+import View from "@/shared/icons/view.svg?react";
+import ViewOff from "@/shared/icons/viewOff.svg?react";
 
 export const UserCreateOrUpdatePage = () => {
-  const [open, setOpen] = useState(false);
+  const [openBirthdayCalendar, setOpenBirthdayCalendar] = useState(false);
+  const [openDeactivedCalendar, setOpenDeactivedCalendar] = useState(false);
   const [show, setShow] = useState(false);
   const [errorUpload, setErrorUpload] = useState(false);
   const [file, setFile] = useState("");
+  const { createUserAction } = useUserActions();
 
   const onDrop = useCallback((acceptedFiles: File[], fileRejection: any[]) => {
     if (fileRejection.length > 0) {
@@ -72,29 +82,37 @@ export const UserCreateOrUpdatePage = () => {
     onDrop,
   });
   const navigate = useNavigate();
-  const { roles } = useRolesQuery();
+  const { roles, rolesIsError, rolesError, rolesIsLoading } = useRolesQuery();
 
   // To do fetch user and replace it and create schema
   const form = useForm({
+    resolver: zodResolver(userCreateOrUpdateSchema),
     defaultValues: {
       roleId: "",
       username: "",
       firstName: "",
       lastName: "",
-      gender: "",
-      nationalId: "",
-      education: "",
+      cellphone: "",
       email: "",
-      birthday: "",
       password: "",
-      passwordHistoryCount: "",
+      // gender: "",
+      // nationalId: "",
+      // education: "",
+      passwordHistoryCount: 0,
       expirePasswordDays: 0,
       passwordAdvantageDays: 0,
-      mustChangePassword: false,
+      // mustChangePassword: false,
+      // active: true,
+      // deactivedAt: "",
     },
   });
 
   const { expirePasswordDays, passwordAdvantageDays } = form.watch();
+
+  const onSubmit = async (input: z.infer<typeof userCreateOrUpdateSchema>) => {
+    console.log(input);
+    await createUserAction.mutateAsync(input);
+  };
 
   return (
     <section className="w-full pe-6 pb-6">
@@ -120,7 +138,7 @@ export const UserCreateOrUpdatePage = () => {
 
         {/* Form section */}
         <Form {...form}>
-          <form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             {/* Role and premission section */}
             <div className="px-7">
               <div className="flex gap-4 py-6 border-b border-default">
@@ -133,38 +151,66 @@ export const UserCreateOrUpdatePage = () => {
                     </p>
                   </div>
                   <FormField
-                    control={form.control}
                     name="roleId"
                     render={({ field }) => (
-                      <FormItem className="flex items-center">
+                      <FormItem className="flex items-baseline gap-3">
                         <FormLabel htmlFor="roleId" className="font-normal">
                           Role:
                         </FormLabel>
-                        <FormControl>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger
-                              id="role"
-                              className="w-70 bg-muted border-default text-orange! font-bold opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                        <div className="space-y-1">
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              disabled={rolesIsLoading}
                             >
-                              <SelectValue placeholder="Select role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {roles?.data.map((role: Role) => (
-                                <SelectItem
-                                  value={String(role.id)}
-                                  className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                                >
-                                  {role.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription />
-                        <FormMessage />
+                              <SelectTrigger
+                                id="role"
+                                className="w-70 h-10! bg-muted border-default font-bold opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                              >
+                                <SelectValue
+                                  placeholder={
+                                    rolesIsLoading
+                                      ? "Loading..."
+                                      : "Select role"
+                                  }
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {!!rolesError && (
+                                  <SelectItem
+                                    value="error"
+                                    disabled
+                                    className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                                  >
+                                    {rolesError.message}
+                                  </SelectItem>
+                                )}
+
+                                {roles?.data.length === 0 && (
+                                  <SelectItem
+                                    value="empty"
+                                    disabled
+                                    className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                                  >
+                                    There is no options!
+                                  </SelectItem>
+                                )}
+
+                                {roles?.data.map((role: Role) => (
+                                  <SelectItem
+                                    key={role.id}
+                                    value={String(role.id)}
+                                    className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                                  >
+                                    {role.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -194,7 +240,6 @@ export const UserCreateOrUpdatePage = () => {
                 className="relative shrink-0 size-22 rounded-full border-2 border-dashed border-blue-lighter cursor-pointer"
               >
                 <FormField
-                  control={form.control}
                   name="profile"
                   render={({ field }) => (
                     <FormItem>
@@ -237,7 +282,6 @@ export const UserCreateOrUpdatePage = () => {
             {/* user info section */}
             <div className="grid grid-cols-3 gap-x-20 gap-y-6 px-7 pb-6">
               <FormField
-                control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
@@ -257,7 +301,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
@@ -277,7 +320,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
@@ -297,7 +339,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
@@ -337,7 +378,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="nationalId"
                 render={({ field }) => (
                   <FormItem>
@@ -357,7 +397,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="education"
                 render={({ field }) => (
                   <FormItem>
@@ -377,31 +416,43 @@ export const UserCreateOrUpdatePage = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem
-                            value="Diploma"
+                            value="سیکل"
+                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                          >
+                            Middle School Diploma
+                          </SelectItem>
+                          <SelectItem
+                            value="پیش دانشگاهی"
+                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                          >
+                            Pre-University Diploma
+                          </SelectItem>
+                          <SelectItem
+                            value="دیپلم"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Diploma
                           </SelectItem>
                           <SelectItem
-                            value="Associate"
+                            value="کاردانی"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Associate
                           </SelectItem>
                           <SelectItem
-                            value="Bachelor"
+                            value="کارشناسی"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Bachelor
                           </SelectItem>
                           <SelectItem
-                            value="Master"
+                            value="کارشناسی ارشد"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Master
                           </SelectItem>
                           <SelectItem
-                            value="Doctoral"
+                            value="دکترا"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Doctoral
@@ -415,7 +466,25 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
+                name="cellphone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm text-gray-lighter ms-2.5">
+                      Mobile Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your cellphone"
+                        className="bg-muted px-5 h-11 font-bold"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -435,7 +504,6 @@ export const UserCreateOrUpdatePage = () => {
               />
 
               <FormField
-                control={form.control}
                 name="birthday"
                 render={({ field }) => (
                   <FormItem>
@@ -446,7 +514,10 @@ export const UserCreateOrUpdatePage = () => {
                       Date of birth
                     </FormLabel>
                     <FormControl>
-                      <Popover open={open} onOpenChange={setOpen}>
+                      <Popover
+                        open={openBirthdayCalendar}
+                        onOpenChange={setOpenBirthdayCalendar}
+                      >
                         <PopoverTrigger asChild>
                           <Button
                             id="birthday"
@@ -472,12 +543,13 @@ export const UserCreateOrUpdatePage = () => {
                           <Calendar
                             mode="single"
                             captionLayout="dropdown"
+                            disabled={(date) => date > startOfDay(new Date())}
                             onSelect={(date) => {
                               if (date) {
                                 const formatedDate = formatLocalDate(date);
                                 field.onChange(formatedDate);
                               }
-                              setOpen(false);
+                              setOpenBirthdayCalendar(false);
                             }}
                             classNames={{
                               day_button: "hover:bg-primary hover:text-white",
@@ -497,7 +569,6 @@ export const UserCreateOrUpdatePage = () => {
               <div className="grid grid-cols-3 gap-x-20 gap-y-6 py-6 border-y border-default">
                 <div className="flex items-end gap-2">
                   <FormField
-                    control={form.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem className="grow">
@@ -505,40 +576,62 @@ export const UserCreateOrUpdatePage = () => {
                           Password of choice
                         </FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <Input
-                              type={show ? "text" : "password"}
-                              placeholder="Enter your password"
-                              className="bg-muted px-5 h-11 font-bold relative"
-                              {...field}
-                            />
-                            <img
-                              src="/icons/blueView.svg"
-                              alt="view icon"
-                              className="size-6 absolute end-5 top-1/2 -translate-y-1/2 cursor-pointer"
-                              onClick={() => setShow((prev) => !prev)}
-                            />
+                          <div className="flex gap-2">
+                            <div className="relative grow">
+                              <Input
+                                type={show ? "text" : "password"}
+                                placeholder="Enter your password"
+                                className="bg-muted px-5 h-11 font-bold relative"
+                                {...field}
+                              />
+
+                              {show ? (
+                                <ViewOff
+                                  className="size-6 text-primary absolute end-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                                  onClick={() => setShow((prev) => !prev)}
+                                />
+                              ) : (
+                                <View
+                                  className="size-6 text-primary absolute end-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                                  onClick={() => setShow((prev) => !prev)}
+                                />
+                              )}
+                            </div>
+
+                            <Button
+                              type="button"
+                              className="bg-blue-darkest hover:bg-blue-darkest/75 border border-blue-darker text-blue-darker h-11"
+                              onClick={() => {
+                                const passwordValue = password.randomPassword({
+                                  length: 10,
+                                  characters: [
+                                    password.lower,
+                                    password.upper,
+                                    password.digits,
+                                    password.symbols,
+                                  ],
+                                });
+                                form.setValue("password", passwordValue, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                            >
+                              <img
+                                src="/icons/blueSync.svg"
+                                alt="sync icon"
+                                className="size-5"
+                              />
+                              Generate
+                            </Button>
                           </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="button"
-                    className="bg-blue-darkest hover:bg-blue-darkest/75 border border-blue-darker text-blue-darker h-11"
-                  >
-                    <img
-                      src="/icons/blueSync.svg"
-                      alt="sync icon"
-                      className="size-5"
-                    />
-                    Generate
-                  </Button>
                 </div>
 
                 <FormField
-                  control={form.control}
                   name="passwordHistoryCount"
                   render={({ field }) => (
                     <FormItem>
@@ -549,6 +642,7 @@ export const UserCreateOrUpdatePage = () => {
                         <Input
                           placeholder="Enter number of saved password in history"
                           className="bg-muted px-5 h-11 font-bold"
+                          inputMode="numeric"
                           {...field}
                         />
                       </FormControl>
@@ -566,7 +660,6 @@ export const UserCreateOrUpdatePage = () => {
                 </div>
 
                 <FormField
-                  control={form.control}
                   name="expirePasswordDays"
                   render={({ field }) => (
                     <FormItem>
@@ -575,18 +668,13 @@ export const UserCreateOrUpdatePage = () => {
                       </FormLabel>
                       <FormControl>
                         <ButtonGroup orientation="horizontal">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="pointer-events-none"
-                          >
-                            <MinusIcon
-                              className={cn(
-                                "text-primary size-5.5 pointer-events-auto! cursor-pointer",
-                                expirePasswordDays === 0 &&
-                                  "text-gray-500 cursor-no-drop"
-                              )}
+                          <ButtonGroup>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              className="disabled:text-gray-500 text-primary"
+                              disabled={expirePasswordDays === 0}
                               onClick={() =>
                                 field.onChange(
                                   Number(field.value) > 0
@@ -594,36 +682,40 @@ export const UserCreateOrUpdatePage = () => {
                                     : 0
                                 )
                               }
-                            />
-                          </Button>
-                          <div className="relative">
-                            <Input
-                              placeholder="0"
-                              className="w-30 bg-background-default rounded-md! font-bold pe-10"
-                              inputMode="numeric"
-                              value={field.value}
-                              onChange={(e) =>
-                                isOnlyNumber(e.target.value) &&
-                                field.onChange(e.target.value)
-                              }
-                            />
+                            >
+                              <MinusIcon className="size-5.5" />
+                            </Button>
+                          </ButtonGroup>
+                          <ButtonGroup className="relative">
+                            <InputGroup className="rounded-md!">
+                              <InputGroupInput
+                                placeholder="0"
+                                className="w-30 bg-background-default rounded-md font-bold pe-10"
+                                inputMode="numeric"
+                                value={field.value}
+                                onChange={(e) =>
+                                  isOnlyNumber(e.target.value) &&
+                                  field.onChange(e.target.value)
+                                }
+                              ></InputGroupInput>
+                            </InputGroup>
                             <span className="absolute top-1/2 end-2 -translate-y-1/2 text-xs text-gray-lighter">
                               Days
                             </span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="pointer-events-none"
-                          >
-                            <PlusIcon
-                              className="text-primary size-5.5 pointer-events-auto! cursor-pointer"
+                          </ButtonGroup>
+                          <ButtonGroup>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              className="text-primary"
                               onClick={() =>
                                 field.onChange(Number(field.value) + 1)
                               }
-                            />
-                          </Button>
+                            >
+                              <PlusIcon className="size-5.5" />
+                            </Button>
+                          </ButtonGroup>
                         </ButtonGroup>
                       </FormControl>
                       <FormMessage />
@@ -632,7 +724,6 @@ export const UserCreateOrUpdatePage = () => {
                 />
 
                 <FormField
-                  control={form.control}
                   name="passwordAdvantageDays"
                   render={({ field }) => (
                     <FormItem>
@@ -641,18 +732,13 @@ export const UserCreateOrUpdatePage = () => {
                       </FormLabel>
                       <FormControl>
                         <ButtonGroup orientation="horizontal">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="pointer-events-none"
-                          >
-                            <MinusIcon
-                              className={cn(
-                                "text-primary size-5.5 pointer-events-auto! cursor-pointer",
-                                passwordAdvantageDays === 0 &&
-                                  "text-gray-500 cursor-no-drop"
-                              )}
+                          <ButtonGroup>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              className="disabled:text-gray-500 text-primary"
+                              disabled={passwordAdvantageDays === 0}
                               onClick={() =>
                                 field.onChange(
                                   Number(field.value) > 0
@@ -660,36 +746,40 @@ export const UserCreateOrUpdatePage = () => {
                                     : 0
                                 )
                               }
-                            />
-                          </Button>
-                          <div className="relative">
-                            <Input
-                              placeholder="0"
-                              className="w-30 bg-background-default rounded-md! font-bold pe-10"
-                              inputMode="numeric"
-                              value={field.value}
-                              onChange={(e) =>
-                                isOnlyNumber(e.target.value) &&
-                                field.onChange(e.target.value)
-                              }
-                            />
+                            >
+                              <MinusIcon className="size-5.5" />
+                            </Button>
+                          </ButtonGroup>
+                          <ButtonGroup className="relative">
+                            <InputGroup className="rounded-md!">
+                              <InputGroupInput
+                                placeholder="0"
+                                className="w-30 bg-background-default rounded-md font-bold pe-10"
+                                inputMode="numeric"
+                                value={field.value}
+                                onChange={(e) =>
+                                  isOnlyNumber(e.target.value) &&
+                                  field.onChange(e.target.value)
+                                }
+                              ></InputGroupInput>
+                            </InputGroup>
                             <span className="absolute top-1/2 end-2 -translate-y-1/2 text-xs text-gray-lighter">
                               Days
                             </span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="pointer-events-none"
-                          >
-                            <PlusIcon
-                              className="text-primary size-5.5 pointer-events-auto! cursor-pointer"
+                          </ButtonGroup>
+                          <ButtonGroup>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="icon"
+                              className="text-primary"
                               onClick={() =>
                                 field.onChange(Number(field.value) + 1)
                               }
-                            />
-                          </Button>
+                            >
+                              <PlusIcon className="size-5.5" />
+                            </Button>
+                          </ButtonGroup>
                         </ButtonGroup>
                       </FormControl>
                       <FormMessage />
@@ -698,13 +788,12 @@ export const UserCreateOrUpdatePage = () => {
                 />
 
                 <FormField
-                  control={form.control}
                   name="mustChangePassword"
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2">
                       <FormControl>
                         <Toggle
-                          className="relative bg-primary hover:bg-primary data-[state=on]:bg-primary w-9 h-5 rounded-full after:content-[''] after:size-3.5 after:bg-foreground after:rounded-full after:absolute after:start-1 data-[state=on]:after:start-auto data-[state=on]:after:end-1"
+                          className="relative bg-primary hover:bg-primary data-[state=off]:bg-muted data-[state=on]:bg-primary border border-default w-9 h-5 rounded-full after:content-[''] after:size-3.5 after:bg-foreground after:rounded-full after:absolute after:start-1 data-[state=on]:after:start-auto data-[state=on]:after:end-1"
                           pressed={field.value}
                           onPressedChange={field.onChange}
                         />
@@ -732,13 +821,12 @@ export const UserCreateOrUpdatePage = () => {
                   </p>
                   <div className="bg-blue-darkest p-4 rounded-md mt-3 ms-3">
                     <FormField
-                      control={form.control}
                       name="active"
                       render={({ field }) => (
                         <FormItem className="flex items-center gap-3">
                           <FormControl>
                             <Toggle
-                              className="relative bg-primary hover:bg-primary data-[state=on]:bg-primary w-9 h-5 rounded-full after:content-[''] after:size-3.5 after:bg-foreground after:rounded-full after:absolute after:start-1 data-[state=on]:after:start-auto data-[state=on]:after:end-1"
+                              className="relative bg-primary hover:bg-primary data-[state=off]:bg-muted data-[state=on]:bg-primary border border-default w-9 h-5 rounded-full after:content-[''] after:size-3.5 after:bg-foreground after:rounded-full after:absolute after:start-1 data-[state=on]:after:start-auto data-[state=on]:after:end-1"
                               pressed={field.value}
                               onPressedChange={field.onChange}
                             />
@@ -773,8 +861,7 @@ export const UserCreateOrUpdatePage = () => {
                 </div>
 
                 <FormField
-                  control={form.control}
-                  name=""
+                  name="deactivedAt"
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-4 col-span-2">
                       <FormLabel className="text-sm text-foreground font-bold">
@@ -784,17 +871,29 @@ export const UserCreateOrUpdatePage = () => {
                         <ToggleGroup
                           type="single"
                           className="grow border border-primary bg-gray-items text-white *:rounded-md! *:w-1/3 *:hover:bg-gray-items *:hover:text-foreground *:data-[state=on]:bg-primary *:data-[state=on]:text-white p-1"
-                          defaultValue="3month"
+                          defaultValue="3"
+                          onValueChange={(value) => {
+                            console.log(value);
+                            let target: Date;
+
+                            if (value === "1y") {
+                              target = getTargetDate(new Date(), {
+                                year: 1,
+                                month: 0,
+                              });
+                            } else {
+                              target = getTargetDate(new Date(), {
+                                year: 0,
+                                month: Number(value),
+                              });
+                            }
+                            console.log(target.toISOString());
+                            form.setValue("deactivedAt", target.toISOString());
+                          }}
                         >
-                          <ToggleGroupItem value="3month">
-                            3 Month
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="6month">
-                            6 Month
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="1year">
-                            1 Year
-                          </ToggleGroupItem>
+                          <ToggleGroupItem value="3">3 Month</ToggleGroupItem>
+                          <ToggleGroupItem value="6">6 Month</ToggleGroupItem>
+                          <ToggleGroupItem value="1y">1 Year</ToggleGroupItem>
                         </ToggleGroup>
                       </FormControl>
                       <FormMessage />
@@ -802,13 +901,60 @@ export const UserCreateOrUpdatePage = () => {
                   )}
                 />
 
-                <div className="flex items-center justify-between px-15 rounded-md bg-muted">
+                {/* <div className="flex items-center justify-between px-15 rounded-md bg-muted">
                   <span>Desired date</span>
                   <div className="flex items-center gap-2">
                     <DatePickerIcon className="fill-primary size-5.5" />
                     2024-10-24
                   </div>
-                </div>
+                </div> */}
+
+                <FormField
+                  name="deactivedAt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Popover
+                          open={openDeactivedCalendar}
+                          onOpenChange={setOpenDeactivedCalendar}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="deactivedAt"
+                              className="w-full px-5! h-full font-bold bg-muted hover:bg-muted/75 border border-default flex justify-between"
+                            >
+                              Desired date
+                              <div className="flex items-center gap-1">
+                                <DatePickerIcon className="fill-primary size-5.5" />
+                                <span>{getDate(field.value)}</span>
+                              </div>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              captionLayout="dropdown"
+                              onSelect={(date) => {
+                                if (date) {
+                                  const formatedDate = formatLocalDate(date);
+                                  field.onChange(formatedDate);
+                                }
+                                setOpenDeactivedCalendar(false);
+                              }}
+                              classNames={{
+                                day_button: "hover:bg-primary hover:text-white",
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               {/* Confirm section */}
@@ -823,7 +969,7 @@ export const UserCreateOrUpdatePage = () => {
                       confirmation option opposite.
                     </p>
                   </div>
-                  <Button type="button">Confirmation</Button>
+                  <Button type="submit">Confirmation</Button>
                 </div>
               </div>
             </div>

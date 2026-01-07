@@ -4,8 +4,9 @@ import { getRoles } from "../api";
 export const useRolesQuery = () => {
   const {
     data: roles,
-    isLoading: rolesIsLoading,
+    isPending: rolesIsLoading,
     isError: rolesIsError,
+    error: rolesError,
   } = useQuery({
     queryKey: ["roles"],
     queryFn: getRoles,
@@ -15,5 +16,6 @@ export const useRolesQuery = () => {
     roles,
     rolesIsLoading,
     rolesIsError,
+    rolesError
   };
 };
