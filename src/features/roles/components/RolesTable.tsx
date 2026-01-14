@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUsersQuery } from "@/features/users/hooks";
+import { useRolesQuery } from "@/features/roles/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import type { User } from "@/features/users/types";
+import type { Role } from "@/features/roles/types";
 import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
@@ -44,64 +44,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { userTableItems } from "../constants";
-import { useUsersFilters } from "../hooks/useUsersFilters";
-import { UserDetails } from "./UserDetails";
-import { useRolesQuery } from "@/features/roles/hooks";
-import type { Role } from "@/features/roles/types";
-import { UserDelete } from "./UserDelete";
+import { roleTableItems } from "../constants";
+import { useRolesFilters } from "@/features/roles/hooks";
+// import { UserDetails } from "./UserDetails";
+// import { UserDelete } from "./UserDelete";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-import { UserTablePagination } from "./UserTablePagination";
+// import { UserTablePagination } from "./UserTablePagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
 import { startOfDay } from "date-fns";
-import UsersIcon from "@/shared/icons/users.svg?react";
+import { DeleteModal } from "@/components/DeleteModal";
+import { Input } from "@/components/ui/input";
+import RolesIcon from "@/shared/icons/roles.svg?react";
+import ViewIcon from "@/shared/icons/view.svg?react";
+import AddIcon from "@/shared/icons/plus.svg?react";
+import EditIcon from "@/shared/icons/edit.svg?react";
 
 type FilterFormValues = {
-  active?: boolean;
   createdAt?: string;
-  roleId?: string;
+  role?: string;
   list_sort?: string;
   list_page?: number;
 };
 
-export const UserTable = () => {
-  const { filters, updateFilters } = useUsersFilters();
-  const { users, usersIsLoading } = useUsersQuery(filters);
+export const RolesTable = () => {
+  const { filters, updateFilters } = useRolesFilters();
+  const { roles, rolesIsLoading } = useRolesQuery(filters);
   const navigate = useNavigate();
-  const { roles } = useRolesQuery();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      active: filters.active,
       createdAt: filters.createdAt,
-      roleId: filters.roleId,
+      role: filters.role,
       list_sort: filters.list_sort,
       list_page: filters.list_page,
     },
   });
 
-  useEffect(() => {
-    const subscription = form.watch((values) => {
-      updateFilters(values);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form, updateFilters]);
+  form.watch((values) => {
+    updateFilters(values);
+  });
 
   return (
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
-        <span className="text-lg font-bold text-primary">Users List</span>
+        <span className="text-lg font-bold text-primary">Roles List</span>
         <Button
           onClick={() => {
-            navigate("/users/create");
+            navigate("/roles/create");
           }}
         >
-          <img src="/icons/plus.svg" alt="add icon" />
-          Add user
+          <AddIcon className="text-foreground" />
+          Add role
         </Button>
       </div>
 
@@ -113,40 +109,30 @@ export const UserTable = () => {
       <div className="p-7 flex items-center justify-between">
         <Form {...form}>
           <form className="flex justify-between items-center w-full">
-            <div className="flex items-center gap-4">
-              <span className="text-gray-lighter text-sm">User Status: </span>
-              <FormField
-                control={form.control}
-                name="active"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-6">
-                    <FormControl>
-                      <RadioGroup
-                        value={
-                          field.value === undefined ? "" : String(field.value)
-                        }
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                        className="flex space-x-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="true" id="active-true" />
-                          <Label htmlFor="active-true">Active</Label>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="false" id="active-false" />
-                          <Label htmlFor="active-false">Inactive</Label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="list_sort"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Role:
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-muted"
+                      placeholder="Search..."
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -197,43 +183,6 @@ export const UserTable = () => {
                         />
                       </PopoverContent>
                     </Popover>
-                  </FormControl>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="roleId"
-              render={({ field }) => (
-                <FormItem className="flex items-center">
-                  <FormLabel
-                    htmlFor="roleId"
-                    className="text-gray-lighter font-normal"
-                  >
-                    Role:
-                  </FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger
-                        id="role"
-                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
-                      >
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roles?.data.map((role: Role) => (
-                          <SelectItem
-                            value={String(role.id)}
-                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                          >
-                            {role.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </FormControl>
                   <FormDescription />
                   <FormMessage />
@@ -295,8 +244,8 @@ export const UserTable = () => {
         </Form>
       </div>
 
-      {/* User table */}
-      {usersIsLoading ? (
+      {/* Role table */}
+      {rolesIsLoading ? (
         <section className="w-full bg-gray-darker rounded-2xl">
           <Table>
             <TableBody className="flex flex-col gap-1 px-7 pb-7">
@@ -327,33 +276,33 @@ export const UserTable = () => {
             </TableBody>
           </Table>
         </section>
-      ) : users?.data.length === 0 ? (
-        <>
+      ) : roles?.data.length === 0 ? (
+        <section className="w-full bg-gray-darker rounded-2xl space-y-2">
           {/* Empty section */}
           <Empty className="pt-3! pb-7! gap-2">
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <UsersIcon className="size-5" />
+                <RolesIcon className="size-5" />
               </EmptyMedia>
-              <EmptyTitle>Users List Empty!</EmptyTitle>
+              <EmptyTitle>Roles List Empty!</EmptyTitle>
             </EmptyHeader>
             <EmptyContent className="text-sm text-muted-foreground">
-              Users will appear here once they are added.
+              Roles will appear here once they are added.
             </EmptyContent>
           </Empty>
-        </>
+        </section>
       ) : (
         <div className="px-7 pb-7">
           <Table className="border-separate border-spacing-y-1">
             {/* Table header */}
             <TableHeader>
               <TableRow className="hover:bg-secondary">
-                {userTableItems.map((userTableItem) => (
+                {roleTableItems.map((roleTableItem) => (
                   <TableHead
-                    key={userTableItem}
+                    key={roleTableItem}
                     className="text-center text-sm text-gray-lighter"
                   >
-                    {userTableItem}
+                    {roleTableItem}
                   </TableHead>
                 ))}
               </TableRow>
@@ -361,80 +310,43 @@ export const UserTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {users?.data.map((user: User) => (
+              {roles?.data.map((role: Role) => (
                 <TableRow
-                  key={user.id}
+                  key={role.id}
                   className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
                 >
                   <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
-                    {user.id}
+                    {role.id}
                   </TableCell>
 
-                  {/* User info */}
-                  <TableCell className="px-4 py-2 border-y border-default">
-                    <div className="flex items-center gap-4">
-                      <div className="border-2 border-orange rounded-full size-8">
-                        {/* To do fetch user profile */}
-                        <img
-                          src={user.profileId ? "" : "/icons/user.svg"}
-                          alt="profile image"
-                          className="size-full rounded-full"
-                        />
-                      </div>
-
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold capitalize">
-                          {user.firstName + " " + user.lastName}
-                        </span>
-                        <span className="text-xs text-gray-lighter lowercase">
-                          {user.email}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  {/* User role */}
+                  {/* Role name */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {user.role.name}
+                    {role.name}
                   </TableCell>
 
-                  {/* User register time */}
+                  {/* Role created at */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {getDate(user.createdAt)} | {getTime(user.createdAt)}
-                  </TableCell>
-
-                  {/* User status */}
-                  <TableCell className="px-4 py-2 text-start border-y border-default">
-                    {user.active ? (
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 bg-green rounded-full" />
-                        <span>Active</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 bg-red rounded-full" />
-                        <span>Inactive</span>
-                      </div>
-                    )}
+                    {getDate(role.createdAt)} | {getTime(role.createdAt)}
                   </TableCell>
 
                   {/* Operation section */}
-                  <TableCell className="px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
-                    {/* edit user */}
+                  <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                    {/* edit role */}
                     <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <img
-                        src="/icons/edit.svg"
-                        alt="edit icon"
-                        className="size-5"
-                      />
-                      Edit User
+                      <EditIcon className="size-5 text-blue-darker" />
+                      Edit Role
                     </Button>
 
-                    {/* delete user */}
-                    <UserDelete userId={user.id} />
+                    {/* Delete role */}
+                    <DeleteModal title="Role" onClick={() => {}} />
 
-                    {/* view user */}
-                    <UserDetails user={user} />
+                    {/* view role */}
+                    <Button
+                      className="p-2.5!"
+                      onClick={() => navigate(`/roles/${role.id}`)}
+                    >
+                      <ViewIcon className="size-5" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -444,7 +356,7 @@ export const UserTable = () => {
       )}
 
       {/* Pagination section */}
-      <UserTablePagination count={users?.count} />
+      {/* <UserTablePagination count={users?.count} /> */}
     </section>
   );
 };

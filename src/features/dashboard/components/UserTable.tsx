@@ -123,10 +123,10 @@ export const UserTable = () => {
                   </div>
 
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold">
+                    <span className="text-sm capitalize font-bold">
                       {user.firstName + " " + user.lastName}
                     </span>
-                    <span className="text-xs text-gray-lighter">
+                    <span className="text-xs lowercase text-gray-lighter">
                       {user.email}
                     </span>
                   </div>

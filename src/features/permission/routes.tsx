@@ -1,6 +1,14 @@
 import { Route } from "react-router";
-import { PermissionPage } from "./pages";
+import {
+  PermissionCreateOrUpdate,
+  PermissionPage,
+  PermissionsPage,
+} from "./pages";
 
 export const PermissionRoutes = (
-  <Route path="permission" element={<PermissionPage />} />
+  <>
+    <Route path="permissions" element={<PermissionsPage />} />
+    <Route path="permissions/:id" element={<PermissionPage />} />
+    <Route path="permissions/create" element={<PermissionCreateOrUpdate />} />
+  </>
 );

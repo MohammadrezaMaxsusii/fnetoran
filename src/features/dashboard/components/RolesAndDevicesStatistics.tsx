@@ -1,13 +1,13 @@
 export const RolesAndDevicesStatistics = () => {
   return (
-    <section className="relative h-fit p-6 rounded-2xl space-y-2 bg-linear-to-r from-60% from-gray-darker/5 to-gray-darker/75">
+    <section className="relative p-6 rounded-2xl bg-linear-to-r from-60% from-gray-darker/5 to-gray-darker/75">
       {/* Header */}
       <span className="text-sm font-semibold">
         Statistics of roles and devices
       </span>
 
       {/* Rolles section */}
-      <div className="flex items-center justify-between border-b border-b-default">
+      <div className="flex items-center justify-between border-b border-b-default my-2.5">
         <div className="flex items-center">
           <img
             src="/icons/identityCard.svg"

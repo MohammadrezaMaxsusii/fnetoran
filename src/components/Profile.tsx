@@ -40,7 +40,7 @@ export const Profile = () => {
           {/* User info */}
           <div>
             <h6 className="text-sm font-bold capitalize">{user?.data.firstName + " " + user?.data.lastName}</h6>
-            <span className="text-xs text-gray-lighter">
+            <span className="text-xs lowercase text-gray-lighter">
               {user?.data.email}
             </span>
           </div>

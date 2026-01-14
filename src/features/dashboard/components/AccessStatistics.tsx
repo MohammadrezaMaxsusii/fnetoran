@@ -31,7 +31,7 @@ export const AccessStatistics = () => {
 
       <div className="grid grid-cols-2 place-content-center size-full">
         {/* Data of chart */}
-        <div className="space-y-6 border-e border-e-default grid items-center">
+        <div className="space-y-6 border-e border-e-default grid items-center ps-4">
           <div className="flex flex-col border-l-4 border-primary ps-3">
             <span className="text-sm">Groups</span>
             <span className="text-5xl text-primary font-bold">1378</span>

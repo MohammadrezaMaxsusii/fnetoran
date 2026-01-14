@@ -24,18 +24,18 @@ export const Activities = () => {
       </div>
 
       {/* Activities section */}
-      <ul>
+      <ul className="grow flex flex-col justify-between">
         {dayItems.map((day) => (
           <li
             key={day.value}
-            className="grid grid-cols-7 items-center p-1 rounded-xl even:bg-gray-items"
+            className="grid grid-cols-7 items-center px-1 py-2 rounded-lg even:bg-gray-items"
           >
             {/* Day section  */}
             <div className="col-span-2">
               <span
                 className={cn(
                   "px-3 py-2 inline-block",
-                  isToday(day.value) && "bg-primary px-3 py-2 rounded-xl font-bold"
+                  isToday(day.value) && "bg-primary px-3 py-2 rounded-lg font-bold"
                 )}
               >
                 {day.value}

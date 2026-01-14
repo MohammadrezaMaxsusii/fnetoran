@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate, useParams } from "react-router";
-// import { usePermissionsOfRole } from "../hooks";
-// import type { CategoryOfRole } from "../types";
+import { usePermissionsOfRole } from "../hooks";
+import type { CategoryOfRole } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Empty,
@@ -12,12 +12,12 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import PermissionIcon from "@/shared/icons/permission.svg?react";
-import { usePermissionsOfPermissionCategoryQuery } from "../hooks/usePermissionsOfPermissionCategoryQuery";
 
-export const PermissionPage = () => {
+export const RolePage = () => {
   const navigate = useNavigate();
   const id = useParams().id as string;
-  const { permissionsOfPermissionCateogory, permissionsOfPermissionCateogoryIsPending } = usePermissionsOfPermissionCategoryQuery(id);
+  const { premissionsOfRole, premissionsOfRoleIsPending } =
+    usePermissionsOfRole(id);
 
   return (
     <section className="w-full pe-6 pb-6">
@@ -27,7 +27,7 @@ export const PermissionPage = () => {
           <span className="text-lg font-bold text-primary">Premissions</span>
           <Button
             variant="secondary"
-            onClick={() => navigate("/permissions")}
+            onClick={() => navigate("/roles")}
             className="border border-default p-3"
           >
             <img src="/icons/back.svg" alt="back icon" className="size-5.5" />
@@ -40,7 +40,7 @@ export const PermissionPage = () => {
         </div>
 
         <div className="p-7 space-y-12">
-          {permissionsOfPermissionCateogoryIsPending ? (
+          {premissionsOfRoleIsPending ? (
             <>
               {Array.from({ length: 4 }).map((_, index) => (
                 <div key={index}>
@@ -59,7 +59,7 @@ export const PermissionPage = () => {
                 </div>
               ))}
             </>
-          ) : permissionsOfPermissionCateogory?.data.length === 0 ? (
+          ) : premissionsOfRole?.data.length === 0 ? (
             <>
               {/* Empty section */}
               <Empty className="pt-3! pb-7! gap-2">
@@ -76,7 +76,7 @@ export const PermissionPage = () => {
             </>
           ) : (
             <>
-              {permissionsOfPermissionCateogory?.data.map((premission: any) => (
+              {premissionsOfRole?.data.map((premission: CategoryOfRole) => (
                 <div key={premission.id}>
                   <div className="flex items-center gap-2 pb-5">
                     <span className="inline-block size-4 bg-transparent rounded-full border-4 border-primary" />

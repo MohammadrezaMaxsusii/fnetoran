@@ -1,21 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { getRoles } from "../api";
 
-export const useRolesQuery = () => {
+export const useRolesQuery = (filters: Record<string, any> = {}) => {
   const {
     data: roles,
-    isPending: rolesIsLoading,
+    isLoading: rolesIsLoading,
     isError: rolesIsError,
     error: rolesError,
   } = useQuery({
-    queryKey: ["roles"],
-    queryFn: getRoles,
+    queryKey: ["roles", filters],
+    queryFn: () => getRoles(filters),
   });
 
   return {
     roles,
     rolesIsLoading,
     rolesIsError,
-    rolesError
+    rolesError,
   };
 };

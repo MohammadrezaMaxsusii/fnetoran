@@ -28,7 +28,7 @@ import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { ChevronDownIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -44,11 +44,12 @@ import z from "zod";
 import { userCreateOrUpdateSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
-import { useUserActions } from "../hooks";
+import { useUserActions, useUsersQuery } from "../hooks";
 import { startOfDay } from "date-fns";
 import password from "secure-random-password";
 import View from "@/shared/icons/view.svg?react";
 import ViewOff from "@/shared/icons/viewOff.svg?react";
+import { api } from "@/shared/libs/axiosInstance";
 
 export const UserCreateOrUpdatePage = () => {
   const [openBirthdayCalendar, setOpenBirthdayCalendar] = useState(false);
@@ -57,6 +58,14 @@ export const UserCreateOrUpdatePage = () => {
   const [errorUpload, setErrorUpload] = useState(false);
   const [file, setFile] = useState("");
   const { createUserAction } = useUserActions();
+  const { id } = useParams();
+  let defaultValues: z.infer<typeof userCreateOrUpdateSchema>;
+  if (id) {
+    (async () => {
+      const result = await api.get(`user/admin/1`);
+      console.log(result);
+    })();
+  }
 
   const onDrop = useCallback((acceptedFiles: File[], fileRejection: any[]) => {
     if (fileRejection.length > 0) {
@@ -835,7 +844,7 @@ export const UserCreateOrUpdatePage = () => {
                             <span className="text-base text-foreground font-bold">
                               User Account
                             </span>
-                            <p className="tex">
+                            <p>
                               Activating or deactivating a user account in the
                               system
                             </p>
@@ -871,9 +880,7 @@ export const UserCreateOrUpdatePage = () => {
                         <ToggleGroup
                           type="single"
                           className="grow border border-primary bg-gray-items text-white *:rounded-md! *:w-1/3 *:hover:bg-gray-items *:hover:text-foreground *:data-[state=on]:bg-primary *:data-[state=on]:text-white p-1"
-                          defaultValue="3"
                           onValueChange={(value) => {
-                            console.log(value);
                             let target: Date;
 
                             if (value === "1y") {
@@ -887,8 +894,8 @@ export const UserCreateOrUpdatePage = () => {
                                 month: Number(value),
                               });
                             }
-                            console.log(target.toISOString());
-                            form.setValue("deactivedAt", target.toISOString());
+
+                            field.onChange(target.toISOString());
                           }}
                         >
                           <ToggleGroupItem value="3">3 Month</ToggleGroupItem>
@@ -900,14 +907,6 @@ export const UserCreateOrUpdatePage = () => {
                     </FormItem>
                   )}
                 />
-
-                {/* <div className="flex items-center justify-between px-15 rounded-md bg-muted">
-                  <span>Desired date</span>
-                  <div className="flex items-center gap-2">
-                    <DatePickerIcon className="fill-primary size-5.5" />
-                    2024-10-24
-                  </div>
-                </div> */}
 
                 <FormField
                   name="deactivedAt"

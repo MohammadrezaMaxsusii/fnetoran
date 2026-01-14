@@ -1,7 +1,7 @@
 export const developmentItems = [
   "users",
   "roles",
-  "permission",
+  "permissions",
   "firewall",
   "retrofit",
 ];
