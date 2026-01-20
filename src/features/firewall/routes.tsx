@@ -1,6 +1,9 @@
 import { Route } from "react-router";
-import { FirewallPage } from "./pages";
+import { FeedPage, FirewallPage } from "./pages";
 
 export const FirewallRoutes = (
-  <Route path="firewall" element={<FirewallPage />} />
+  <>
+    <Route path="firewall" element={<FirewallPage />} />
+    <Route path="feed" element={<FeedPage />} />
+  </>
 );
