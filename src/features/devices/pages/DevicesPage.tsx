@@ -1,5 +1,9 @@
+import { DeviceTable } from "../components";
+
 export const DevicesPage = () => {
   return (
-    <div>DevicesPage</div>
-  )
-}
+    <div className="w-full pe-5">
+      <DeviceTable />
+    </div>
+  );
+};
