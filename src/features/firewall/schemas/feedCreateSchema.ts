@@ -8,6 +8,6 @@ export const feedCreateSchema = z.object({
   ),
   source: z.string().trim(),
   fileName: z.string().trim(),
-  fileType: z.string().trim(),
-  item: z.string().trim(),
+  fileType: z.string().trim().optional(),
+  item: z.ipv4(),
 });

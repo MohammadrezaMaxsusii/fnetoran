@@ -39,15 +39,32 @@ import { Calendar } from "@/components/ui/calendar";
 import { startOfDay } from "date-fns";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { useState } from "react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { z } from "zod";
+import { useFeedActions } from "../hooks/useFeedActions";
+import { useFeedsQuery } from "../hooks";
 
 export const FeedCreate = () => {
   const [open, setOpen] = useState(false);
+  const { createFeedAction } = useFeedActions();
+  const { feeds, feedsIsPending, feedsError } = useFeedsQuery();
   const form = useForm({
     resolver: zodResolver(feedCreateSchema),
     defaultValues: {
-      removeDate: undefined
-    }
+      fileType: "available_files",
+    },
   });
+
+  const fileType = form.watch("fileType");
+
+  const submitHandler = async (input: z.infer<typeof feedCreateSchema>) => {
+    console.log("hiiiiiiiiiiii");
+    let newInput = {...input}
+    console.log(newInput);
+    delete newInput.removeDate;
+    await createFeedAction.mutateAsync(newInput);
+  };
 
   return (
     <Dialog>
@@ -67,166 +84,243 @@ export const FeedCreate = () => {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Dialog content */}
-        <div>
-          <Form {...form}>
-            <form className="flex flex-col gap-5 py-4 w-full">
-              <FormField
-                control={form.control}
-                name="item"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      htmlFor="item"
-                      className="text-gray-lighter font-normal ps-0.5"
-                    >
-                      IP:
-                    </FormLabel>
-                    <FormControl>
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-8 py-4 w-full"
+            onSubmit={form.handleSubmit(submitHandler)}
+          >
+            <FormField
+              name="item"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="item"
+                    className="text-gray-lighter font-normal ps-0.5"
+                  >
+                    IP:
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-muted"
+                      placeholder="Enter your IP"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="source"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="source"
+                    className="text-gray-lighter font-normal ps-0.5"
+                  >
+                    Refrence:
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-muted"
+                      placeholder="Enter your refrence"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="fileName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="fileName"
+                    className="text-gray-lighter font-normal ps-0.5 flex justify-between items-center"
+                  >
+                    Feed:
+                    <FormField
+                      name="fileType"
+                      render={(fileType) => (
+                        <FormItem>
+                          <FormControl>
+                            <RadioGroup
+                              value={fileType.field.value}
+                              onValueChange={fileType.field.onChange}
+                              className="flex space-x-4"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem
+                                  value="available_files"
+                                  id="available_files"
+                                />
+                                <Label htmlFor="available_files">
+                                  Exist feed
+                                </Label>
+                              </div>
+
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem
+                                  value="new_file"
+                                  id="new_file"
+                                />
+                                <Label htmlFor="new_file">New feed</Label>
+                              </div>
+                            </RadioGroup>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </FormLabel>
+                  <FormControl>
+                    {fileType === "new_file" ? (
                       <Input
                         className="bg-muted"
-                        placeholder="Enter your IP"
+                        placeholder="Enter your Feed"
                         {...field}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="source"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      htmlFor="source"
-                      className="text-gray-lighter font-normal ps-0.5"
-                    >
-                      Refrence:
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-muted"
-                        placeholder="Enter your refrence"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      htmlFor="type"
-                      className="text-gray-lighter font-normal ps-0.5"
-                    >
-                      Type:
-                    </FormLabel>
-                    <FormControl>
+                    ) : (
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger
-                          id="type"
+                          id="feed"
                           className="w-full bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
                         >
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue
+                            placeholder={feeds?.data.length === 0 ? "Please select new feed and add your feed" : "Select feed"}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem
-                            value="allow"
-                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                          >
-                            Allow
-                          </SelectItem>
-                          <SelectItem
-                            value="block"
-                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                          >
-                            Block
-                          </SelectItem>
+                          {feeds?.data.map((feed: any) => (
+                            <SelectItem
+                              key={feed.id}
+                              value={String(feed.id)}
+                              className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                            >
+                              {feed.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="removeDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      htmlFor="removeDate"
-                      className="text-gray-lighter font-normal ps-0.5"
-                    >
-                      Deleted at:
-                    </FormLabel>
-                    <FormControl>
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            id="date"
-                            className="bg-muted hover:bg-muted/75 border border-default justify-between font-normal"
-                          >
-                            {field.value ? (
-                              <span>{field.value}</span>
-                            ) : (
-                              <span className="text-muted-foreground">
-                                Select date
-                              </span>
-                            )}
-                            <ChevronDownIcon />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="start"
+            <FormField
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="type"
+                    className="text-gray-lighter font-normal ps-0.5"
+                  >
+                    Type:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="type"
+                        className="w-full bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="allow"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                         >
-                          <Calendar
-                            mode="single"
-                            captionLayout="dropdown"
-                            disabled={(date) => date > startOfDay(new Date())}
-                            onSelect={(date) => {
-                              if (date) {
-                                const formatedDate = formatLocalDate(date);
-                                field.onChange(formatedDate);
-                              }
-                              setOpen(false);
-                            }}
-                            classNames={{
-                              day_button: "hover:bg-primary hover:text-white",
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </div>
+                          Allow
+                        </SelectItem>
+                        <SelectItem
+                          value="block"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          Block
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        {/* Dialog footer */}
-        <DialogFooter className="grid grid-cols-2 gap-3">
-          <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker">
-            Create
-          </Button>
-          <DialogClose asChild>
-            <Button variant="secondary">Close</Button>
-          </DialogClose>
-        </DialogFooter>
+            <FormField
+              name="removeDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor="removeDate"
+                    className="text-gray-lighter font-normal ps-0.5"
+                  >
+                    Deleted at:
+                  </FormLabel>
+                  <FormControl>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="date"
+                          className="bg-muted hover:bg-muted/75 border border-default justify-between font-normal"
+                        >
+                          {field.value ? (
+                            <span>{field.value}</span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Select date
+                            </span>
+                          )}
+                          <ChevronDownIcon />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto overflow-hidden p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          disabled={(date) => date < startOfDay(new Date())}
+                          onSelect={(date) => {
+                            if (date) {
+                              const formatedDate = formatLocalDate(date);
+                              field.onChange(formatedDate);
+                            }
+                            setOpen(false);
+                          }}
+                          classNames={{
+                            day_button: "hover:bg-primary hover:text-white",
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Dialog footer */}
+            <DialogFooter className="grid grid-cols-2 gap-3">
+              <Button
+                type="submit"
+                className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
+              >
+                Create
+              </Button>
+              <DialogClose asChild>
+                <Button variant="secondary">Close</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

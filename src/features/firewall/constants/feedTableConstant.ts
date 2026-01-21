@@ -1,1 +1,9 @@
-export const feedTableItems = ["IP", "Status", "Feed source", "Action"];
+export const feedTableItems = [
+  "Id",
+  "IP",
+  "Feed",
+  "Type",
+  "Date",
+  "Status",
+  "Operation",
+];

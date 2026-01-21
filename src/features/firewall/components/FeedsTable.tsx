@@ -43,6 +43,7 @@ import EditIcon from "@/shared/icons/edit.svg?react";
 import { useFeedsFilters, useFeedsQuery } from "../hooks";
 import { feedTableItems } from "../constants";
 import { FeedCreate } from "./FeedCreate";
+import type { Feed } from "../types/feedType";
 
 type FilterFormValues = {
   feed?: string;
@@ -313,7 +314,7 @@ export const FeedsTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {feeds?.data.map((feed: Role) => (
+              {feeds?.data.map((feed: Feed) => (
                 <TableRow
                   key={feed.id}
                   className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
@@ -322,14 +323,39 @@ export const FeedsTable = () => {
                     {feed.id}
                   </TableCell>
 
-                  {/* Feed name */}
+                  {/* Feed IP */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {feed.name}
+                    {feed.item}
+                  </TableCell>
+
+                  {/* Feed */}
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {feed.fileName || "---"}
+                  </TableCell>
+
+                  {/* Feed type */}
+                  <TableCell className="px-4 py-2 text-center border-y border-default capitalize">
+                    {feed.type || "---"}
                   </TableCell>
 
                   {/* Feed created at */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
                     {getDate(feed.createdAt)} | {getTime(feed.createdAt)}
+                  </TableCell>
+
+                  {/* Feed status */}
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {feed.active ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-green rounded-full" />
+                        <span>Active</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-red rounded-full" />
+                        <span>Inactive</span>
+                      </div>
+                    )}
                   </TableCell>
 
                   {/* Operation section */}

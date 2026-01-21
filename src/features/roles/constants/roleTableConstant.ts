@@ -1,1 +1,1 @@
-export const roleTableItems = ["Id", "Name", "Date"];
+export const roleTableItems = ["Id", "Name", "Date", "Operation"];
