@@ -34,7 +34,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  ChevronDownIcon,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { startOfDay } from "date-fns";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
@@ -44,30 +47,41 @@ import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useFeedActions } from "../hooks/useFeedActions";
 import { useFeedsQuery } from "../hooks";
+import { getErrorMessage } from "@/shared/utils";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 export const FeedCreate = () => {
-  const [open, setOpen] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { createFeedAction } = useFeedActions();
   const { feeds, feedsIsPending, feedsError } = useFeedsQuery();
   const form = useForm({
     resolver: zodResolver(feedCreateSchema),
     defaultValues: {
       fileType: "available_files",
+      fileName: "",
+      item: "",
+      type: "allow",
+      source: "",
     },
   });
 
   const fileType = form.watch("fileType");
 
   const submitHandler = async (input: z.infer<typeof feedCreateSchema>) => {
-    console.log("hiiiiiiiiiiii");
-    let newInput = {...input}
-    console.log(newInput);
-    delete newInput.removeDate;
-    await createFeedAction.mutateAsync(newInput);
+    try {
+      await createFeedAction.mutateAsync(input);
+      form.reset();
+      setOpenModal(false);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={openModal} onOpenChange={setOpenModal}>
       <DialogTrigger asChild>
         <Button>
           <AddIcon className="text-foreground" />
@@ -77,11 +91,18 @@ export const FeedCreate = () => {
 
       <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8">
         {/* Dialog header */}
-        <DialogHeader>
+        <DialogHeader className="gap-4">
           <DialogTitle className="text-lg font-bold">Add feed</DialogTitle>
           <DialogDescription className="hidden">
             Add another feed
           </DialogDescription>
+          {errorMessage && (
+            <Alert variant="destructive">
+              <AlertCircleIcon />
+              <AlertTitle>Something went wrong!</AlertTitle>
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
         </DialogHeader>
 
         <Form {...form}>
@@ -157,7 +178,10 @@ export const FeedCreate = () => {
                                   value="available_files"
                                   id="available_files"
                                 />
-                                <Label htmlFor="available_files">
+                                <Label
+                                  htmlFor="available_files"
+                                  className="text-gray-lighter"
+                                >
                                   Exist feed
                                 </Label>
                               </div>
@@ -167,7 +191,12 @@ export const FeedCreate = () => {
                                   value="new_file"
                                   id="new_file"
                                 />
-                                <Label htmlFor="new_file">New feed</Label>
+                                <Label
+                                  htmlFor="new_file"
+                                  className="text-gray-lighter"
+                                >
+                                  New feed
+                                </Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -189,10 +218,17 @@ export const FeedCreate = () => {
                       >
                         <SelectTrigger
                           id="feed"
-                          className="w-full bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                          className={cn(
+                            "w-full bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100",
+                            !!form.formState.errors.fileName && "border-red-500"
+                          )}
                         >
                           <SelectValue
-                            placeholder={feeds?.data.length === 0 ? "Please select new feed and add your feed" : "Select feed"}
+                            placeholder={
+                              feeds?.data.length === 0
+                                ? "Please select new feed and add your feed"
+                                : "Select feed"
+                            }
                           />
                         </SelectTrigger>
                         <SelectContent>
@@ -202,7 +238,7 @@ export const FeedCreate = () => {
                               value={String(feed.id)}
                               className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                             >
-                              {feed.name}
+                              {feed.fileName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -264,7 +300,7 @@ export const FeedCreate = () => {
                     Deleted at:
                   </FormLabel>
                   <FormControl>
-                    <Popover open={open} onOpenChange={setOpen}>
+                    <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
                       <PopoverTrigger asChild>
                         <Button
                           id="date"
@@ -293,7 +329,7 @@ export const FeedCreate = () => {
                               const formatedDate = formatLocalDate(date);
                               field.onChange(formatedDate);
                             }
-                            setOpen(false);
+                            setOpenCalendar(false);
                           }}
                           classNames={{
                             day_button: "hover:bg-primary hover:text-white",

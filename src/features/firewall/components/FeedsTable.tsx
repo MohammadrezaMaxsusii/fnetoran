@@ -38,12 +38,14 @@ import {
 import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import FirewallIcon from "@/shared/icons/firewall.svg?react";
-import ViewIcon from "@/shared/icons/view.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { useFeedsFilters, useFeedsQuery } from "../hooks";
 import { feedTableItems } from "../constants";
 import { FeedCreate } from "./FeedCreate";
 import type { Feed } from "../types/feedType";
+import { useFeedActions } from "../hooks/useFeedActions";
+import { FeedDetails } from "./FeedDetails";
+import { TablePagination } from "@/components/TablePagination";
 
 type FilterFormValues = {
   feed?: string;
@@ -56,7 +58,7 @@ type FilterFormValues = {
 export const FeedsTable = () => {
   const { filters, updateFilters } = useFeedsFilters();
   const { feeds, feedsIsPending } = useFeedsQuery(filters);
-  // const [open, setOpen] = useState(false);
+  const { deleteFeedAction } = useFeedActions();
   const form = useForm<FilterFormValues>({
     defaultValues: {
       feed: filters.feed,
@@ -367,12 +369,13 @@ export const FeedsTable = () => {
                     </Button>
 
                     {/* Delete feed */}
-                    <DeleteModal title="Feed" onClick={() => {}} />
+                    <DeleteModal
+                      title="Feed"
+                      onClick={() => deleteFeedAction.mutateAsync(feed.id)}
+                    />
 
-                    {/* view feed */}
-                    <Button className="p-2.5!" onClick={() => {}}>
-                      <ViewIcon className="size-5" />
-                    </Button>
+                    {/* View feed */}
+                    <FeedDetails feed={feed} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -382,7 +385,11 @@ export const FeedsTable = () => {
       )}
 
       {/* Pagination section */}
-      {/* <UserTablePagination count={users?.count} /> */}
+      <TablePagination
+        count={feeds?.count}
+        currentPage={filters.list_page}
+        updateFilters={updateFilters}
+      />
     </section>
   );
 };

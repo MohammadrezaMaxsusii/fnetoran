@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFeed } from "../api";
+import { createFeed, deleteFeed } from "../api";
 
 export const useFeedActions = () => {
   const queryClient = useQueryClient();
@@ -15,7 +15,13 @@ export const useFeedActions = () => {
     onSuccess,
   });
 
+  const deleteFeedAction = useMutation({
+    mutationFn: deleteFeed,
+    onSuccess,
+  });
+
   return {
     createFeedAction,
+    deleteFeedAction,
   };
 };
