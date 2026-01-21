@@ -60,6 +60,7 @@ import RolesIcon from "@/shared/icons/roles.svg?react";
 import ViewIcon from "@/shared/icons/view.svg?react";
 import AddIcon from "@/shared/icons/plus.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
+import { TablePagination } from "@/components/TablePagination";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -356,7 +357,11 @@ export const RolesTable = () => {
       )}
 
       {/* Pagination section */}
-      {/* <UserTablePagination count={users?.count} /> */}
+      <TablePagination
+        count={roles?.count}
+        currentPage={filters.list_page}
+        updateFilters={updateFilters}
+      />
     </section>
   );
 };

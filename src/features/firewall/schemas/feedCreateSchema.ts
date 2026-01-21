@@ -6,8 +6,8 @@ export const feedCreateSchema = z.object({
     (val) => (typeof val === "string" && val ? new Date(val) : undefined),
     z.date().optional()
   ),
-  source: z.string().trim(),
-  fileName: z.string().trim(),
+  source: z.string().trim().nonempty("Reffrence is required."),
+  fileName: z.string().trim().nonempty("Feed is required."),
   fileType: z.string().trim().optional(),
   item: z.ipv4(),
 });

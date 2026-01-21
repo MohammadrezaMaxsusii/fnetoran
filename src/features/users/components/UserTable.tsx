@@ -51,7 +51,7 @@ import { useRolesQuery } from "@/features/roles/hooks";
 import type { Role } from "@/features/roles/types";
 import { UserDelete } from "./UserDelete";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-import { UserTablePagination } from "./UserTablePagination";
+import { TablePagination } from "@/components/TablePagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
@@ -226,6 +226,7 @@ export const UserTable = () => {
                       <SelectContent>
                         {roles?.data.map((role: Role) => (
                           <SelectItem
+                            key={role.id}
                             value={String(role.id)}
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
@@ -419,7 +420,7 @@ export const UserTable = () => {
                   </TableCell>
 
                   {/* Operation section */}
-                  <TableCell className="px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                  <TableCell className="w-1/5 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit user */}
                     <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
                       <img
@@ -444,7 +445,7 @@ export const UserTable = () => {
       )}
 
       {/* Pagination section */}
-      <UserTablePagination count={users?.count} />
+      <TablePagination count={users?.count} currentPage={filters.list_page} updateFilters={updateFilters} />
     </section>
   );
 };

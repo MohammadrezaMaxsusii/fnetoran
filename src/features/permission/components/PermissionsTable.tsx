@@ -53,6 +53,7 @@ import EditIcon from "@/shared/icons/edit.svg?react";
 import { usePermissionsFilters } from "../hooks/usePermissionsFilters";
 import { usePermissionsQuery } from "../hooks";
 import { permissionTableItems } from "../constants";
+import { TablePagination } from "@/components/TablePagination";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -319,7 +320,8 @@ export const PermissionsTable = () => {
 
                   {/* Permission created at */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {getDate(permission.createdAt)} | {getTime(permission.createdAt)}
+                    {getDate(permission.createdAt)} |{" "}
+                    {getTime(permission.createdAt)}
                   </TableCell>
 
                   {/* Operation section */}
@@ -349,7 +351,11 @@ export const PermissionsTable = () => {
       )}
 
       {/* Pagination section */}
-      {/* <UserTablePagination count={users?.count} /> */}
+      <TablePagination
+        count={permissions?.count}
+        currentPage={filters.list_page}
+        updateFilters={updateFilters}
+      />
     </section>
   );
 };
