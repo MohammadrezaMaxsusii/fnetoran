@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
   EmptyContent,
@@ -27,14 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ChevronDownIcon, FunnelX } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { FunnelX } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -42,36 +34,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-import { useNavigate } from "react-router";
-import { startOfDay } from "date-fns";
-import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
-import ViewIcon from "@/shared/icons/view.svg?react";
-import AddIcon from "@/shared/icons/plus.svg?react";
-import EditIcon from "@/shared/icons/edit.svg?react";
-import { usePermissionsFilters } from "../hooks/usePermissionsFilters";
-import { usePermissionsQuery } from "../hooks";
-import { permissionTableItems } from "../constants";
+import FirewallIcon from "@/shared/icons/firewall.svg?react";
+import { useZonesFilters, useZoneActions, useZonesQuery } from "../hooks";
+import { zoneTableItems } from "../constants";
+import { ZoneCreate } from "./ZoneCreate";
+import type { Zone } from "../types/zoneType";
 import { TablePagination } from "@/components/TablePagination";
-import { PermissionCreate } from "./PermissionCreate";
+import { getDate, getTime } from "@/shared/utils";
+import { DeleteModal } from "@/components/DeleteModal";
+import { ZoneUpdate } from "./ZoneUpdate";
 
 type FilterFormValues = {
-  createdAt?: string;
-  category?: string;
+  zone?: string;
   list_sort?: string;
   list_page?: number;
 };
 
-export const PermissionsTable = () => {
-  const { filters, updateFilters } = usePermissionsFilters();
-  const { permissions, permissionsIsPending } = usePermissionsQuery(filters);
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+export const ZonesTable = () => {
+  const { filters, updateFilters } = useZonesFilters();
+  const { zones, zonesIsPending } = useZonesQuery(filters);
+  const { deleteZoneAction } = useZoneActions();
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      createdAt: filters.createdAt,
-      category: filters.category,
+      zone: filters.zone,
       list_sort: filters.list_sort,
       list_page: filters.list_page,
     },
@@ -85,8 +71,8 @@ export const PermissionsTable = () => {
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
-        <span className="text-lg font-bold text-primary">Permissions List</span>
-        <PermissionCreate />
+        <span className="text-lg font-bold text-primary">Zones List</span>
+        <ZoneCreate />
       </div>
 
       <div className="px-7">
@@ -99,14 +85,14 @@ export const PermissionsTable = () => {
           <form className="flex justify-between items-center w-full">
             <FormField
               control={form.control}
-              name="category"
+              name="zone"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="category"
+                    htmlFor="zone"
                     className="text-gray-lighter font-normal"
                   >
-                    Name:
+                    Zone:
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -115,62 +101,6 @@ export const PermissionsTable = () => {
                       value={field.value}
                       onChange={field.onChange}
                     />
-                  </FormControl>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="createdAt"
-              render={({ field }) => (
-                <FormItem className="flex items-center">
-                  <FormLabel
-                    htmlFor="createdAt"
-                    className="text-gray-lighter font-normal"
-                  >
-                    Date:
-                  </FormLabel>
-                  <FormControl>
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="date"
-                          className="bg-muted hover:bg-muted/75 border border-default w-48 justify-between font-normal"
-                        >
-                          {field.value ? (
-                            <span>{field.value}</span>
-                          ) : (
-                            <span className="text-muted-foreground">
-                              Select date
-                            </span>
-                          )}
-                          <ChevronDownIcon />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto overflow-hidden p-0"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          captionLayout="dropdown"
-                          disabled={(date) => date > startOfDay(new Date())}
-                          onSelect={(date) => {
-                            if (date) {
-                              const formatedDate = formatLocalDate(date);
-                              field.onChange(formatedDate);
-                            }
-                            setOpen(false);
-                          }}
-                          classNames={{
-                            day_button: "hover:bg-primary hover:text-white",
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
                   </FormControl>
                   <FormDescription />
                   <FormMessage />
@@ -232,8 +162,8 @@ export const PermissionsTable = () => {
         </Form>
       </div>
 
-      {/* Permission table */}
-      {permissionsIsPending ? (
+      {/* Zone table */}
+      {zonesIsPending ? (
         <section className="w-full bg-gray-darker rounded-2xl">
           <Table>
             <TableBody className="flex flex-col gap-1 px-7 pb-7">
@@ -264,18 +194,18 @@ export const PermissionsTable = () => {
             </TableBody>
           </Table>
         </section>
-      ) : permissions?.data.length === 0 ? (
+      ) : zones?.data.length === 0 ? (
         <section className="w-full bg-gray-darker rounded-2xl space-y-2">
           {/* Empty section */}
           <Empty className="pt-3! pb-7! gap-2">
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                {/* <PermissionsIcon className="size-5" /> */}
+                <FirewallIcon className="size-5" />
               </EmptyMedia>
-              <EmptyTitle>Permissions List Empty!</EmptyTitle>
+              <EmptyTitle>Zones List Empty!</EmptyTitle>
             </EmptyHeader>
             <EmptyContent className="text-sm text-muted-foreground">
-              Permissions will appear here once they are added.
+              Zones will appear here once they are added.
             </EmptyContent>
           </Empty>
         </section>
@@ -285,12 +215,12 @@ export const PermissionsTable = () => {
             {/* Table header */}
             <TableHeader>
               <TableRow className="hover:bg-secondary">
-                {permissionTableItems.map((permissionTableItem) => (
+                {zoneTableItems.map((zoneTableItem) => (
                   <TableHead
-                    key={permissionTableItem}
+                    key={zoneTableItem}
                     className="text-center text-sm text-gray-lighter"
                   >
-                    {permissionTableItem}
+                    {zoneTableItem}
                   </TableHead>
                 ))}
               </TableRow>
@@ -298,46 +228,39 @@ export const PermissionsTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {permissions?.data.map((permission: any) => (
-                <TableRow
-                  key={permission.id}
-                  className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
-                >
-                  <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
-                    {permission.id}
-                  </TableCell>
+              {zones?.data.map((zone: Zone) => (
+                  <TableRow
+                    key={zone.id}
+                    className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
+                  >
+                    <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
+                      {zone.id}
+                    </TableCell>
 
-                  {/* Permission name */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {permission.name}
-                  </TableCell>
+                    <TableCell className="px-4 py-2 text-center border-y border-default">
+                      {zone.name}
+                    </TableCell>
 
-                  {/* Permission created at */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {getDate(permission.createdAt)} |{" "}
-                    {getTime(permission.createdAt)}
-                  </TableCell>
+                    <TableCell className="px-4 py-2 text-center border-y border-default">
+                      {zone.description || "-"}
+                    </TableCell>
 
-                  {/* Operation section */}
-                  <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
-                    {/* edit permission */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <EditIcon className="size-5 text-blue-darker" />
-                      Edit Permission
-                    </Button>
+                    <TableCell className="px-4 py-2 text-center border-y border-default">
+                      {getDate(zone.createdAt)} | {getTime(zone.createdAt)}
+                    </TableCell>
 
-                    {/* Delete permission */}
-                    <DeleteModal title="Permission" onClick={() => {}} />
+                    {/* Operation section */}
+                    <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                      {/* edit zone */}
+                      <ZoneUpdate currentZone={zone} />
 
-                    {/* view permission */}
-                    <Button
-                      className="p-2.5!"
-                      onClick={() => navigate(`/permissions/${permission.id}`)}
-                    >
-                      <ViewIcon className="size-5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                      {/* Delete zone */}
+                      <DeleteModal
+                        title="Zone"
+                        onClick={() => deleteZoneAction.mutateAsync(zone.id)}
+                      />
+                    </TableCell>
+                  </TableRow>
               ))}
             </TableBody>
           </Table>
@@ -346,8 +269,8 @@ export const PermissionsTable = () => {
 
       {/* Pagination section */}
       <TablePagination
-        count={permissions?.count}
-        currentPage={filters.list_page}
+        count={zones?.count}
+        currentPage={zones?.list_page}
         updateFilters={updateFilters}
       />
     </section>
