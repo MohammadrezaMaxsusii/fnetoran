@@ -54,6 +54,7 @@ import { usePermissionsFilters } from "../hooks/usePermissionsFilters";
 import { usePermissionsQuery } from "../hooks";
 import { permissionTableItems } from "../constants";
 import { TablePagination } from "@/components/TablePagination";
+import { PermissionCreate } from "./PermissionCreate";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -87,14 +88,7 @@ export const PermissionsTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Permissions List</span>
-        <Button
-          onClick={() => {
-            navigate("/permissions/create");
-          }}
-        >
-          <AddIcon className="text-foreground" />
-          Add permission
-        </Button>
+        <PermissionCreate />
       </div>
 
       <div className="px-7">

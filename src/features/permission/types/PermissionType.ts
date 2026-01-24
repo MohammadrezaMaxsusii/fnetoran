@@ -12,3 +12,15 @@ export interface Permission {
   deletedAt: string;
   permissions: PermissionsOfRole[];
 }
+
+export interface CategoryOfPermissions {
+  createdAt: string;
+  deletedAt: string;
+  id: string;
+  isDefault: boolean;
+  name: string;
+  parentId: string;
+  permissions: PermissionsOfRole[];
+  ref: string;
+  updatedAt: string;
+}

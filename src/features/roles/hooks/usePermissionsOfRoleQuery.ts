@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPermissionsOfRole } from "../api";
+import { getPermissionsOfRole } from "@/features/permission/api";
 
 export const usePermissionsOfRole = (id: string) => {
   const {

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate, useParams } from "react-router";
 import { usePermissionsOfRole } from "../hooks";
-import type { CategoryOfRole } from "../types";
+import type { CategoryOfPermissions } from "@/features/permission/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Empty,
@@ -76,24 +76,26 @@ export const RolePage = () => {
             </>
           ) : (
             <>
-              {premissionsOfRole?.data.map((premission: CategoryOfRole) => (
-                <div key={premission.id}>
-                  <div className="flex items-center gap-2 pb-5">
-                    <span className="inline-block size-4 bg-transparent rounded-full border-4 border-primary" />
-                    <h6 className="text-primary">{premission.name}</h6>
+              {premissionsOfRole?.data.map(
+                (premission: CategoryOfPermissions) => (
+                  <div key={premission.id}>
+                    <div className="flex items-center gap-2 pb-5">
+                      <span className="inline-block size-4 bg-transparent rounded-full border-4 border-primary" />
+                      <h6 className="text-primary">{premission.name}</h6>
+                    </div>
+                    <ul className="grid grid-cols-3 gap-4">
+                      {premission.permissions.map((item) => (
+                        <li
+                          key={item.id}
+                          className="text-center bg-muted p-4 rounded-lg"
+                        >
+                          {item.text}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="grid grid-cols-3 gap-4">
-                    {premission.permissions.map((item) => (
-                      <li
-                        key={item.id}
-                        className="text-center bg-muted p-4 rounded-lg"
-                      >
-                        {item.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                )
+              )}
             </>
           )}
         </div>

@@ -27,15 +27,3 @@ export interface PermissionsOfRole {
   updatedAt: string;
   url: string;
 }
-
-export interface CategoryOfRole {
-  createdAt: string;
-  deletedAt: string;
-  id: string;
-  isDefault: boolean;
-  name: string;
-  parentId: string;
-  permissions: PermissionsOfRole[];
-  ref: string;
-  updatedAt: string;
-}

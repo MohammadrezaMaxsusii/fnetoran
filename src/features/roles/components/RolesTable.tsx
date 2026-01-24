@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/popover";
 import { ChevronDownIcon, FunnelX } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -46,21 +46,16 @@ import {
 } from "@/components/ui/select";
 import { roleTableItems } from "../constants";
 import { useRolesFilters } from "@/features/roles/hooks";
-// import { UserDetails } from "./UserDetails";
-// import { UserDelete } from "./UserDelete";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-// import { UserTablePagination } from "./UserTablePagination";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
 import { startOfDay } from "date-fns";
 import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import RolesIcon from "@/shared/icons/roles.svg?react";
 import ViewIcon from "@/shared/icons/view.svg?react";
-import AddIcon from "@/shared/icons/plus.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { TablePagination } from "@/components/TablePagination";
+import { RoleCreate } from "./RoleCreate";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -92,14 +87,7 @@ export const RolesTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Roles List</span>
-        <Button
-          onClick={() => {
-            navigate("/roles/create");
-          }}
-        >
-          <AddIcon className="text-foreground" />
-          Add role
-        </Button>
+        <RoleCreate />
       </div>
 
       <div className="px-7">

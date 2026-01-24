@@ -44,7 +44,7 @@ import z from "zod";
 import { userCreateOrUpdateSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
-import { useUserActions, useUsersQuery } from "../hooks";
+import { useUserActions } from "../hooks";
 import { startOfDay } from "date-fns";
 import password from "secure-random-password";
 import View from "@/shared/icons/view.svg?react";
@@ -116,7 +116,7 @@ export const UserCreateOrUpdatePage = () => {
     },
   });
 
-  const { expirePasswordDays, passwordAdvantageDays } = form.watch();
+  const [expirePasswordDays, passwordAdvantageDays] = form.watch(["expirePasswordDays", "passwordAdvantageDays"]);
 
   const onSubmit = async (input: z.infer<typeof userCreateOrUpdateSchema>) => {
     console.log(input);
