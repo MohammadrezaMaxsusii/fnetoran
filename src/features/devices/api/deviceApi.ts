@@ -14,15 +14,20 @@ export const deleteDevice = async (id: number) => {
 };
 
 export const createDevice = async (
-  input: z.infer<typeof deviceCreateSchema>
+  input: z.infer<typeof deviceCreateSchema>,
 ) => {
   const { data } = await api.post("/devices/create", input);
   return data;
 };
 
 export const createDeviceCredential = async (
-  input: z.infer<typeof deviceCreateSchema>
+  input: z.infer<typeof deviceCreateSchema>,
 ) => {
   const { data } = await api.post("/devicesCredential/create", input);
+  return data;
+};
+
+export const registerForFirewall = async (id: number) => {
+  const { data } = await api.post(`/devices/firewall/ip_block/register/${id}`);
   return data;
 };
