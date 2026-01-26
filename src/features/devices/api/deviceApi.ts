@@ -3,11 +3,6 @@ import z from "zod";
 import type { deviceCreateSchema } from "../schemas";
 // import type { userCreateOrUpdateSchema } from "../schemas";
 
-// export const getUser = async () => {
-//   const { data } = await api.get("/user/myself");
-//   return data;
-// };
-
 export const deleteDevice = async (id: number) => {
   const { data } = await api.delete(`/devices/delete/${id}`);
   return data;

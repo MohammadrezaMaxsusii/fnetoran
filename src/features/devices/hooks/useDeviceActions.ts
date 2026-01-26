@@ -5,6 +5,7 @@ import {
   deleteDevice,
   registerForFirewall,
 } from "../api";
+import { toast } from "sonner";
 
 export const useDeviceActions = () => {
   const queryClient = useQueryClient();
@@ -32,6 +33,7 @@ export const useDeviceActions = () => {
 
   const registerForFirewallAction = useMutation({
     mutationFn: registerForFirewall,
+    onSuccess: () => toast.success('Device added to firewall')
   });
 
   return {
