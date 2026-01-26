@@ -18,11 +18,11 @@ import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
-import { getErrorMessage } from "@/shared/utils";
 import ErrorIcon from "@/shared/icons/error.svg?react";
+import { FieldError } from "@/components/ui/field";
 
 export const LoginForm = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -35,8 +35,9 @@ export const LoginForm = () => {
   const onSubmit = async (input: Login) => {
     try {
       await loginAction.mutateAsync(input);
-    } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrors(undefined);
+    } catch (error: unknown) {
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -93,7 +94,7 @@ export const LoginForm = () => {
         {loginAction.isError && (
           <div className="flex items-center gap-2">
             <ErrorIcon className="text-red" />
-            <span className="text-sm text-red">{errorMessage}</span>
+            <FieldError errors={errors} />
           </div>
         )}
 

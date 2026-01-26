@@ -1,5 +1,6 @@
 import axios from "axios";
 import queryString from "query-string";
+import { getErrorMessage } from "../utils";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -25,6 +26,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       window.location.href = "/login";
     }
-    return Promise.reject(error);
-  }
+
+    const normalizedError = getErrorMessage(error);
+    return Promise.reject(normalizedError);
+  },
 );

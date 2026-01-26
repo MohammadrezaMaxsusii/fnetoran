@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import AddIcon from "@/shared/icons/plus.svg?react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { zoneCreateSchema } from "../schemas";
@@ -26,14 +25,14 @@ import { AlertCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { useZoneActions } from "../hooks";
-import { getErrorMessage } from "@/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import type { Zone } from "../types/zoneType";
+import { FieldError } from "@/components/ui/field";
 
 export const ZoneUpdate = ({ currentZone }: { currentZone: Zone }) => {
   const [openModal, setOpenModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const { updateZoneAction } = useZoneActions();
   const form = useForm({
     resolver: zodResolver(zoneCreateSchema),
@@ -48,8 +47,9 @@ export const ZoneUpdate = ({ currentZone }: { currentZone: Zone }) => {
       await updateZoneAction.mutateAsync({ id: currentZone.id, input });
       form.reset();
       setOpenModal(false);
+      setErrors(undefined);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -69,11 +69,13 @@ export const ZoneUpdate = ({ currentZone }: { currentZone: Zone }) => {
           <DialogDescription className="hidden">
             Add another feed
           </DialogDescription>
-          {errorMessage && (
+          {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>
+                <FieldError errors={errors} />
+              </AlertDescription>
             </Alert>
           )}
         </DialogHeader>

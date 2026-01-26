@@ -1,6 +1,8 @@
 import { api } from "@/shared/libs/axiosInstance";
 import { z } from "zod";
-import type { permissionsOfRoleFormSchema } from "../schemas/permissionCreateOrUpdateSchema";
+import type {
+  permissionsOfRoleFormSchema,
+} from "../schemas/permissionCreateOrUpdateSchema";
 
 export const getPermissions = async (params: Record<string, any>) => {
   const { data } = await api.get("/permissionCategory/list", { params });
@@ -19,7 +21,7 @@ export const getPermissionsCategory = async () => {
   return data;
 };
 
-export const createPermissionsCategory = async (input) => {
+export const createPermissionsCategory = async (input: { name: string }) => {
   const { data } = await api.post("/permissionCategory/create", input);
   return data;
 };
@@ -31,7 +33,10 @@ export const getPermissionsOfPermissionCategory = async (id: string) => {
   return data;
 };
 
-export const createPermissionOfPermissionCategory = async (input) => {
+export const createPermissionOfPermissionCategory = async (input: {
+  categoryId: string,
+  permissionIds: string[],
+}) => {
   const { data } = await api.post("/permission/addToCategory", input);
   return data;
 };

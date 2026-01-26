@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUsersQuery } from "@/features/users/hooks";
+import { useUserActions, useUsersQuery } from "@/features/users/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/features/users/types";
@@ -54,9 +54,11 @@ import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { TablePagination } from "@/components/TablePagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { startOfDay } from "date-fns";
 import UsersIcon from "@/shared/icons/users.svg?react";
+import { DeleteModal } from "@/components/DeleteModal";
+import EditIcon from "@/shared/icons/edit.svg?react";
 
 type FilterFormValues = {
   active?: boolean;
@@ -69,6 +71,7 @@ type FilterFormValues = {
 export const UserTable = () => {
   const { filters, updateFilters } = useUsersFilters();
   const { users, usersIsLoading } = useUsersQuery(filters);
+  const { deleteUserAction } = useUserActions();
   const navigate = useNavigate();
   const { roles } = useRolesQuery();
   const [open, setOpen] = useState(false);
@@ -422,17 +425,18 @@ export const UserTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/5 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit user */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <img
-                        src="/icons/edit.svg"
-                        alt="edit icon"
-                        className="size-5"
-                      />
+                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6" onClick={() => navigate(`/users/update/${user.id}`)}>
+                      <EditIcon className="size-5" />
                       Edit User
                     </Button>
 
                     {/* delete user */}
-                    <UserDelete userId={user.id} />
+                    <DeleteModal
+                      title="User"
+                      onClick={() =>
+                        deleteUserAction.mutate({ userId: user.id })
+                      }
+                    />
 
                     {/* view user */}
                     <UserDetails user={user} />
@@ -445,7 +449,11 @@ export const UserTable = () => {
       )}
 
       {/* Pagination section */}
-      <TablePagination count={users?.count} currentPage={filters.list_page} updateFilters={updateFilters} />
+      <TablePagination
+        count={users?.count}
+        currentPage={filters.list_page}
+        updateFilters={updateFilters}
+      />
     </section>
   );
 };
