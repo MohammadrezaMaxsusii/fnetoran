@@ -10,6 +10,7 @@ import { FirewallRoutes } from "./features/firewall/routes";
 // import { RetrofitRoutes } from "./features/retrofit/routes";
 import { NotFoundRoutes } from "./features/notFound/routes";
 import { ZonesRoutes } from "./features/zones/routes";
+import { IpBlockRoutes } from "./features/ipBlock/routes";
 
 export const App = () => {
   return (
@@ -26,6 +27,7 @@ export const App = () => {
           {DevicesRoutes}
           {FirewallRoutes}
           {ZonesRoutes}
+          {IpBlockRoutes}
           {/* {RetrofitRoutes} */}
         </Route>
       </Routes>

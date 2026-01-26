@@ -55,7 +55,7 @@ export const AppSidebar = () => {
                       <SidebarMenuItem
                         className="has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
                       >
-                        {/* <SidebarMenuButton asChild>
+                        <SidebarMenuButton asChild>
                           <Link to={url} className="flex items-center gap-2">
                             <img src={icon} alt={title} />
                             <span>{title}</span>
@@ -69,7 +69,7 @@ export const AppSidebar = () => {
                               <SidebarMenuSubItem />
                             </SidebarMenuSub>
                           </CollapsibleContent>
-                        </SidebarMenuButton> */}
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     ) : (
                       <SidebarMenuItem

@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createDevice, createDeviceCredential, deleteDevice } from "../api";
+import {
+  createDevice,
+  createDeviceCredential,
+  deleteDevice,
+  registerForFirewall,
+} from "../api";
 
 export const useDeviceActions = () => {
   const queryClient = useQueryClient();
@@ -25,9 +30,14 @@ export const useDeviceActions = () => {
     // onSuccess,
   });
 
+  const registerForFirewallAction = useMutation({
+    mutationFn: registerForFirewall,
+  });
+
   return {
     deleteDeviceAction,
     createDeviceAction,
     createDeviceCredentialAction,
+    registerForFirewallAction,
   };
 };

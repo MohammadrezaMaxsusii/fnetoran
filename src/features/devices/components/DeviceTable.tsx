@@ -6,11 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import { useUsersQuery } from "@/features/users/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import type { Device } from "@/features/devices/types";
-// import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
   EmptyContent,
@@ -34,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon, FunnelX } from "lucide-react";
+import { ChevronDownIcon, FunnelX, EllipsisIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
 import {
@@ -46,15 +43,7 @@ import {
 } from "@/components/ui/select";
 import { deviceTableItems } from "../constants";
 import { useUsersFilters } from "../hooks/useUsersFilters";
-// import { UserDetails } from "./UserDetails";
-// import { useRolesQuery } from "@/features/roles/hooks";
-// import type { Role } from "@/features/roles/types";
-// import { UserDelete } from "./UserDelete";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-// import { UserTablePagination } from "./UserTablePagination";
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-// import { useNavigate } from "react-router";
 import { startOfDay } from "date-fns";
 import UsersIcon from "@/shared/icons/users.svg?react";
 import {
@@ -64,21 +53,24 @@ import {
 } from "../hooks";
 import { DeleteModal } from "@/components/DeleteModal";
 import { DeviceCreate } from "./DeviceCreate";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type FilterFormValues = {
-  type?: string,
+  type?: string;
   list_sort?: string;
   list_page?: number;
 };
 
 export const DeviceTable = () => {
   const { filters, updateFilters } = useUsersFilters();
-  // const { users, usersIsLoading } = useUsersQuery(filters);
   const { devices, devicesIsLoading } = useDevicesQuery(filters);
-  const { deleteDeviceAction } = useDeviceActions();
+  const { deleteDeviceAction, registerForFirewallAction } = useDeviceActions();
   const { deviceTypes, deviceTypesIsPending } = useDeviceTypesQuery();
-  // const navigate = useNavigate();
-  // const { roles } = useRolesQuery();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
@@ -87,6 +79,14 @@ export const DeviceTable = () => {
       list_page: filters.list_page,
     },
   });
+
+  const handleRegisterForFirewall = async (id: number) => {
+    try {
+      await registerForFirewallAction.mutateAsync(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const subscription = form.watch((values) => {
@@ -101,16 +101,7 @@ export const DeviceTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Devices List</span>
-
         <DeviceCreate />
-        {/* <Button
-          onClick={() => {
-            navigate("/users/create");
-          }}
-        >
-          <img src="/icons/plus.svg" alt="add icon" />
-          Add device
-        </Button> */}
       </div>
 
       <div className="px-7">
@@ -241,12 +232,13 @@ export const DeviceTable = () => {
                           {Object.keys(deviceTypes?.data).map(
                             (deviceType: string) => (
                               <SelectItem
+                                key={deviceType}
                                 value={deviceType}
                                 className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                               >
                                 {deviceType}
                               </SelectItem>
-                            )
+                            ),
                           )}
                         </SelectContent>
                       </Select>
@@ -410,7 +402,7 @@ export const DeviceTable = () => {
                     {device.series ?? "-"}
                   </TableCell>
 
-                  <TableCell className="px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                  <TableCell className="px-4 py-2 text-center border-y border-default space-x-1.5">
                     <Button className="bg-navy-blue hover:bg-navy-blue border text-blue-darker border-blue-darker p-2.5!">
                       <img
                         src="/icons/edit.svg"
@@ -431,6 +423,24 @@ export const DeviceTable = () => {
                         className="size-5"
                       />
                     </Button>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center rounded-r-lg border-y border-e border-default">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <EllipsisIcon />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => handleRegisterForFirewall(device.id)}
+                        >
+                          Register for firewall
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
   EmptyContent,
@@ -34,30 +35,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import FirewallIcon from "@/shared/icons/firewall.svg?react";
-import { useZonesFilters, useZoneActions, useZonesQuery } from "../hooks";
-import { zoneTableItems } from "../constants";
-import { ZoneCreate } from "./ZoneCreate";
-import type { Zone } from "../types/zoneType";
+import EditIcon from "@/shared/icons/edit.svg?react";
+import { useFeedsFilters, useFeedsQuery } from "../hooks";
+import { apiTableItems } from "../constants";
+import type { Feed } from "../types/feedType";
+import { useFeedActions } from "../hooks/useFeedActions";
+// import { FeedDetails } from "./FeedDetails";
 import { TablePagination } from "@/components/TablePagination";
-import { getDate, getTime } from "@/shared/utils";
-import { DeleteModal } from "@/components/DeleteModal";
-import { ZoneUpdate } from "./ZoneUpdate";
+import { IPCreate } from "./IPCreate";
 
 type FilterFormValues = {
-  zone?: string;
+  feed?: string;
+  active?: string;
+  type?: string;
   list_sort?: string;
   list_page?: number;
 };
 
-export const ZonesTable = () => {
-  const { filters, updateFilters } = useZonesFilters();
-  const { zones, zonesIsPending } = useZonesQuery(filters);
-  const { deleteZoneAction } = useZoneActions();
+export const IPsTable = () => {
+  const { filters, updateFilters } = useFeedsFilters();
+  const { feeds, feedsIsPending } = useFeedsQuery(filters);
+  // const {} = use
+  const { deleteFeedAction } = useFeedActions();
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      zone: filters.zone,
+      feed: filters.feed,
+      active: filters.active,
+      type: filters.type,
       list_sort: filters.list_sort,
       list_page: filters.list_page,
     },
@@ -71,8 +78,8 @@ export const ZonesTable = () => {
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
-        <span className="text-lg font-bold text-primary">Zones List</span>
-        <ZoneCreate />
+        <span className="text-lg font-bold text-primary">IP List</span>
+        <IPCreate />
       </div>
 
       <div className="px-7">
@@ -85,14 +92,14 @@ export const ZonesTable = () => {
           <form className="flex justify-between items-center w-full">
             <FormField
               control={form.control}
-              name="zone"
+              name="feed"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="zone"
+                    htmlFor="feed"
                     className="text-gray-lighter font-normal"
                   >
-                    Zone:
+                    Feed:
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -101,6 +108,88 @@ export const ZonesTable = () => {
                       value={field.value}
                       onChange={field.onChange}
                     />
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="active"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Status:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="status"
+                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="true"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          True
+                        </SelectItem>
+                        <SelectItem
+                          value="false"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          False
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="type"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Type:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="type"
+                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="allow"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          Allow
+                        </SelectItem>
+                        <SelectItem
+                          value="block"
+                          className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                        >
+                          Block
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormDescription />
                   <FormMessage />
@@ -162,8 +251,8 @@ export const ZonesTable = () => {
         </Form>
       </div>
 
-      {/* Zone table */}
-      {zonesIsPending ? (
+      {/* Feed table */}
+      {feedsIsPending ? (
         <section className="w-full bg-gray-darker rounded-2xl">
           <Table>
             <TableBody className="flex flex-col gap-1 px-7 pb-7">
@@ -194,7 +283,7 @@ export const ZonesTable = () => {
             </TableBody>
           </Table>
         </section>
-      ) : zones?.data.length === 0 ? (
+      ) : feeds?.data.length === 0 ? (
         <section className="w-full bg-gray-darker rounded-2xl space-y-2">
           {/* Empty section */}
           <Empty className="pt-3! pb-7! gap-2">
@@ -202,10 +291,10 @@ export const ZonesTable = () => {
               <EmptyMedia variant="icon">
                 <FirewallIcon className="size-5" />
               </EmptyMedia>
-              <EmptyTitle>Zones List Empty!</EmptyTitle>
+              <EmptyTitle>IP List Empty!</EmptyTitle>
             </EmptyHeader>
             <EmptyContent className="text-sm text-muted-foreground">
-              Zones will appear here once they are added.
+              IPs will appear here once they are added.
             </EmptyContent>
           </Empty>
         </section>
@@ -215,12 +304,12 @@ export const ZonesTable = () => {
             {/* Table header */}
             <TableHeader>
               <TableRow className="hover:bg-secondary">
-                {zoneTableItems.map((zoneTableItem) => (
+                {apiTableItems.map((feedTableItem) => (
                   <TableHead
-                    key={zoneTableItem}
+                    key={feedTableItem}
                     className="text-center text-sm text-gray-lighter"
                   >
-                    {zoneTableItem}
+                    {feedTableItem}
                   </TableHead>
                 ))}
               </TableRow>
@@ -228,37 +317,66 @@ export const ZonesTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {zones?.data.map((zone: Zone) => (
+              {feeds?.data.map((feed: Feed) => (
                 <TableRow
-                  key={zone.id}
+                  key={feed.id}
                   className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
                 >
                   <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
-                    {zone.id}
+                    {feed.id}
                   </TableCell>
 
+                  {/* Feed IP */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {zone.name}
+                    {feed.item}
                   </TableCell>
 
+                  {/* Feed */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {zone.description || "-"}
+                    {feed.fileName || "---"}
                   </TableCell>
 
+                  {/* Feed type */}
+                  <TableCell className="px-4 py-2 text-center border-y border-default capitalize">
+                    {feed.type || "---"}
+                  </TableCell>
+
+                  {/* Feed created at */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {getDate(zone.createdAt)} | {getTime(zone.createdAt)}
+                    {getDate(feed.createdAt)} | {getTime(feed.createdAt)}
+                  </TableCell>
+
+                  {/* Feed status */}
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {feed.active ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-green rounded-full" />
+                        <span>Active</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-red rounded-full" />
+                        <span>Inactive</span>
+                      </div>
+                    )}
                   </TableCell>
 
                   {/* Operation section */}
                   <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
-                    {/* edit zone */}
-                    <ZoneUpdate currentZone={zone} />
+                    {/* edit feed */}
+                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
+                      <EditIcon className="size-5 text-blue-darker" />
+                      Edit Feed
+                    </Button>
 
-                    {/* Delete zone */}
+                    {/* Delete feed */}
                     <DeleteModal
-                      title="Zone"
-                      onClick={() => deleteZoneAction.mutateAsync(zone.id)}
+                      title="Feed"
+                      onClick={() => deleteFeedAction.mutateAsync(feed.id)}
                     />
+
+                    {/* View feed */}
+                    {/* <FeedDetails feed={feed} /> */}
                   </TableCell>
                 </TableRow>
               ))}
@@ -269,8 +387,8 @@ export const ZonesTable = () => {
 
       {/* Pagination section */}
       <TablePagination
-        count={zones?.count}
-        currentPage={zones?.list_page}
+        count={feeds?.count}
+        currentPage={filters.list_page}
         updateFilters={updateFilters}
       />
     </section>
