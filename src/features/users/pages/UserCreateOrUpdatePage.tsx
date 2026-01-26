@@ -25,8 +25,8 @@ import { Separator } from "@/components/ui/separator";
 import { useRolesQuery } from "@/features/roles/hooks";
 import type { Role } from "@/features/roles/types";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
-import { ChevronDownIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { AlertCircleIcon, ChevronDownIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { useDropzone } from "react-dropzone";
@@ -44,54 +44,30 @@ import z from "zod";
 import { userCreateOrUpdateSchema } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
-import { useUserActions } from "../hooks";
+import { useSpecificUserQuery, useUserActions } from "../hooks";
 import { startOfDay } from "date-fns";
 import password from "secure-random-password";
 import View from "@/shared/icons/view.svg?react";
 import ViewOff from "@/shared/icons/viewOff.svg?react";
-import { api } from "@/shared/libs/axiosInstance";
+import { useFileActions } from "@/shared/hooks/useFileActions";
+import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FieldError } from "@/components/ui/field";
 
 export const UserCreateOrUpdatePage = () => {
   const [openBirthdayCalendar, setOpenBirthdayCalendar] = useState(false);
   const [openDeactivedCalendar, setOpenDeactivedCalendar] = useState(false);
   const [show, setShow] = useState(false);
   const [errorUpload, setErrorUpload] = useState(false);
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const [file, setFile] = useState("");
-  const { createUserAction } = useUserActions();
-  const { id } = useParams();
-  let defaultValues: z.infer<typeof userCreateOrUpdateSchema>;
-  if (id) {
-    (async () => {
-      const result = await api.get(`user/admin/1`);
-      console.log(result);
-    })();
-  }
-
-  const onDrop = useCallback((acceptedFiles: File[], fileRejection: any[]) => {
-    if (fileRejection.length > 0) {
-      setErrorUpload(true);
-      setFile("");
-      return;
-    }
-    const file = acceptedFiles[0];
-
-    if (file) {
-      setFile(URL.createObjectURL(file));
-      setErrorUpload(false);
-    }
-  }, []);
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-      "image/jpg": [],
-    },
-    maxSize: 200 * 1024,
-    multiple: false,
-    onDrop,
-  });
+  const { createUserAction, updateUserAction } = useUserActions();
+  const { id } = useParams<{ id?: string }>();
+  const { specificUser } = useSpecificUserQuery({ user_id: id });
+  const { roles, rolesError, rolesIsLoading } = useRolesQuery();
+  const { uploadFileAction } = useFileActions();
   const navigate = useNavigate();
-  const { roles, rolesIsError, rolesError, rolesIsLoading } = useRolesQuery();
+  const isEdit = !!id;
 
   // To do fetch user and replace it and create schema
   const form = useForm({
@@ -104,23 +80,78 @@ export const UserCreateOrUpdatePage = () => {
       cellphone: "",
       email: "",
       password: "",
-      // gender: "",
-      // nationalId: "",
-      // education: "",
       passwordHistoryCount: 0,
       expirePasswordDays: 0,
       passwordAdvantageDays: 0,
-      // mustChangePassword: false,
-      // active: true,
-      // deactivedAt: "",
     },
   });
 
-  const [expirePasswordDays, passwordAdvantageDays] = form.watch(["expirePasswordDays", "passwordAdvantageDays"]);
+  const onDrop = useCallback((acceptedFiles: File[], fileRejection: any[]) => {
+    if (fileRejection.length > 0) {
+      setErrorUpload(true);
+      setFile("");
+      return;
+    }
+    const file = acceptedFiles[0];
+
+    if (file) {
+      setFile(URL.createObjectURL(file));
+      setErrorUpload(false);
+
+      const formData = new FormData();
+      formData.append("file", acceptedFiles[0]);
+
+      uploadFileAction.mutate(formData, {
+        onSuccess: (data) => {
+          toast.success("File upload successfully.");
+          form.setValue("profileId", data?.data.id);
+        },
+        onError: () => {
+          toast.error("File upload faild.");
+        },
+      });
+    }
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "image/jpeg": [],
+      "image/png": [],
+      "image/jpg": [],
+    },
+    maxSize: 200 * 1024,
+    multiple: false,
+    onDrop,
+  });
+
+  console.log(specificUser?.data)
+
+  useEffect(() => {
+    form.reset({
+      ...specificUser?.data,
+      roleId: specificUser?.data.userRoleId,
+    });
+  }, [specificUser?.data]);
+
+  const [expirePasswordDays, passwordAdvantageDays] = form.watch([
+    "expirePasswordDays",
+    "passwordAdvantageDays",
+  ]);
 
   const onSubmit = async (input: z.infer<typeof userCreateOrUpdateSchema>) => {
-    console.log(input);
-    await createUserAction.mutateAsync(input);
+    try {
+      if (isEdit) {
+        const newInput = {
+          ...input,
+          userId: specificUser?.data.id,
+        };
+        await updateUserAction.mutateAsync(newInput);
+      } else {
+        await createUserAction.mutateAsync(input);
+      }
+    } catch (error) {
+      if (error instanceof Array) setErrors(error);
+    }
   };
 
   return (
@@ -148,9 +179,21 @@ export const UserCreateOrUpdatePage = () => {
         {/* Form section */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
+            {errors && (
+              <div className="px-7 pt-6">
+                <Alert variant="destructive">
+                  <AlertCircleIcon />
+                  <AlertTitle>Something went wrong!</AlertTitle>
+                  <AlertDescription>
+                    <FieldError errors={errors} />
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
+
             {/* Role and premission section */}
             <div className="px-7">
-              <div className="flex gap-4 py-6 border-b border-default">
+              <div className="flex gap-4 pb-6 pt-3 border-b border-default">
                 <div className="grow flex items-center justify-between text-sm bg-blue-darkest rounded-lg p-8">
                   <div>
                     <span className="font-bold">User role</span>
@@ -224,21 +267,27 @@ export const UserCreateOrUpdatePage = () => {
                     )}
                   />
                 </div>
-                <div className="flex items-center gap-10 p-8 bg-gray-items rounded-lg">
-                  <div className="space-y-2">
-                    <span className="block text-sm font-bold">Permission</span>
-                    <span className="text-primary text-4xl font-bold">39</span>
-                    <span className="text-gray-lighter">Access</span>
+                {isEdit && (
+                  <div className="flex items-center gap-10 p-8 bg-gray-items rounded-lg">
+                    <div className="space-y-2">
+                      <span className="block text-sm font-bold">
+                        Permission
+                      </span>
+                      <span className="text-primary text-4xl font-bold">
+                        39
+                      </span>
+                      <span className="text-gray-lighter">Access</span>
+                    </div>
+                    <Button className="bg-orange hover:bg-orange/90 text-gray-darker py-5!">
+                      View Permission
+                      <img
+                        src="/icons/forwardArrow.svg"
+                        alt="forward arrow icon"
+                        className="size-6"
+                      />
+                    </Button>
                   </div>
-                  <Button className="bg-orange hover:bg-orange/90 text-gray-darker py-5!">
-                    View Permission
-                    <img
-                      src="/icons/forwardArrow.svg"
-                      alt="forward arrow icon"
-                      className="size-6"
-                    />
-                  </Button>
-                </div>
+                )}
               </div>
             </div>
 
@@ -249,11 +298,11 @@ export const UserCreateOrUpdatePage = () => {
                 className="relative shrink-0 size-22 rounded-full border-2 border-dashed border-blue-lighter cursor-pointer"
               >
                 <FormField
-                  name="profile"
-                  render={({ field }) => (
+                  name="profileId"
+                  render={() => (
                     <FormItem>
                       <FormControl autoFocus>
-                        <Input {...field} {...getInputProps()} />
+                        <Input {...getInputProps()} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -277,7 +326,7 @@ export const UserCreateOrUpdatePage = () => {
                 <p
                   className={cn(
                     "text-xs text-gray-light",
-                    errorUpload && "text-red"
+                    errorUpload && "text-red",
                   )}
                 >
                   Use a square aspect ratio and JPEG, PNG, or JPG format. The
@@ -461,7 +510,7 @@ export const UserCreateOrUpdatePage = () => {
                             Master
                           </SelectItem>
                           <SelectItem
-                            value="دکترا"
+                            value="دکتری"
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             Doctoral
@@ -688,7 +737,7 @@ export const UserCreateOrUpdatePage = () => {
                                 field.onChange(
                                   Number(field.value) > 0
                                     ? Number(field.value) - 1
-                                    : 0
+                                    : 0,
                                 )
                               }
                             >
@@ -752,7 +801,7 @@ export const UserCreateOrUpdatePage = () => {
                                 field.onChange(
                                   Number(field.value) > 0
                                     ? Number(field.value) - 1
-                                    : 0
+                                    : 0,
                                 )
                               }
                             >
@@ -820,7 +869,7 @@ export const UserCreateOrUpdatePage = () => {
             <div className="px-7 py-6">
               {/* Activate or deactivate section */}
               <div className="grid grid-cols-3 gap-x-20 gap-y-6">
-                <div className="col-span-2">
+                <div className={cn("col-span-3", isEdit && "col-span-2")}>
                   <p className="text-sm font-bold">
                     Activate or deactivate a user account
                     <span className="font-normal">
@@ -828,7 +877,7 @@ export const UserCreateOrUpdatePage = () => {
                       (within a specified period){" "}
                     </span>
                   </p>
-                  <div className="bg-blue-darkest p-4 rounded-md mt-3 ms-3">
+                  <div className="bg-blue-darkest p-4 rounded-md mt-3">
                     <FormField
                       name="active"
                       render={({ field }) => (
@@ -856,18 +905,22 @@ export const UserCreateOrUpdatePage = () => {
                   </div>
                 </div>
 
-                <div className="col-span-1 relative flex flex-col gap-2">
-                  <span className="font-bold">User account creation date</span>
-                  <div className="bg-gray-items grow flex items-center ps-15 rounded-md">
-                    <div className="space-x-4">
-                      <span>2025-10-24</span>
-                      <span>|</span>
-                      <span>14:39</span>
-                    </div>
+                {isEdit && (
+                  <div className="col-span-1 relative flex flex-col gap-2">
+                    <span className="font-bold">
+                      User account creation date
+                    </span>
+                    <div className="bg-gray-items grow flex items-center ps-15 rounded-md">
+                      <div className="space-x-4">
+                        <span>2025-10-24</span>
+                        <span>|</span>
+                        <span>14:39</span>
+                      </div>
 
-                    <CalendarIcon className="absolute top-1/2 end-15 -translate-y-1/3 scale-130" />
+                      <CalendarIcon className="absolute top-1/2 end-15 -translate-y-1/3 scale-130" />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <FormField
                   name="deactivedAt"

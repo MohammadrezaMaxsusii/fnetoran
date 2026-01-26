@@ -26,12 +26,12 @@ import { AlertCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { useZoneActions } from "../hooks";
-import { getErrorMessage } from "@/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FieldError } from "@/components/ui/field";
 
 export const ZoneCreate = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const { createZoneAction } = useZoneActions();
   const form = useForm({
     resolver: zodResolver(zoneCreateSchema),
@@ -46,8 +46,9 @@ export const ZoneCreate = () => {
       await createZoneAction.mutateAsync(input);
       form.reset();
       setOpenModal(false);
+      setErrors(undefined);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -67,11 +68,13 @@ export const ZoneCreate = () => {
           <DialogDescription className="hidden">
             Add another feed
           </DialogDescription>
-          {errorMessage && (
+          {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>
+                <FieldError errors={errors} />
+              </AlertDescription>
             </Alert>
           )}
         </DialogHeader>

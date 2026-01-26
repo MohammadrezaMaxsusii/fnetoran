@@ -18,12 +18,12 @@ import { Progress } from "@/components/ui/progress";
 import { useUserInfoAction } from "../hooks";
 import type { UserInfo } from "../types";
 import { useState } from "react";
-import { getErrorMessage } from "@/shared/utils";
 import ErrorIcon from "@/shared/icons/error.svg?react";
 import BackIcon from "@/shared/icons/back.svg?react";
+import { FieldError } from "@/components/ui/field";
 
 export const UserInfoForm = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const { userInfoAction } = useUserInfoAction();
   const navigate = useNavigate();
 
@@ -37,8 +37,9 @@ export const UserInfoForm = () => {
   const onSubmit = async (input: UserInfo) => {
     try {
       await userInfoAction.mutateAsync(input);
+      setErrors(undefined)
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -50,7 +51,7 @@ export const UserInfoForm = () => {
       <div className="flex items-center justify-between">
         <span className="text-orange">Enter your info account</span>
         <Button variant="secondary" onClick={() => navigate("/login")}>
-          <BackIcon className="size-5"/>
+          <BackIcon className="size-5" />
           Back
         </Button>
       </div>
@@ -83,7 +84,7 @@ export const UserInfoForm = () => {
           {userInfoAction.isError && (
             <div className="flex items-center gap-2">
               <ErrorIcon className="text-red" />
-              <span className="text-sm text-red">{errorMessage}</span>
+              <FieldError errors={errors} />
             </div>
           )}
 

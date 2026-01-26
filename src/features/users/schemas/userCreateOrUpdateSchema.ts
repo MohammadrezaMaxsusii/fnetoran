@@ -2,11 +2,12 @@ import { z } from "zod";
 
 export const userCreateOrUpdateSchema = z.object({
   roleId: z.string().trim().min(1, "role is required."),
+  profileId: z.coerce.number().optional(),
   username: z.string().trim().min(1, "username is required."),
   firstName: z.string().trim().min(1, "first name is required."),
   lastName: z.string().trim().min(1, "last name is required."),
-  gender: z.string().trim().optional(),
-  nationalId: z
+  gender: z.coerce.number().optional(),
+  nationalId: z.coerce
     .string()
     .trim()
     .optional()
@@ -21,22 +22,22 @@ export const userCreateOrUpdateSchema = z.object({
   email: z.email(),
   birthday: z.preprocess(
     (val) => (typeof val === "string" && val ? new Date(val) : undefined),
-    z.date().optional()
+    z.date().optional(),
   ),
   password: z
     .string()
     .min(8, "password must be at least 8 characters.")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/,
-      "password must contain uppercase, lowercase, number, and special character."
+      "password must contain uppercase, lowercase, number, and special character.",
     ),
-  passwordHistoryCount: z.string().optional(),
-  expirePasswordDays: z.number().optional(),
-  passwordAdvantageDays: z.number().optional(),
+  passwordHistoryCount: z.coerce.string().optional(),
+  expirePasswordDays: z.coerce.number().optional(),
+  passwordAdvantageDays: z.coerce.number().optional(),
   mustChangePassword: z.boolean().optional(),
   active: z.boolean().optional(),
   deactivedAt: z.preprocess(
     (val) => (typeof val === "string" && val ? new Date(val) : undefined),
-    z.date().optional()
+    z.date().optional(),
   ),
 });

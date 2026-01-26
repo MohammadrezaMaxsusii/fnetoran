@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import { useRoleActions } from "../hooks";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getErrorMessage, isOnlyNumber } from "@/shared/utils";
+import { isOnlyNumber } from "@/shared/utils";
 import { Spinner } from "@/components/ui/spinner";
 import type { PermissionsOfRole } from "../types";
 import type { CategoryOfPermissions } from "@/features/permission/types";
@@ -60,11 +60,13 @@ import { permissionsOfRoleFormSchema } from "@/features/permission/schemas/permi
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { dayItems } from "@/features/dashboard/constants";
+import { Label } from "@/components/ui/label";
+import { FieldError } from "@/components/ui/field";
 
 export const RoleCreate = () => {
   const [step, setStep] = useState(1);
   const [openModal, setOpenModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const [checkedParents, setCheckedParents] = useState<string[]>([]);
   const [checkedChildren, setCheckedChildren] = useState<string[]>([]);
   const { createRoleAction } = useRoleActions();
@@ -76,6 +78,8 @@ export const RoleCreate = () => {
     defaultValues: {
       name: "",
       maxRequestPerMinute: 100,
+      workingTimeLimitStart: "01:00",
+      workingTimeLimitEnd: "23:30",
       workingDayLimit: ["0", "1", "2", "3", "4", "5", "6"],
     },
   });
@@ -83,8 +87,6 @@ export const RoleCreate = () => {
   const permissionsOfRoleForm = useForm({
     resolver: zodResolver(permissionsOfRoleFormSchema),
     defaultValues: {
-      search: "",
-      role_ids: "",
       permission_ids: checkedChildren,
     },
   });
@@ -99,7 +101,7 @@ export const RoleCreate = () => {
     return permissionsCategory?.data
       .map((category: CategoryOfPermissions) => {
         const filteredPermissions = category.permissions.filter((permission) =>
-          permission.text.toLowerCase().includes(search.toLowerCase())
+          permission.text.toLowerCase().includes(search.toLowerCase()),
         );
 
         if (filteredPermissions.length === 0) return null;
@@ -114,17 +116,19 @@ export const RoleCreate = () => {
 
   const handleParentChange = (
     category: CategoryOfPermissions,
-    isChecked: boolean
+    isChecked: boolean,
   ) => {
     if (isChecked) {
       setCheckedParents((prev) => Array.from(new Set([...prev, category.id])));
       setCheckedChildren((prev) =>
-        Array.from(new Set([...prev, ...category.permissions.map((p) => p.id)]))
+        Array.from(
+          new Set([...prev, ...category.permissions.map((p) => p.id)]),
+        ),
       );
     } else {
       setCheckedParents((prev) => prev.filter((id) => id !== category.id));
       setCheckedChildren((prev) =>
-        prev.filter((id) => !category.permissions.some((p) => p.id === id))
+        prev.filter((id) => !category.permissions.some((p) => p.id === id)),
       );
     }
   };
@@ -132,11 +136,11 @@ export const RoleCreate = () => {
   const handleChildChange = (
     category: CategoryOfPermissions,
     permission: PermissionsOfRole,
-    isChecked: boolean
+    isChecked: boolean,
   ) => {
     if (isChecked) {
       setCheckedChildren((prev) =>
-        Array.from(new Set([...prev, permission.id]))
+        Array.from(new Set([...prev, permission.id])),
       );
       if (!checkedParents.includes(category.id)) {
         setCheckedParents((prev) => [...prev, category.id]);
@@ -145,7 +149,7 @@ export const RoleCreate = () => {
       setCheckedChildren((prev) => prev.filter((id) => id !== permission.id));
 
       const siblingsChecked = category.permissions.some(
-        (p) => checkedChildren.includes(p.id) && p.id !== permission.id
+        (p) => checkedChildren.includes(p.id) && p.id !== permission.id,
       );
 
       if (!siblingsChecked) {
@@ -161,14 +165,15 @@ export const RoleCreate = () => {
     checkedChildren.includes(permission.id);
 
   const roleFormSubmitHandler = async (
-    input: z.infer<typeof roleFormSchema>
+    input: z.infer<typeof roleFormSchema>,
   ) => {
     try {
       const res = await createRoleAction.mutateAsync(input);
       permissionsOfRoleForm.setValue("role_ids", [res.data.id]);
       setStep(2);
+      setErrors(undefined);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -176,12 +181,15 @@ export const RoleCreate = () => {
     permissionsOfRoleForm.setValue("permission_ids", checkedChildren);
 
     try {
-      await createPremissionsOfRoleAction.mutateAsync(permissionsOfRoleForm.getValues());
+      await createPremissionsOfRoleAction.mutateAsync(
+        permissionsOfRoleForm.getValues(),
+      );
       roleForm.reset();
       permissionsOfRoleForm.reset();
       setOpenModal(false);
+      setErrors(undefined);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErrors(error);
     }
   };
 
@@ -201,13 +209,15 @@ export const RoleCreate = () => {
             Create a New Role
           </DialogTitle>
           <DialogDescription className="hidden">
-            Create another role
+            Create another r
           </DialogDescription>
-          {errorMessage && (
+          {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>
+                <FieldError errors={errors}/>
+              </AlertDescription>
             </Alert>
           )}
         </DialogHeader>
@@ -218,7 +228,7 @@ export const RoleCreate = () => {
           <Form {...roleForm}>
             <form
               onSubmit={roleForm.handleSubmit(roleFormSubmitHandler)}
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-6"
             >
               <span className="text-sm text-orange">
                 Choosing a name and role time limits
@@ -269,7 +279,7 @@ export const RoleCreate = () => {
                                 field.onChange(
                                   Number(field.value) > 0
                                     ? Number(field.value) - 1
-                                    : 0
+                                    : 0,
                                 )
                               }
                             >
@@ -339,102 +349,102 @@ export const RoleCreate = () => {
                 )}
               />
 
-              <div className="flex items-end justify-between *:basis-1/2">
-                <FormField
-                  control={roleForm.control}
-                  name="workingTimeLimitStart"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        htmlFor="workingTimeLimitStart"
-                        className="text-gray-lighter text-nowrap font-normal ps-0.5"
-                      >
-                        Operating hours on selected days
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger
-                            id="workingTimeLimitStart"
-                            className="w-45 h-12! bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
-                          >
-                            <div className="flex items-center w-full">
-                              <Clock className="text-primary" />
-                              <div className="flex flex-col mx-auto">
-                                <span className="text-xs text-orange">
-                                  Start time
-                                </span>
-                                <SelectValue
-                                  placeholder={field.value ? field.value : ""}
-                                />
-                              </div>
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {workingTime.map((time) => (
-                              <SelectItem
-                                key={time}
-                                value={time}
-                                className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                              >
-                                {time}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="flex flex-col gap-2">
+                <Label className="text-gray-lighter text-nowrap font-normal ps-0.5">
+                  Operating hours on selected days
+                </Label>
 
-                <FormField
-                  control={roleForm.control}
-                  name="workingTimeLimitEnd"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-center">
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger
-                            id="workingTimeLimitStart"
-                            className="w-45 h-12! bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                <div className="flex justify-between gap-3 *:basis-1/2">
+                  <FormField
+                    control={roleForm.control}
+                    name="workingTimeLimitStart"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
                           >
-                            <div className="flex items-center w-full">
-                              <Clock className="text-primary" />
-                              <div className="flex flex-col mx-auto">
-                                <span className="text-xs text-orange">
-                                  End time
-                                </span>
-                                <SelectValue
-                                  placeholder={field.value ? field.value : ""}
-                                />
+                            <SelectTrigger
+                              id="workingTimeLimitStart"
+                              className="w-full h-11! bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                            >
+                              <div className="flex items-center w-full">
+                                <Clock className="text-primary" />
+                                <div className="flex flex-col mx-auto">
+                                  <span className="text-xs text-orange font-bold">
+                                    Start time
+                                  </span>
+                                  <SelectValue
+                                    placeholder={field.value ? field.value : ""}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {workingTime.map((time) => (
-                              <SelectItem
-                                key={time}
-                                value={time}
-                                className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
-                              >
-                                {time}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {workingTime.map((time) => (
+                                <SelectItem
+                                  key={time}
+                                  value={time}
+                                  className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                                >
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={roleForm.control}
+                    name="workingTimeLimitEnd"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              id="workingTimeLimitStart"
+                              className="w-full h-11! bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                            >
+                              <div className="flex items-center w-full">
+                                <Clock className="text-primary" />
+                                <div className="flex flex-col mx-auto">
+                                  <span className="text-xs text-orange font-bold">
+                                    End time
+                                  </span>
+                                  <SelectValue
+                                    placeholder={field.value ? field.value : ""}
+                                  />
+                                </div>
+                              </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {workingTime.map((time) => (
+                                <SelectItem
+                                  key={time}
+                                  value={time}
+                                  className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                                >
+                                  {time}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Dialog footer */}
@@ -494,7 +504,7 @@ export const RoleCreate = () => {
                             handleChildChange(
                               category,
                               permission,
-                              checked === true
+                              checked === true,
                             )
                           }
                         />

@@ -34,10 +34,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  AlertCircleIcon,
-  ChevronDownIcon,
-} from "lucide-react";
+import { AlertCircleIcon, ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { startOfDay } from "date-fns";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
@@ -47,14 +44,14 @@ import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useFeedActions } from "../hooks/useFeedActions";
 import { useFeedsQuery } from "../hooks";
-import { getErrorMessage } from "@/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { FieldError } from "@/components/ui/field";
 
 export const FeedCreate = () => {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErros] = useState<{ message: string }[]>();
   const { createFeedAction } = useFeedActions();
   const { feeds, feedsIsPending, feedsError } = useFeedsQuery();
   const form = useForm({
@@ -75,8 +72,9 @@ export const FeedCreate = () => {
       await createFeedAction.mutateAsync(input);
       form.reset();
       setOpenModal(false);
+      setErros(undefined)
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      if (error instanceof Array) setErros(error);
     }
   };
 
@@ -96,11 +94,13 @@ export const FeedCreate = () => {
           <DialogDescription className="hidden">
             Add another feed
           </DialogDescription>
-          {errorMessage && (
+          {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>
+                <FieldError errors={errors}/>
+              </AlertDescription>
             </Alert>
           )}
         </DialogHeader>
@@ -220,7 +220,8 @@ export const FeedCreate = () => {
                           id="feed"
                           className={cn(
                             "w-full bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100",
-                            !!form.formState.errors.fileName && "border-red-500"
+                            !!form.formState.errors.fileName &&
+                              "border-red-500",
                           )}
                         >
                           <SelectValue

@@ -2,12 +2,22 @@ import axios from "axios";
 
 export const getErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.detail;
+    const data = error.response?.data;
+
+    if (data?.errors) {
+      return Object.values(data.errors).map((item) => ({
+        message: item,
+      }));
+    }
+
+    if (data?.detail) {
+      return [{ message: data.detail }];
+    }
   }
 
   if (error instanceof Error) {
-    return error.message;
+    return [{ message: error.message }];
   }
 
-  return error;
+  return [{ message: "An unknown error occurred." }];
 };
