@@ -16,18 +16,23 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { sidebarItems } from "@/shared/constants/sidebarConstant";
 import { Separator } from "./ui/separator";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import { ChevronDownIcon } from "lucide-react";
 
 export const AppSidebar = () => {
   const { open } = useSidebar();
 
   return (
-    <div
-      className="h-screen flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0 sticky inset-y-0 start-0 z-40">
+    <div className="h-screen flex flex-col items-center gap-5 p-6 max-w-min **:data-side:flex **:data-side:flex-col **:data-side:min-h-0 sticky inset-y-0 start-0 z-40">
       {/* Logo */}
       <div
         className={cn(
           "flex place-content-center border-e border-default w-full px-5 py-1",
-          !open && "w-full border-0 p-0"
+          !open && "w-full border-0 p-0",
         )}
       >
         {open ? (
@@ -49,43 +54,45 @@ export const AppSidebar = () => {
 
             <SidebarGroupContent>
               <SidebarMenu>
-                {sidebarItems.map(({ title, haveChilde, url, icon }) => (
-                  <div key={title}>
-                    {haveChilde ? (
-                      <SidebarMenuItem
-                        className="has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
-                      >
-                        <SidebarMenuButton asChild>
-                          <Link to={url} className="flex items-center gap-2">
-                            <img src={icon} alt={title} />
-                            <span>{title}</span>
-                          </Link>
-
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              <SidebarMenuSubItem />
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ) : (
-                      <SidebarMenuItem
-                        className={cn(
-                          "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert"
-                        )}
-                      >
-                        <SidebarMenuButton asChild>
-                          <Link to={url} className="flex items-center gap-2">
-                            <img src={icon} alt={title} />
-                            <span>{title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
+                {sidebarItems.map(({ title, children, url, icon }) => (
+                  <SidebarMenuItem
+                    key={title}
+                    className={cn(
+                      "has-hover:[&>a>img]:brightness-0 has-hover:[&>a>img]:invert",
                     )}
-                  </div>
+                  >
+                    {children ? (
+                      <Collapsible>
+                        <CollapsibleTrigger
+                          asChild
+                          className="flex items-center justify-between w-full gap-2 cursor-pointer hover:bg-primary hover:text-white px-2 py-1 rounded-md"
+                        >
+                          <div>
+                            <img src={icon} alt={title} />
+                            <span>{title}</span>
+                            <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+                          {children.map((child) => (
+                            <Link
+                              to={child.url}
+                              className="flex items-center gap-2 ps-6 py-1"
+                            >
+                              ○<span>{child.title}</span>
+                            </Link>
+                          ))}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuButton asChild>
+                        <Link to={url} className="flex items-center gap-2">
+                          <img src={icon} alt={title} />
+                          <span>{title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    )}
+                  </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
