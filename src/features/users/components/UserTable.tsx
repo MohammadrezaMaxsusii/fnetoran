@@ -49,16 +49,16 @@ import { useUsersFilters } from "../hooks/useUsersFilters";
 import { UserDetails } from "./UserDetails";
 import { useRolesQuery } from "@/features/roles/hooks";
 import type { Role } from "@/features/roles/types";
-import { UserDelete } from "./UserDelete";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { TablePagination } from "@/components/TablePagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { startOfDay } from "date-fns";
 import UsersIcon from "@/shared/icons/users.svg?react";
 import { DeleteModal } from "@/components/DeleteModal";
 import EditIcon from "@/shared/icons/edit.svg?react";
+import { UserAvatar } from "./UserAvatar";
 
 type FilterFormValues = {
   active?: boolean;
@@ -377,14 +377,7 @@ export const UserTable = () => {
                   {/* User info */}
                   <TableCell className="px-4 py-2 border-y border-default">
                     <div className="flex items-center gap-4">
-                      <div className="border-2 border-orange rounded-full size-8">
-                        {/* To do fetch user profile */}
-                        <img
-                          src={user.profileId ? "" : "/icons/user.svg"}
-                          alt="profile image"
-                          className="size-full rounded-full"
-                        />
-                      </div>
+                      <UserAvatar profileId={user.profileId} />
 
                       <div className="flex flex-col">
                         <span className="text-sm font-bold capitalize">
@@ -425,7 +418,10 @@ export const UserTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/5 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit user */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6" onClick={() => navigate(`/users/update/${user.id}`)}>
+                    <Button
+                      className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6"
+                      onClick={() => navigate(`/users/update/${user.id}`)}
+                    >
                       <EditIcon className="size-5" />
                       Edit User
                     </Button>

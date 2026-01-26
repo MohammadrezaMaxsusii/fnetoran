@@ -8,5 +8,5 @@ export const permissionsOfRoleFormSchema = z.object({
 
 export const permissionCreateSchema = z.object({
   name: z.string().min(1, "permission name is required."),
-  permission_ids: z.array(z.number().or(z.string())),
+  permission_ids: z.array(z.number().or(z.string())).min(1, "permission is required."),
 });

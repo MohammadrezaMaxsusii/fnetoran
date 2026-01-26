@@ -12,6 +12,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { UserAvatar } from "@/features/users/components";
 
 export const UserTable = () => {
   const { users, usersIsLoading } = useUsersQuery({ list_limit: "3" });
@@ -113,14 +114,7 @@ export const UserTable = () => {
               {/* User info */}
               <TableCell className="px-4 py-2 rounded-l-lg border-y border-s border-default">
                 <div className="flex items-center gap-4">
-                  <div className="border-2 border-orange rounded-full size-8">
-                    {/* To do fetch user profile */}
-                    <img
-                      src={user.profileId ? "" : "/icons/user.svg"}
-                      alt="profile image"
-                      className="size-full rounded-full"
-                    />
-                  </div>
+                  <UserAvatar profileId={user.profileId} />
 
                   <div className="flex flex-col">
                     <span className="text-sm capitalize font-bold">

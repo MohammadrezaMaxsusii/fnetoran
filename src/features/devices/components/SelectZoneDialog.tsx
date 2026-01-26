@@ -53,6 +53,8 @@ export const SelectZoneDialog = ({ open, setOpen, deviceId }) => {
     },
   });
 
+  console.log(zones)
+
   const submitHandler = async (input: z.infer<typeof addToZoneSchema>) => {
     try {
       await mutateAsync({
@@ -109,7 +111,7 @@ export const SelectZoneDialog = ({ open, setOpen, deviceId }) => {
                         {zones?.data.map((deviceType) => (
                           <SelectItem
                             key={deviceType.id}
-                            value={deviceType.id}
+                            value={String(deviceType.id)}
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             {deviceType.name}

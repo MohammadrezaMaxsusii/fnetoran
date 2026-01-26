@@ -209,14 +209,14 @@ export const RoleCreate = () => {
             Create a New Role
           </DialogTitle>
           <DialogDescription className="hidden">
-            Create another r
+            Create another role
           </DialogDescription>
           {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
               <AlertDescription>
-                <FieldError errors={errors}/>
+                <FieldError errors={errors} />
               </AlertDescription>
             </Alert>
           )}
@@ -484,9 +484,13 @@ export const RoleCreate = () => {
                   <div className="flex items-center gap-2">
                     <Checkbox
                       checked={isParentChecked(category)}
-                      onCheckedChange={(checked) =>
-                        handleParentChange(category, checked === true)
-                      }
+                      onCheckedChange={(checked) => {
+                        handleParentChange(category, checked === true);
+                        permissionsOfRoleForm.setValue(
+                          "permission_ids",
+                          checkedChildren,
+                        );
+                      }}
                     />
                     <span className="text-primary">{category.name}</span>
                   </div>
@@ -500,13 +504,17 @@ export const RoleCreate = () => {
                       >
                         <Checkbox
                           checked={isChildChecked(permission)}
-                          onCheckedChange={(checked) =>
+                          onCheckedChange={(checked) => {
                             handleChildChange(
                               category,
                               permission,
                               checked === true,
-                            )
-                          }
+                            );
+                            permissionsOfRoleForm.setValue(
+                              "permission_ids",
+                              checkedChildren,
+                            );
+                          }}
                         />
                         <span>{permission.text}</span>
                       </div>
@@ -529,7 +537,10 @@ export const RoleCreate = () => {
               </Button>
 
               <Button
-                onClick={permissionsOfRoleFormSubmitHandler}
+                type="button"
+                onClick={permissionsOfRoleForm.handleSubmit(
+                  permissionsOfRoleFormSubmitHandler,
+                )}
                 className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
               >
                 {createRoleAction?.isPending ? <Spinner /> : "Confirm Role"}
