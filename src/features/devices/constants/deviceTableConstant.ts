@@ -1,5 +1,6 @@
 export const deviceTableItems = [
   "ID",
+  "Vendor",
   "Device Type",
   "Model",
   "IP Address",
@@ -7,4 +8,5 @@ export const deviceTableItems = [
   "Host Name",
   "Series",
   "Operation",
+  "More",
 ];
