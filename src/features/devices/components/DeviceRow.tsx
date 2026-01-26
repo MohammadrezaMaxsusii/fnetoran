@@ -162,7 +162,7 @@ export const DeviceRow = ({ device }) => {
         <TableCell className="px-4 py-2 text-center rounded-r-lg border-y border-e border-default">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="secondary" className="border border-foreground/25" size="icon">
                 <EllipsisIcon />
               </Button>
             </DropdownMenuTrigger>

@@ -224,7 +224,7 @@ export const DeviceCreate = () => {
             />
 
             <Tabs
-              className="rounded-lg bg-gray-light p-2"
+              className="rounded-lg bg-gray-items p-2"
               value={tab}
               onValueChange={(value) => setTab(value)}
             >
