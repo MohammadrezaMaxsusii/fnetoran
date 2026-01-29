@@ -39,34 +39,25 @@ import { Calendar } from "@/components/ui/calendar";
 import { startOfDay } from "date-fns";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { useFeedActions } from "../hooks/useFeedActions";
 import { useAttackTypesQuery } from "../hooks";
 import { getErrorMessage } from "@/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
 import { useZonesQuery } from "@/features/zones/hooks";
 import type { Zone } from "@/features/zones/types/zoneType";
+import { Textarea } from "@/components/ui/textarea";
 
 export const IPCreate = () => {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { createFeedAction } = useFeedActions();
-  // const { feeds, feedsIsPending, feedsError } = useFeedsQuery();
   const { zones } = useZonesQuery();
   const { attackTypes } = useAttackTypesQuery();
   const form = useForm({
     resolver: zodResolver(apiCreateSchema),
     defaultValues: {
-      // fileType: "available_files",
-      // fileName: "",
-      // item: "",
-      // type: "allow",
-      // source: "",
-      //
       ip: "",
       zone_ids: "",
       action: "",
@@ -85,7 +76,8 @@ export const IPCreate = () => {
       form.reset();
       setOpenModal(false);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      console.log(error)
+      // setErrorMessage(getErrorMessage(error));
     }
   };
 
@@ -202,7 +194,7 @@ export const IPCreate = () => {
                       <SelectContent>
                         {zones?.data.map((zone: Zone) => (
                           <SelectItem
-                            value={zone.id}
+                            value={String(zone.id)}
                             className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
                           >
                             {zone.name}
@@ -263,11 +255,13 @@ export const IPCreate = () => {
                     Evidence:
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       className="bg-muted"
                       placeholder="Enter your evidence"
                       {...field}
-                    />
+                    /> */}
+
+                    <Textarea className="bg-muted" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

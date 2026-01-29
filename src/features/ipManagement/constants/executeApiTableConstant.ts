@@ -1,0 +1,17 @@
+export const executeApiTableItems = [
+  "ID",
+  "IP",
+  "Error Message",
+  // "Executed At",
+  "Device",
+  "Status",
+  "Action",
+  "Zones",
+  "Approval Status",
+  "Requested By",
+  "Approver",
+  "Evidence",
+  "Attack type",
+  "Date",
+  // "Operation",
+];

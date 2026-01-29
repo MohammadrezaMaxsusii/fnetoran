@@ -1,11 +1,14 @@
 export const apiTableItems = [
   "ID",
   "IP",
-  "Requested by",
-  "Device",
   "Action",
-  "Attack type",
+  "Zones",
+  "Approval Status",
+  "Requested by",
+  "Approver",
+  "Summary",
   "Evidence",
+  "Attack Type",
   "Date",
   "Operation",
 ];

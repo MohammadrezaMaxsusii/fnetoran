@@ -1,12 +1,11 @@
 export const pendingApiTableItems = [
   "ID",
   "IP",
-  "Requested by",
-  "Device",
   "Action",
-  "Attack type",
+  "Zones",
+  "Requested By",
   "Evidence",
+  "Attack type",
   "Date",
-  "Status",
   "Operation",
 ];

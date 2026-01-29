@@ -5,12 +5,17 @@ export * from "./feedApi";
 export * from "./feedsApi";
 
 export const getApis = async () => {
-  const response = await api.get("/devices/firewall/ip_block/list");
+  const response = await api.get("/devices/firewall/ip_block/request-list");
   return response.data;
 };
 
 export const getPendingApis = async () => {
-  const response = await api.get("/devices/firewall/ip_block/pending");
+  const response = await api.get("/devices/firewall/ip_block/pending-list");
+  return response.data;
+};
+
+export const getExecuteApis = async () => {
+  const response = await api.get("/devices/firewall/ip_block/execute-list");
   return response.data;
 };
 
