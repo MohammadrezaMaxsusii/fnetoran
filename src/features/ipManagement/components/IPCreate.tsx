@@ -42,16 +42,16 @@ import { useState } from "react";
 import { z } from "zod";
 import { useFeedActions } from "../hooks/useFeedActions";
 import { useAttackTypesQuery } from "../hooks";
-import { getErrorMessage } from "@/shared/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useZonesQuery } from "@/features/zones/hooks";
 import type { Zone } from "@/features/zones/types/zoneType";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/ui/field";
 
 export const IPCreate = () => {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<{ message: string[] } | null>(null);
   const { createFeedAction } = useFeedActions();
   const { zones } = useZonesQuery();
   const { attackTypes } = useAttackTypesQuery();
@@ -75,9 +75,8 @@ export const IPCreate = () => {
       });
       form.reset();
       setOpenModal(false);
-    } catch (error) {
-      console.log(error)
-      // setErrorMessage(getErrorMessage(error));
+    } catch (error: unknown) {
+      if (Array.isArray(error)) setErrors(error);
     }
   };
 
@@ -97,11 +96,14 @@ export const IPCreate = () => {
           <DialogDescription className="hidden">
             Add another feed
           </DialogDescription>
-          {errorMessage && (
+          {errors && (
             <Alert variant="destructive">
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
+              {/* <AlertDescription>{errorMessage}</AlertDescription> */}
+              <AlertDescription>
+                <FieldError errors={errors} />
+              </AlertDescription>
             </Alert>
           )}
         </DialogHeader>

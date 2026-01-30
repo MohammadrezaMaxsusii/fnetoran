@@ -24,6 +24,10 @@ export const sidebarItems = [
         title: "Zones",
         url: "/devices/zones",
       },
+      {
+        title: "Scan",
+        url: "/devices/scan",
+      },
     ],
   },
   {

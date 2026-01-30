@@ -7,10 +7,10 @@ import { RolesRoutes } from "./features/roles/routes";
 import { PermissionRoutes } from "./features/permission/routes";
 import { DevicesRoutes } from "./features/devices/routes";
 import { FirewallRoutes } from "./features/firewall/routes";
-// import { RetrofitRoutes } from "./features/retrofit/routes";
 import { NotFoundRoutes } from "./features/notFound/routes";
 import { ZonesRoutes } from "./features/zones/routes";
 import { IpManagementRoutes } from "./features/ipManagement/routes";
+import { DevicesScanRoutes } from "./features/devicesScan/routes";
 
 export const App = () => {
   return (
@@ -28,7 +28,7 @@ export const App = () => {
           {FirewallRoutes}
           {ZonesRoutes}
           {IpManagementRoutes}
-          {/* {RetrofitRoutes} */}
+          {DevicesScanRoutes}
         </Route>
       </Routes>
     </main>
