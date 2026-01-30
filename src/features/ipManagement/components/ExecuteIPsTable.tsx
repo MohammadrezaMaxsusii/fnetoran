@@ -43,7 +43,7 @@ import {
   useApproveIp,
   useFeedsFilters,
   useFeedsQuery,
-  useGetPendingApis,
+  useGetExecuteApis,
   useRejectIp,
 } from "../hooks";
 import { TablePagination } from "@/components/TablePagination";
@@ -51,6 +51,7 @@ import type { API } from "../types/apiType";
 import { toast } from "sonner";
 import { pendingApiTableItems } from "../constants/pendingApiTableConstant";
 import { Spinner } from "@/components/ui/spinner";
+import { executeApiTableItems } from "../constants";
 
 type FilterFormValues = {
   feed?: string;
@@ -60,13 +61,13 @@ type FilterFormValues = {
   list_page?: number;
 };
 
-export const PendingIPsTable = () => {
+export const ExecuteIPsTable = () => {
   const { filters, updateFilters } = useFeedsFilters();
   const { feeds, feedsIsPending } = useFeedsQuery(filters);
-  const { pendingApis, pendingApisLoading } = useGetPendingApis();
+  const { executeApis, executeApisLoading } = useGetExecuteApis();
   // const { deleteFeedAction } = useFeedActions();
-  const { mutateAsync: approveIp, isPending: pendingApprove } = useApproveIp();
-  const { mutateAsync: rejectApi, isPending: pendingReject } = useRejectIp();
+  // const { mutateAsync: approveIp, isPending: pendingApprove } = useApproveIp();
+  // const { mutateAsync: rejectApi, isPending: pendingReject } = useRejectIp();
   const form = useForm<FilterFormValues>({
     defaultValues: {
       feed: filters.feed,
@@ -81,27 +82,27 @@ export const PendingIPsTable = () => {
     updateFilters(values);
   });
 
-  const handleApproveIp = async (id: number) => {
-    try {
-      await approveIp(id);
-    } catch (error) {
-      toast.error(error.detail);
-    }
-  };
+  // const handleApproveIp = async (id: number) => {
+  //   try {
+  //     await approveIp(id);
+  //   } catch (error) {
+  //     toast.error(error.detail);
+  //   }
+  // };
 
-  const handleRejectIp = async (id: number) => {
-    try {
-      await rejectApi(id);
-    } catch (error) {
-      toast.error(error.detail);
-    }
-  };
+  // const handleRejectIp = async (id: number) => {
+  //   try {
+  //     await rejectApi(id);
+  //   } catch (error) {
+  //     toast.error(error.detail);
+  //   }
+  // };
 
   return (
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
-        <span className="text-lg font-bold text-primary">Pending IP List</span>
+        <span className="text-lg font-bold text-primary">Log IP List</span>
         {/* <IPCreate /> */}
       </div>
 
@@ -110,7 +111,7 @@ export const PendingIPsTable = () => {
       </div>
 
       {/* Feed table */}
-      {pendingApisLoading ? (
+      {executeApisLoading ? (
         <section className="w-full bg-gray-darker rounded-2xl">
           <Table>
             <TableBody className="flex flex-col gap-1 px-7 pb-7">
@@ -141,7 +142,7 @@ export const PendingIPsTable = () => {
             </TableBody>
           </Table>
         </section>
-      ) : pendingApis?.data.length === 0 ? (
+      ) : executeApis?.data.length === 0 ? (
         <section className="w-full bg-gray-darker rounded-2xl space-y-2">
           {/* Empty section */}
           <Empty className="pt-3! pb-7! gap-2">
@@ -162,7 +163,7 @@ export const PendingIPsTable = () => {
             {/* Table header */}
             <TableHeader>
               <TableRow className="hover:bg-secondary">
-                {pendingApiTableItems.map((feedTableItem) => (
+                {executeApiTableItems.map((feedTableItem) => (
                   <TableHead
                     key={feedTableItem}
                     className="text-center text-sm text-gray-lighter"
@@ -175,7 +176,7 @@ export const PendingIPsTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {pendingApis?.data.map((api: API) => (
+              {executeApis?.data.map((api: API) => (
                 <TableRow
                   key={api.id}
                   className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
@@ -189,6 +190,34 @@ export const PendingIPsTable = () => {
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.errorMessage}
+                  </TableCell>
+
+                  {/* <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.executedAt
+                      ? getDate(api.executedAt) | getTime(api.executedAt)
+                      : "-"}
+                  </TableCell> */}
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.device.ip}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-start border-y border-default">
+                    {api.status === "approved" ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-green rounded-full" />
+                        <span>{api.status}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-3 h-3 bg-red rounded-full" />
+                        <span>{api.status}</span>
+                      </div>
+                    )}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
                     {api.action}
                   </TableCell>
 
@@ -197,7 +226,15 @@ export const PendingIPsTable = () => {
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.approvalStatus}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
                     {api.requestedBy}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.approver}
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
@@ -216,21 +253,21 @@ export const PendingIPsTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit feed */}
-                    <Button
+                    {/* <Button
                       className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6"
                       onClick={() => handleApproveIp(api.id)}
                       disabled={pendingApprove}
                     >
                       {pendingApprove ? <Spinner /> : "Approve"}
-                    </Button>
+                    </Button> */}
 
-                    <Button
+                    {/* <Button
                       className="bg-red-darker hover:bg-red-darker text-red-500 border border-red px-6"
                       onClick={() => handleRejectIp(api.id)}
                       disabled={pendingReject}
                     >
                       {pendingReject ? <Spinner /> : "Reject"}
-                    </Button>
+                    </Button> */}
                   </TableCell>
                 </TableRow>
               ))}

@@ -59,8 +59,8 @@ type FilterFormValues = {
 export const IPsTable = () => {
   const { filters, updateFilters } = useFeedsFilters();
   const { feeds, feedsIsPending } = useFeedsQuery(filters);
-  const { apis, apisLoading } = useGetApis()
-  const { deleteFeedAction } = useFeedActions();
+  const { apis, apisLoading } = useGetApis();
+  // const { deleteFeedAction } = useFeedActions();
   const form = useForm<FilterFormValues>({
     defaultValues: {
       feed: filters.feed,
@@ -250,49 +250,49 @@ export const IPsTable = () => {
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.action}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.zones}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.approvalStatus}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
                     {api.requestedBy}
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {api.device}
+                    {api.approver || "-"}
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {api.action}
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <div className="w-3 h-3 bg-green rounded-full" />
+                      <span>Applied: {api.summary.applied}</span>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="w-3 h-3 bg-red rounded-full" />
+                      <span>Failed: {api.summary.failed}</span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 text-center border-y border-default">
+                    {api.evidence || '-'}
                   </TableCell>
 
                   <TableCell className="px-4 py-2 text-center border-y border-default">
                     {api.attackType}
                   </TableCell>
 
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {api.evidence}
-                  </TableCell>
-
-                  {/* Feed type */}
-                  {/* <TableCell className="px-4 py-2 text-center border-y border-default capitalize">
-                    {feed.type || "---"}
-                  </TableCell> */}
-
                   {/* Feed created at */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
                     {getDate(api.createdAt)} | {getTime(api.createdAt)}
                   </TableCell>
-
-                  {/* Feed status */}
-                  {/* <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {feed.active ? (
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 bg-green rounded-full" />
-                        <span>Active</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 bg-red rounded-full" />
-                        <span>Inactive</span>
-                      </div>
-                    )}
-                  </TableCell> */}
 
                   {/* Operation section */}
                   <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">

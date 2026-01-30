@@ -9,7 +9,7 @@ export const useFeedActions = () => {
 
   const onSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: ["feeds"],
+      queryKey: ["apis"],
     });
   };
 

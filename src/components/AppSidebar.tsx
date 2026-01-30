@@ -105,7 +105,7 @@ export const AppSidebar = () => {
                             <TooltipTrigger asChild>
                               <SidebarMenuButton
                                 className={cn(
-                                  "px-2 py-1",
+                                  "px-2 py-1 hover:[&_img]:brightness-0 hover:[&_img]:invert",
                                   isActive(url) &&
                                     "bg-primary text-foreground [&_img]:brightness-0 [&_img]:invert",
                                 )}

@@ -43,6 +43,10 @@ export const sidebarItems = [
         title: "Pending IPs",
         url: "/firewall/ip-management/pending",
       },
+      {
+        title: "Log IPs",
+        url: "firewall/ip-management/execute",
+      },
     ],
   },
   // { title: "Retrofit", url: "/retrofit", icon: "/icons/retrofit.svg" },

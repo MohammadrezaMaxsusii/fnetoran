@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { approveIp, getApis, getPendingApis, rejectIp } from "../api";
+import {
+  approveIp,
+  getApis,
+  getExecuteApis,
+  getPendingApis,
+  rejectIp,
+} from "../api";
 
 export * from "./useFeedsFilters";
 export * from "./useApisQuery";
@@ -26,6 +32,18 @@ export const useGetPendingApis = () => {
   return {
     pendingApis: data,
     pendingApisLoading: isPending,
+  };
+};
+
+export const useGetExecuteApis = () => {
+  const { data, isPending } = useQuery({
+    queryKey: ["execute-apis"],
+    queryFn: getExecuteApis,
+  });
+
+  return {
+    executeApis: data,
+    executeApisLoading: isPending,
   };
 };
 
