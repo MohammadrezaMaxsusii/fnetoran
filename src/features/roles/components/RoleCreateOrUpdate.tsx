@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -36,12 +36,16 @@ import {
 } from "lucide-react";
 import { useRoleActions } from "../hooks";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { isOnlyNumber } from "@/shared/utils";
+import { getEndTime, getStartTime, isOnlyNumber } from "@/shared/utils";
 import { Spinner } from "@/components/ui/spinner";
-import type { PermissionsOfRole } from "../types";
-import type { CategoryOfPermissions } from "@/features/permission/types";
+import type { PermissionsOfRole, Role } from "../types";
+import type {
+  CategoryOfPermissions,
+  Permission,
+} from "@/features/permission/types";
 import {
   usePermissionsCategoryQuery,
+  usePermissionsOfRoleQuery,
   usePremissionsOfRoleActions,
 } from "@/features/permission/hooks";
 import { Input } from "@/components/ui/input";
@@ -62,37 +66,64 @@ import { z } from "zod";
 import { dayItems } from "@/features/dashboard/constants";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field";
+import { usePermissionsCategoryActions } from "@/features/permission/hooks/usePermissionsCategoryActions";
 
-export const RoleCreate = () => {
+interface Props {
+  role?: Role;
+}
+
+export const RoleCreateOrUpdate = ({ role }: Props) => {
   const [step, setStep] = useState(1);
   const [openModal, setOpenModal] = useState(false);
   const [errors, setErrors] = useState<{ message: string }[]>();
   const [checkedParents, setCheckedParents] = useState<string[]>([]);
   const [checkedChildren, setCheckedChildren] = useState<string[]>([]);
-  const { createRoleAction } = useRoleActions();
-  const { createPremissionsOfRoleAction } = usePremissionsOfRoleActions();
+  const { createRoleAction, updateRoleAction } = useRoleActions();
   const { permissionsCategory } = usePermissionsCategoryQuery();
+  const [search, setSearch] = useState("");
+  const { createPermissionsOfRoleAction, deletePermissionsOfRoleAction } =
+    usePremissionsOfRoleActions();
+  const {
+    createPermissionOfPermissionCategoryAction,
+    deletePermissionOfPermissionCategoryAction,
+  } = usePermissionsCategoryActions();
+  // const { permissionsOfRole } = usePermissionsOfRoleQuery(role.id);
+  // const permissionIds = permissionsOfRole?.data[0].permissions.map(
+  //   (item: Permission) => String(item.id),
+  // );
+  const isEdit = !!role;
 
   const roleForm = useForm({
     resolver: zodResolver(roleFormSchema),
     defaultValues: {
       name: "",
       maxRequestPerMinute: 100,
-      workingTimeLimitStart: "01:00",
-      workingTimeLimitEnd: "23:30",
-      workingDayLimit: ["0", "1", "2", "3", "4", "5", "6"],
+      workingTimeLimitStart: "01:00:00",
+      workingTimeLimitEnd: "23:30:00",
+      workingDayLimit: [0, 1, 2, 3, 4, 5, 6],
     },
   });
+
+  useEffect(() => {
+    if (role) {
+      roleForm.reset({
+        ...role,
+        workingDayLimit: role.workingDayLimit.map((item) => String(item)),
+        workingTimeLimitStart: getStartTime(role.workingTimeLimit),
+        workingTimeLimitEnd: getEndTime(role.workingTimeLimit),
+      });
+    }
+  }, [role]);
 
   const permissionsOfRoleForm = useForm({
     resolver: zodResolver(permissionsOfRoleFormSchema),
     defaultValues: {
-      permission_ids: checkedChildren,
+      role_ids: [],
+      permission_ids: [],
     },
   });
 
   const maxRequestPerMinute = roleForm.watch("maxRequestPerMinute");
-  const search = permissionsOfRoleForm.watch("search");
 
   // Filter categories by children (permissions)
   const filteredData = useMemo(() => {
@@ -118,19 +149,26 @@ export const RoleCreate = () => {
     category: CategoryOfPermissions,
     isChecked: boolean,
   ) => {
+    let newCheckedChildren: string[] = [];
+
     if (isChecked) {
       setCheckedParents((prev) => Array.from(new Set([...prev, category.id])));
-      setCheckedChildren((prev) =>
-        Array.from(
-          new Set([...prev, ...category.permissions.map((p) => p.id)]),
-        ),
+      newCheckedChildren = Array.from(
+        new Set([...checkedChildren, ...category.permissions.map((p) => p.id)]),
       );
     } else {
       setCheckedParents((prev) => prev.filter((id) => id !== category.id));
-      setCheckedChildren((prev) =>
-        prev.filter((id) => !category.permissions.some((p) => p.id === id)),
+      newCheckedChildren = checkedChildren.filter(
+        (id) => !category.permissions.some((p) => p.id === id),
       );
     }
+
+    setCheckedChildren(newCheckedChildren);
+    permissionsOfRoleForm.setValue("permission_ids", newCheckedChildren, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
   const handleChildChange = (
@@ -138,15 +176,16 @@ export const RoleCreate = () => {
     permission: PermissionsOfRole,
     isChecked: boolean,
   ) => {
+    let newCheckedChildren: string[] = [];
     if (isChecked) {
-      setCheckedChildren((prev) =>
-        Array.from(new Set([...prev, permission.id])),
+      newCheckedChildren = Array.from(
+        new Set([...checkedChildren, permission.id]),
       );
       if (!checkedParents.includes(category.id)) {
         setCheckedParents((prev) => [...prev, category.id]);
       }
     } else {
-      setCheckedChildren((prev) => prev.filter((id) => id !== permission.id));
+      newCheckedChildren = checkedChildren.filter((id) => id !== permission.id);
 
       const siblingsChecked = category.permissions.some(
         (p) => checkedChildren.includes(p.id) && p.id !== permission.id,
@@ -156,6 +195,13 @@ export const RoleCreate = () => {
         setCheckedParents((prev) => prev.filter((id) => id !== category.id));
       }
     }
+
+    setCheckedChildren(newCheckedChildren);
+    permissionsOfRoleForm.setValue("permission_ids", newCheckedChildren, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
   const isParentChecked = (category: CategoryOfPermissions) =>
@@ -168,8 +214,16 @@ export const RoleCreate = () => {
     input: z.infer<typeof roleFormSchema>,
   ) => {
     try {
-      const res = await createRoleAction.mutateAsync(input);
-      permissionsOfRoleForm.setValue("role_ids", [res.data.id]);
+      if (isEdit) {
+        const newInput = {
+          ...input,
+          id: role?.id,
+        };
+        await updateRoleAction.mutateAsync(newInput);
+      } else {
+        const res = await createRoleAction.mutateAsync(input);
+        permissionsOfRoleForm.setValue("role_ids", [res.data.id]);
+      }
       setStep(2);
       setErrors(undefined);
     } catch (error) {
@@ -178,18 +232,25 @@ export const RoleCreate = () => {
   };
 
   const permissionsOfRoleFormSubmitHandler = async () => {
-    permissionsOfRoleForm.setValue("permission_ids", checkedChildren);
-
     try {
-      await createPremissionsOfRoleAction.mutateAsync(
-        permissionsOfRoleForm.getValues(),
-      );
-      roleForm.reset();
-      permissionsOfRoleForm.reset();
+      if (isEdit) {
+        await deletePermissionsOfRoleAction.mutateAsync({
+          permission_ids: checkedChildren,
+          role_ids: [role.id],
+        });
+        await createPermissionsOfRoleAction.mutateAsync({
+          role_ids: [role.id],
+          permission_ids: checkedChildren,
+        });
+      }
+
       setOpenModal(false);
-      setErrors(undefined);
+      permissionsOfRoleForm.reset();
+      setCheckedParents([]);
+      setCheckedChildren([]);
+      setSearch("");
     } catch (error) {
-      if (error instanceof Array) setErrors(error);
+      if (Array.isArray(error)) setErrors(error);
     }
   };
 
@@ -223,7 +284,6 @@ export const RoleCreate = () => {
         </DialogHeader>
 
         {/* Main content */}
-
         {step === 1 ? (
           <Form {...roleForm}>
             <form
@@ -463,90 +523,108 @@ export const RoleCreate = () => {
             </form>
           </Form>
         ) : (
-          <div className="flex flex-col gap-4">
-            <span className="text-sm text-orange">Select Role Permissions</span>
-
-            <InputGroup className="bg-gray-darker">
-              <InputGroupInput
-                placeholder="Search your access..."
-                {...permissionsOfRoleForm.register("search")}
-              />
-              <InputGroupAddon align="inline-end">
-                <Search className="text-white" />
-              </InputGroupAddon>
-            </InputGroup>
-
-            {/* Checkbox Tree */}
-            <div className="flex flex-col gap-3 border border-default p-4 rounded-md h-100 overflow-y-auto">
-              {filteredData?.map((category: CategoryOfPermissions) => (
-                <div key={category.id} className="flex flex-col gap-2">
-                  {/* Parent checkbox */}
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={isParentChecked(category)}
-                      onCheckedChange={(checked) => {
-                        handleParentChange(category, checked === true);
-                        permissionsOfRoleForm.setValue(
-                          "permission_ids",
-                          checkedChildren,
-                        );
-                      }}
-                    />
-                    <span className="text-primary">{category.name}</span>
-                  </div>
-
-                  {/* Children checkbox */}
-                  <div className="flex flex-col gap-1">
-                    {category.permissions.map((permission) => (
-                      <div
-                        key={permission.id}
-                        className="flex items-center gap-2 bg-gray-darker p-2 rounded-md"
-                      >
-                        <Checkbox
-                          checked={isChildChecked(permission)}
-                          onCheckedChange={(checked) => {
-                            handleChildChange(
-                              category,
-                              permission,
-                              checked === true,
-                            );
-                            permissionsOfRoleForm.setValue(
-                              "permission_ids",
-                              checkedChildren,
-                            );
-                          }}
-                        />
-                        <span>{permission.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              {filteredData?.length === 0 && (
-                <span className="text-sm text-gray-400">
-                  No permissions found
-                </span>
+          <Form {...permissionsOfRoleForm}>
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={permissionsOfRoleForm.handleSubmit(
+                permissionsOfRoleFormSubmitHandler,
               )}
-            </div>
+            >
+              <span className="text-sm text-orange">Select Permissions</span>
 
-            {/* Dialog footer */}
-            <DialogFooter className="grid grid-cols-2 gap-3">
-              <Button variant="secondary" onClick={() => setStep(1)}>
-                Previous
-              </Button>
+              <InputGroup className="bg-gray-darker">
+                <InputGroupInput
+                  placeholder="Search your access..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <InputGroupAddon align="inline-end">
+                  <Search />
+                </InputGroupAddon>
+              </InputGroup>
 
-              <Button
-                type="button"
-                onClick={permissionsOfRoleForm.handleSubmit(
-                  permissionsOfRoleFormSubmitHandler,
+              <div className="flex flex-col gap-3 border border-default p-4 rounded-md h-100 overflow-y-auto">
+                {filteredData?.map((category: CategoryOfPermissions) => (
+                  <div key={category.id} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={isParentChecked(category)}
+                        onCheckedChange={(checked) =>
+                          handleParentChange(category, checked === true)
+                        }
+                      />
+                      <span className="text-primary">{category.name}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      {category.permissions.map((permission) => (
+                        <div
+                          key={permission.id}
+                          className="flex items-center gap-2 bg-gray-darker p-2 rounded-md"
+                        >
+                          <FormField
+                            control={permissionsOfRoleForm.control}
+                            name="permission_ids"
+                            render={() => (
+                              <FormItem className="flex items-center gap-2">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={isChildChecked(permission)}
+                                    onCheckedChange={(checked) =>
+                                      handleChildChange(
+                                        category,
+                                        permission,
+                                        checked === true,
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormLabel>{permission.text}</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {filteredData?.length === 0 && (
+                  <span className="text-sm text-gray-400">
+                    No permissions found
+                  </span>
                 )}
-                className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
-              >
-                {createRoleAction?.isPending ? <Spinner /> : "Confirm Role"}
-              </Button>
-            </DialogFooter>
-          </div>
+              </div>
+
+              {permissionsOfRoleForm.formState.errors.permission_ids && (
+                <FormMessage>
+                  <>
+                    {
+                      permissionsOfRoleForm.formState.errors.permission_ids
+                        .message
+                    }
+                  </>
+                </FormMessage>
+              )}
+
+              <DialogFooter className="grid grid-cols-2 gap-3">
+                <DialogClose asChild>
+                  <Button variant="secondary">Close</Button>
+                </DialogClose>
+
+                <Button
+                  type="submit"
+                  className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
+                >
+                  {createPermissionOfPermissionCategoryAction.isPending ? (
+                    <Spinner />
+                  ) : (
+                    "Confirm Role"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         )}
       </DialogContent>
     </Dialog>

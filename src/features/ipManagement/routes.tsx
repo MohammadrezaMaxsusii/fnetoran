@@ -3,7 +3,7 @@ import { IPsPage, PendingIPsPage } from "./pages";
 
 export const IpManagementRoutes = (
   <>
-    <Route path="ip-management" element={<IPsPage />} />
-    <Route path="ip-management/pending" element={<PendingIPsPage />} />
+    <Route path="firewall/ip-management" element={<IPsPage />} />
+    <Route path="firewall/ip-management/pending" element={<PendingIPsPage />} />
   </>
 );

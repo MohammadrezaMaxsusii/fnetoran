@@ -3,6 +3,6 @@ import { ZonesPage } from "./pages";
 
 export const ZonesRoutes = (
   <>
-    <Route path="zones" element={<ZonesPage />} />
+    <Route path="devices/zones" element={<ZonesPage />} />
   </>
 );

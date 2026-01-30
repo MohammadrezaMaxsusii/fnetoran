@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useRolesQuery } from "@/features/roles/hooks";
+import { useRoleActions, useRolesQuery } from "@/features/roles/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/features/roles/types";
@@ -55,7 +55,8 @@ import RolesIcon from "@/shared/icons/roles.svg?react";
 import ViewIcon from "@/shared/icons/view.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { TablePagination } from "@/components/TablePagination";
-import { RoleCreate } from "./RoleCreate";
+import { RoleCreateOrUpdate } from "./RoleCreateOrUpdate";
+import { RoleUpdate } from "./RoleUpdate";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -67,6 +68,7 @@ type FilterFormValues = {
 export const RolesTable = () => {
   const { filters, updateFilters } = useRolesFilters();
   const { roles, rolesIsLoading } = useRolesQuery(filters);
+  const { deleteRoleAction } = useRoleActions();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
@@ -87,7 +89,7 @@ export const RolesTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Roles List</span>
-        <RoleCreate />
+        <RoleCreateOrUpdate />
       </div>
 
       <div className="px-7">
@@ -321,13 +323,10 @@ export const RolesTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit role */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <EditIcon className="size-5 text-blue-darker" />
-                      Edit Role
-                    </Button>
+                    <RoleUpdate role={role} />
 
                     {/* Delete role */}
-                    <DeleteModal title="Role" onClick={() => {}} />
+                    <DeleteModal title="Role" onClick={() => deleteRoleAction.mutate({ roleId: role.id })} />
 
                     {/* view role */}
                     <Button

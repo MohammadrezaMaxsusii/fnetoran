@@ -13,33 +13,35 @@ export const sidebarItems = [
   },
   {
     title: "Devices",
+    url: "/devices",
     icon: "/icons/devices.svg",
     children: [
       {
         title: "Device List",
-        url: "/devices",
+        url: "/devices/list",
       },
       {
         title: "Zones",
-        url: "/zones",
+        url: "/devices/zones",
       },
     ],
   },
   {
     title: "Firewall",
+    url: "/firewall",
     icon: "/icons/firewall.svg",
     children: [
       {
         title: "Feed",
-        url: "/feed",
+        url: "/firewall/feed",
       },
       {
         title: "IP Management",
-        url: "/ip-management",
+        url: "/firewall/ip-management",
       },
       {
         title: "Pending IPs",
-        url: "/ip-management/pending",
+        url: "/firewall/ip-management/pending",
       },
     ],
   },

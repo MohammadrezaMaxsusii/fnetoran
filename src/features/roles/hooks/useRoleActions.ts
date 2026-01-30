@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createRole } from "../api";
+import { createRole, updateRole, deleteRole } from "../api";
 
 export const useRoleActions = () => {
   const queryClient = useQueryClient();
@@ -15,7 +15,19 @@ export const useRoleActions = () => {
     onSuccess,
   });
 
+  const updateRoleAction = useMutation({
+    mutationFn: updateRole,
+    onSuccess,
+  });
+
+  const deleteRoleAction = useMutation({
+    mutationFn: deleteRole,
+    onSuccess,
+  });
+
   return {
     createRoleAction,
+    updateRoleAction,
+    deleteRoleAction,
   };
 };

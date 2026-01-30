@@ -48,13 +48,15 @@ import { startOfDay } from "date-fns";
 import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import ViewIcon from "@/shared/icons/view.svg?react";
-import AddIcon from "@/shared/icons/plus.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { usePermissionsFilters } from "../hooks/usePermissionsFilters";
 import { usePermissionsQuery } from "../hooks";
 import { permissionTableItems } from "../constants";
 import { TablePagination } from "@/components/TablePagination";
-import { PermissionCreate } from "./PermissionCreate";
+import { usePermissionsCategoryActions } from "../hooks/usePermissionsCategoryActions";
+import type { Permission } from "../types";
+import { PermissionCreateForm } from "./PermissionCreateForm";
+import { PermissionUpdateForm } from "./PermissionUpdateForm";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -66,6 +68,7 @@ type FilterFormValues = {
 export const PermissionsTable = () => {
   const { filters, updateFilters } = usePermissionsFilters();
   const { permissions, permissionsIsPending } = usePermissionsQuery(filters);
+  const { deletePermissionsCategoryAction } = usePermissionsCategoryActions();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
@@ -86,7 +89,9 @@ export const PermissionsTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Permissions List</span>
-        <PermissionCreate />
+        {/* <PermissionCreate /> */}
+        {/* <PermissionFormCreate /> */}
+        <PermissionCreateForm />
       </div>
 
       <div className="px-7">
@@ -298,7 +303,7 @@ export const PermissionsTable = () => {
 
             {/* Table body */}
             <TableBody>
-              {permissions?.data.map((permission: any) => (
+              {permissions?.data.map((permission: Permission) => (
                 <TableRow
                   key={permission.id}
                   className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
@@ -321,13 +326,10 @@ export const PermissionsTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit permission */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <EditIcon className="size-5 text-blue-darker" />
-                      Edit Permission
-                    </Button>
+                    <PermissionUpdateForm categoryOfPermission={permission} />
 
                     {/* Delete permission */}
-                    <DeleteModal title="Permission" onClick={() => {}} />
+                    <DeleteModal title="Permission" onClick={() => deletePermissionsCategoryAction.mutate({ id: permission.id })} />
 
                     {/* view permission */}
                     <Button

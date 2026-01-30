@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createPermissionsOfRole } from "../api";
+import { createPermissionsOfRole, deletePermissionsOfRole } from "../api";
 
 export const usePremissionsOfRoleActions = () => {
   const queryClient = useQueryClient();
@@ -10,12 +10,18 @@ export const usePremissionsOfRoleActions = () => {
     });
   };
 
-  const createPremissionsOfRoleAction = useMutation({
+  const createPermissionsOfRoleAction = useMutation({
     mutationFn: createPermissionsOfRole,
     onSuccess,
   });
 
+  const deletePermissionsOfRoleAction = useMutation({
+    mutationFn: deletePermissionsOfRole,
+    onSuccess,
+  });
+
   return {
-    createPremissionsOfRoleAction,
+    createPermissionsOfRoleAction,
+    deletePermissionsOfRoleAction,
   };
 };

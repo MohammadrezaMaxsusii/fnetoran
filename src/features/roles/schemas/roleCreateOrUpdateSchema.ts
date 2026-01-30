@@ -7,7 +7,7 @@ export const roleFormSchema = z.object({
     .min(10, "min request in per minutes must be at least 10.")
     .max(1000, "max request in per minutes must be less than 1000.")
     .optional(),
-  workingDayLimit: z.array(z.string()).optional(),
+  workingDayLimit: z.array(z.string().or(z.number())).optional(),
   workingTimeLimitStart: z.string().trim().optional(),
   workingTimeLimitEnd: z.string().trim().optional(),
 });

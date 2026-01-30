@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate, useParams } from "react-router";
-import { usePermissionsOfRole } from "../hooks";
+import { useCategoryPermissionsOfRoleQuery } from "../hooks";
 import type { CategoryOfPermissions } from "@/features/permission/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -17,7 +17,7 @@ export const RolePage = () => {
   const navigate = useNavigate();
   const id = useParams().id as string;
   const { premissionsOfRole, premissionsOfRoleIsPending } =
-    usePermissionsOfRole(id);
+    useCategoryPermissionsOfRoleQuery(id);
 
   return (
     <section className="w-full pe-6 pb-6">

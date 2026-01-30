@@ -124,8 +124,6 @@ export const UserCreateOrUpdatePage = () => {
     onDrop,
   });
 
-  console.log(specificUser?.data)
-
   useEffect(() => {
     form.reset({
       ...specificUser?.data,

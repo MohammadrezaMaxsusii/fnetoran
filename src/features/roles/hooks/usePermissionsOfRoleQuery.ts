@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPermissionsOfRole } from "@/features/permission/api";
+import { getCategoryPermissionsOfRole } from "@/features/permission/api";
 
-export const usePermissionsOfRole = (id: string) => {
+export const useCategoryPermissionsOfRoleQuery = (id: string) => {
   const {
     data: premissionsOfRole,
     isPending: premissionsOfRoleIsPending,
     isError: premissionsOfRoleIsError,
   } = useQuery({
-    queryKey: ["premissions-of-role", id],
-    queryFn: () => getPermissionsOfRole(id),
+    queryKey: ["category-premissions-of-role", id],
+    queryFn: () => getCategoryPermissionsOfRole(id),
   });
 
   return {

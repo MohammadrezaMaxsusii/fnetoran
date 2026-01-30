@@ -1,2 +1,3 @@
 export * from "./PermissionsTable";
-export * from "./PermissionCreate";
+export * from "./PermissionCreateForm";
+export * from "./PermissionUpdateForm";
