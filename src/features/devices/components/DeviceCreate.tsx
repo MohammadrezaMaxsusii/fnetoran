@@ -248,7 +248,7 @@ export const DeviceCreate = () => {
                         </FormLabel>
 
                         <FormControl>
-                          <Input placeholder="Enter your IP" {...field} />
+                          <Input placeholder="Enter your username" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -267,7 +267,7 @@ export const DeviceCreate = () => {
                         </FormLabel>
 
                         <FormControl>
-                          <Input placeholder="Enter your IP" {...field} />
+                          <Input placeholder="Enter your password" type="password" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
