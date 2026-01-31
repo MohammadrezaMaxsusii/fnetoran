@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { AuthRoutes } from "./features/auth/routes";
 import { DashboardRoutes } from "./features/dashboard/routes";
 import { AppLayout } from "./components/AppLayout";
@@ -16,6 +16,8 @@ export const App = () => {
   return (
     <main className="h-full bg-background-default text-white">
       <Routes>
+        <Route index element={<Navigate to="/login" />} />
+
         {AuthRoutes}
         {NotFoundRoutes}
 
