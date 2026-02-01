@@ -15,25 +15,19 @@ export const TerminalInstance = ({ id }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XTermTerminal | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
-  const bufferRef = useRef("");
   const { device, deviceIsLoading } = useDeviceQuery(id);
-  const [status, setStatus] = useState<
-    "connected" | "connecting" | "disconnected"
-  >("connecting");
+  const [status, setStatus] = useState<"connected" | "connecting" | "disconnected">("connecting");
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Initialize terminal
     const term = new XTermTerminal({
       cursorBlink: true,
       fontFamily: "JetBrains Mono, monospace",
       fontSize: 13,
       scrollback: 3000,
-      theme: {
-        background: "#0f1115",
-        foreground: "#e5e7eb",
-        cursor: "#e5e7eb",
-      },
+      theme: { background: "#0f1115", foreground: "#e5e7eb", cursor: "#e5e7eb" },
     });
 
     const fitAddon = new FitAddon();
@@ -44,15 +38,17 @@ export const TerminalInstance = ({ id }: Props) => {
     fitAddon.fit();
     term.focus();
 
+    termRef.current = term;
+
+    // Initial terminal messages
     term.writeln("\x1b[1;36mDevice Terminal\x1b[0m");
     term.writeln("Type 'reconnect' to try again\r\n");
-    prompt(term);
+    writePrompt(term);
 
-    termRef.current = term;
+    // Connect to WebSocket
     connect(term);
 
-    term.onData((data) => handleInput(data, term));
-
+    // Resize observer
     const observer = new ResizeObserver(() => fitAddon.fit());
     observer.observe(containerRef.current);
 
@@ -63,14 +59,17 @@ export const TerminalInstance = ({ id }: Props) => {
     };
   }, [id]);
 
-  // Socket handler
+  // --- Terminal prompt ---
+  function writePrompt(term: XTermTerminal) {
+    term.write("\x1b[94m>\x1b[0m ");
+  }
+
+  // --- WebSocket connection ---
   function connect(term: XTermTerminal) {
     setStatus("connecting");
     term.writeln("\x1b[33mConnecting...\x1b[0m\r\n");
 
-    const socket = new WebSocket(
-      `${import.meta.env.VITE_WEBSOCKET_URL}/devices/terminal/${id}`,
-    );
+    const socket = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/devices/terminal/${id}`);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -78,54 +77,45 @@ export const TerminalInstance = ({ id }: Props) => {
       term.writeln("\x1b[32mConnected ✔\x1b[0m\r\n");
     };
 
-    socket.onmessage = (e) => term.write(`${e.data}\r\n`);
+    socket.onmessage = (e) => {
+      // Directly write SSH output to terminal
+      term.write(e.data);
+    };
 
     socket.onclose = () => {
       setStatus("disconnected");
-      term.writeln("\x1b[31mDisconnected 🔌\x1b[0m\r\n");
-      prompt(term);
+      term.writeln("\r\n\x1b[31mDisconnected 🔌\x1b[0m\r\n");
+      writePrompt(term);
     };
   }
 
-  // Input handler
-  function handleInput(data: string, term: XTermTerminal) {
-    const socket = socketRef.current;
+  // --- Handle input: stream-based ---
+  useEffect(() => {
+    const term = termRef.current;
+    if (!term) return;
 
-    if (data === "\r") {
-      term.write("\r\n");
-      const cmd = bufferRef.current.trim();
-      bufferRef.current = "";
+    // Send every keystroke directly to SSH backend
+    const onDataHandler = (data: string) => {
+      const socket = socketRef.current;
+      if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
-      if (cmd === "clear" || cmd === "cls") term.clear();
-      else if (socket?.readyState === WebSocket.OPEN) socket.send(cmd + "\n");
+      socket.send(data);
+    };
 
-      prompt(term);
-    } else if (data === "\u007F") {
-      if (bufferRef.current.length) {
-        bufferRef.current = bufferRef.current.slice(0, -1);
-        term.write("\b \b");
-      }
-    } else {
-      bufferRef.current += data;
-      term.write(data);
-    }
-  }
+    term.onData(onDataHandler);
 
-  function prompt(term: XTermTerminal) {
-    term.write("\x1b[94m>\x1b[0m ");
-  }
+    // return () => {
+    //   term.offData(onDataHandler);
+    // };
+  }, []);
 
   return (
     <>
-      {/* Header of Terminal */}
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-black">
         <div className="flex items-center gap-2">
           <span>📡 Device IP:</span>
-          {deviceIsLoading ? (
-            <Skeleton className="h-4 w-24" />
-          ) : (
-            <span>{device?.data.ip}</span>
-          )}
+          {deviceIsLoading ? <Skeleton className="h-4 w-24" /> : <span>{device?.data.ip}</span>}
         </div>
 
         <div className="flex items-center gap-1">
@@ -133,30 +123,19 @@ export const TerminalInstance = ({ id }: Props) => {
           <span>(Terminal)</span>
         </div>
 
-        {/* Status of terminal */}
-        <div
-          className={`flex items-center gap-2 ${
-            status === "connected"
-              ? "text-green-400"
-              : status === "connecting"
-                ? "text-yellow-400"
-                : "text-red-400"
-          }`}
-        >
+        <div className={`flex items-center gap-2 ${
+          status === "connected" ? "text-green-400" :
+          status === "connecting" ? "text-yellow-400" : "text-red-400"
+        }`}>
           <span>●</span>
           <span>{status}</span>
         </div>
       </div>
 
-      {/* Terminal */}
+      {/* Terminal container */}
       <div className="h-100 bg-[#0b0e14]">
-        <div
-          ref={containerRef}
-          className="h-full text-sm focus:outline-none"
-          onClick={() =>
-            containerRef.current?.querySelector("textarea")?.focus()
-          }
-        />
+        <div ref={containerRef} className="h-full text-sm focus:outline-none"
+             onClick={() => containerRef.current?.querySelector("textarea")?.focus()} />
       </div>
     </>
   );
