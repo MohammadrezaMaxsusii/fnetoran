@@ -1,5 +1,5 @@
 export interface Device {
-  id: number;
+  id: string;
   type: string,
   model: string,
   ip: string,

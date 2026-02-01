@@ -6,10 +6,11 @@ export * from "./useUsersFilters";
 export * from "./useDevicesQuery";
 export * from "./useDeviceActions";
 export * from "./useDeviceTypesQuery";
+export * from "./useDeviceQuery";
 
 export const useAddToZone = () => {
   return useMutation({
     mutationFn: addToZone,
-    onSuccess: () => toast.success('Device added to zone')
+    onSuccess: () => toast.success("Device added to zone"),
   });
 };

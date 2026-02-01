@@ -1,7 +1,11 @@
 import { api } from "@/shared/libs/axiosInstance";
 import z from "zod";
 import type { deviceCreateSchema } from "../schemas";
-// import type { userCreateOrUpdateSchema } from "../schemas";
+
+export const getDevice = async (id: string) => {
+  const { data } = await api.get(`/devices/info/${id}`);
+  return data;
+};
 
 export const deleteDevice = async (id: number) => {
   const { data } = await api.delete(`/devices/delete/${id}`);

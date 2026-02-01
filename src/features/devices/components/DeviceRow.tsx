@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SelectZoneDialog } from "./SelectZoneDialog";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 type FilterFormValues = {
   type?: string;
@@ -74,6 +75,7 @@ export const DeviceRow = ({ device }) => {
   const { deleteDeviceAction, registerForFirewallAction } = useDeviceActions();
   //   const { deviceTypes, deviceTypesIsPending } = useDeviceTypesQuery();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   //   const [openDialog, setOpenDialog] = useState(false);
   //   const form = useForm<FilterFormValues>({
   //     defaultValues: {
@@ -176,6 +178,10 @@ export const DeviceRow = ({ device }) => {
 
               <DropdownMenuItem onClick={() => setOpen(true)}>
                 Add to zone
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => navigate(`/devices/terminal/${device.id}`)}>
+                Terminal
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
