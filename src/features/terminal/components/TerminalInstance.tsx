@@ -25,7 +25,7 @@ export const TerminalInstance = ({ id }: Props) => {
     const term = new XTermTerminal({
       cursorBlink: true,
       fontFamily: "JetBrains Mono, monospace",
-      fontSize: 13,
+      fontSize: 16,
       scrollback: 3000,
       theme: { background: "#0f1115", foreground: "#e5e7eb", cursor: "#e5e7eb" },
     });
@@ -112,7 +112,7 @@ export const TerminalInstance = ({ id }: Props) => {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-black">
+      <div className="flex items-center justify-between px-4 py-2 bg-black size-full">
         <div className="flex items-center gap-2">
           <span>📡 Device IP:</span>
           {deviceIsLoading ? <Skeleton className="h-4 w-24" /> : <span>{device?.data.ip}</span>}
@@ -133,7 +133,7 @@ export const TerminalInstance = ({ id }: Props) => {
       </div>
 
       {/* Terminal container */}
-      <div className="h-100 bg-[#0b0e14]">
+      <div className="size-full bg-[#0f1115] p-4">
         <div ref={containerRef} className="h-full text-sm focus:outline-none"
              onClick={() => containerRef.current?.querySelector("textarea")?.focus()} />
       </div>

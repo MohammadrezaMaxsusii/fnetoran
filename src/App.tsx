@@ -12,6 +12,7 @@ import { ZonesRoutes } from "./features/zones/routes";
 import { IpManagementRoutes } from "./features/ipManagement/routes";
 import { DevicesScanRoutes } from "./features/devicesScan/routes";
 import { TerminalRoutes } from "./features/terminal/routes";
+import { BackupsRoutes } from "./features/backup/routes";
 
 export const App = () => {
   return (
@@ -33,6 +34,7 @@ export const App = () => {
           {IpManagementRoutes}
           {DevicesScanRoutes}
           {TerminalRoutes}
+          {BackupsRoutes}
         </Route>
       </Routes>
     </main>

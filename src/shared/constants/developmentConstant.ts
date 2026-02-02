@@ -1,4 +1,3 @@
 export const developmentItems = [
-  "retrofit",
-  "scan"
+  "test",
 ];

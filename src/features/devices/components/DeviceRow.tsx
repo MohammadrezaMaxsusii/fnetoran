@@ -56,12 +56,20 @@ import { DeviceCreate } from "./DeviceCreate";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SelectZoneDialog } from "./SelectZoneDialog";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { useBackupActions } from "@/features/backup/hooks";
 
 type FilterFormValues = {
   type?: string;
@@ -76,6 +84,7 @@ export const DeviceRow = ({ device }) => {
   //   const { deviceTypes, deviceTypesIsPending } = useDeviceTypesQuery();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { createBackupAction } = useBackupActions();
   //   const [openDialog, setOpenDialog] = useState(false);
   //   const form = useForm<FilterFormValues>({
   //     defaultValues: {
@@ -164,7 +173,11 @@ export const DeviceRow = ({ device }) => {
         <TableCell className="px-4 py-2 text-center rounded-r-lg border-y border-e border-default">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="border border-foreground/25" size="icon">
+              <Button
+                variant="secondary"
+                className="border border-foreground/25"
+                size="icon"
+              >
                 <EllipsisIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -180,9 +193,54 @@ export const DeviceRow = ({ device }) => {
                 Add to zone
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => navigate(`/devices/terminal/${device.id}`)}>
+              <DropdownMenuItem
+                onClick={() => navigate(`/devices/terminal/${device.id}`)}
+              >
                 Terminal
               </DropdownMenuItem>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Backup</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        createBackupAction.mutate(
+                          { device_id: device.id, backup_type: "running" },
+                          {
+                            onSuccess: () => {
+                              toast.success("Backup successfully");
+                            },
+                            onError: () => {
+                              toast.error("Backup faild.");
+                            },
+                          },
+                        )
+                      }
+                    >
+                      Running backup
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      onClick={() =>
+                        createBackupAction.mutate(
+                          { device_id: device.id, backup_type: "startup" },
+                          {
+                            onSuccess: () => {
+                              toast.success("Backup successfully");
+                            },
+                            onError: () => {
+                              toast.error("Backup faild.");
+                            },
+                          },
+                        )
+                      }
+                    >
+                      Startup backup
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>

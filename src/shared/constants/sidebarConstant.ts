@@ -28,6 +28,10 @@ export const sidebarItems = [
         title: "Scan",
         url: "/devices/scan",
       },
+      {
+        title: "Backups",
+        url: "/devices/backups",
+      },
     ],
   },
   {

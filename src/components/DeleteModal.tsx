@@ -34,7 +34,7 @@ export const DeleteModal = ({ onClick, title }: Props) => {
 
         {/* Dialog content */}
         <div className="flex flex-col items-center gap-2 mt-4">
-          <img src="/icons/delete.svg" alt="delete icon" className="size-18" />
+          <DeleteIcon className="size-18" />
           <span className="text-lg text-red font-bold">Delete {title}</span>
           <p className="text-sm">
             Are you sure you want to Delete your {title}?

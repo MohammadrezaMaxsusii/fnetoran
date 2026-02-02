@@ -129,7 +129,7 @@
   }
 
   #root {
-    @apply h-full;
+    @apply h-full bg-background-default;
   }
 
   button:not([disabled]),
