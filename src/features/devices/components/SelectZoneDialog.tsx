@@ -53,8 +53,6 @@ export const SelectZoneDialog = ({ open, setOpen, deviceId }) => {
     },
   });
 
-  console.log(zones)
-
   const submitHandler = async (input: z.infer<typeof addToZoneSchema>) => {
     try {
       await mutateAsync({

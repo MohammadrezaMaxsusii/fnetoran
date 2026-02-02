@@ -31,7 +31,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon, FunnelX, EllipsisIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  FunnelX,
+  EllipsisIcon,
+  RefreshCcwIcon,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
 import {
@@ -50,6 +55,7 @@ import {
   useDeviceActions,
   useDevicesQuery,
   useDeviceTypesQuery,
+  useLoadAssetsQuery,
 } from "../hooks";
 import { DeleteModal } from "@/components/DeleteModal";
 import { DeviceCreate } from "./DeviceCreate";
@@ -61,7 +67,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SelectZoneDialog } from "./SelectZoneDialog";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FilterFormValues = {
   type?: string;
@@ -73,6 +81,7 @@ export const DeviceRow = ({ device }) => {
   //   const { filters, updateFilters } = useUsersFilters();
   //   const { devices, devicesIsLoading } = useDevicesQuery(filters);
   const { deleteDeviceAction, registerForFirewallAction } = useDeviceActions();
+  const [deviceId, setDeviceId] = useState("");
   //   const { deviceTypes, deviceTypesIsPending } = useDeviceTypesQuery();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -84,6 +93,7 @@ export const DeviceRow = ({ device }) => {
   //       list_page: filters.list_page,
   //     },
   //   });
+  const { assetsSuccess, assetsFetching } = useLoadAssetsQuery(deviceId);
 
   const handleRegisterForFirewall = async (id: number) => {
     try {
@@ -93,17 +103,39 @@ export const DeviceRow = ({ device }) => {
     }
   };
 
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (assetsSuccess) {
+      queryClient.invalidateQueries({ queryKey: ["devices"] });
+    }
+  }, [assetsSuccess, queryClient]);
+
   return (
     <>
       <TableRow
         key={device.id}
-        className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
+        className={cn(
+          "bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items",
+          !device.fetchedAsset &&
+            "bg-[#2C0D11] odd:bg-[#2C0D11] hover:bg-[#2C0D11] odd:hover:bg-[#2C0D11]",
+        )}
       >
-        <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
+        <TableCell
+          className={cn(
+            "px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.id}
         </TableCell>
 
-        <TableCell className="px-4 py-2 border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           <div className="flex items-center gap-4">
             <div className="border-2 border-orange rounded-full size-12 bg-white">
               {/* To do fetch user profile */}
@@ -122,49 +154,114 @@ export const DeviceRow = ({ device }) => {
           </div>
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.type}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.model || "-"}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.ip}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.portCount ?? "-"}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.hostname ?? "-"}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           {device.series ?? "-"}
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center border-y border-default space-x-1.5">
-          <Button className="bg-navy-blue hover:bg-navy-blue border text-blue-darker border-blue-darker p-2.5!">
-            <img src="/icons/edit.svg" alt="edit icon" className="size-5" />
-          </Button>
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center border-y border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
+          <div className="flex items-center gap-x-1.5 justify-center">
+            {!device.fetchedAsset && (
+              <Button
+                variant="destructive"
+                onClick={() => setDeviceId(device.id)}
+                disabled={assetsFetching}
+              >
+                <RefreshCcwIcon />
+                Sync
+              </Button>
+            )}
 
-          <DeleteModal
-            title="Device"
-            onClick={() => deleteDeviceAction.mutate(device.id)}
-          />
+            <Button className="bg-navy-blue hover:bg-navy-blue border text-blue-darker border-blue-darker p-2.5!">
+              <img src="/icons/edit.svg" alt="edit icon" className="size-5" />
+            </Button>
 
-          <Button className="p-2.5!">
-            <img src="/icons/view.svg" alt="edit icon" className="size-5" />
-          </Button>
+            <DeleteModal
+              title="Device"
+              onClick={() => deleteDeviceAction.mutate(device.id)}
+            />
+
+            {device.fetchedAsset && (
+              <Button asChild className="p-2.5!">
+                <Link to={`/device/${device.id}`}>
+                  <img
+                    src="/icons/view.svg"
+                    alt="edit icon"
+                    className="size-5"
+                  />
+                </Link>
+              </Button>
+            )}
+          </div>
         </TableCell>
 
-        <TableCell className="px-4 py-2 text-center rounded-r-lg border-y border-e border-default">
+        <TableCell
+          className={cn(
+            "px-4 py-2 text-center rounded-r-lg border-y border-e border-default",
+            !device.fetchedAsset && "border-red-600",
+          )}
+        >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="border border-foreground/25" size="icon">
+              <Button
+                variant="secondary"
+                className="border border-foreground/25"
+                size="icon"
+              >
                 <EllipsisIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -180,7 +277,9 @@ export const DeviceRow = ({ device }) => {
                 Add to zone
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => navigate(`/devices/terminal/${device.id}`)}>
+              <DropdownMenuItem
+                onClick={() => navigate(`/devices/terminal/${device.id}`)}
+              >
                 Terminal
               </DropdownMenuItem>
             </DropdownMenuContent>
