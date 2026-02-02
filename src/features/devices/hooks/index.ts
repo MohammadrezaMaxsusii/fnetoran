@@ -76,16 +76,16 @@ export const useHistoryQuery = () => {
   };
 };
 
-export const useDeviceQuery = () => {
-  const { deviceId } = useParams();
+// export const useDeviceQuery = () => {
+//   const { deviceId } = useParams();
 
-  const { data, isPending } = useQuery({
-    queryKey: ["device", deviceId],
-    queryFn: () => get(deviceId),
-  });
+//   const { data, isPending } = useQuery({
+//     queryKey: ["device", deviceId],
+//     queryFn: () => get(deviceId),
+//   });
 
-  return {
-    device: data,
-    deviceLoading: isPending,
-  };
-};
+//   return {
+//     device: data,
+//     deviceLoading: isPending,
+//   };
+// };

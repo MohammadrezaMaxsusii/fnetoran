@@ -28,7 +28,7 @@ export function DeviceHardeningCheckPage() {
 
   const { deviceId, cisId } = useParams();
 
-  const { device, deviceLoading } = useDeviceQuery();
+  const { device, deviceIsLoading } = useDeviceQuery(deviceId);
 
   useEffect(() => {
     const query = async () => {
@@ -78,7 +78,7 @@ export function DeviceHardeningCheckPage() {
     };
   }, []);
 
-  if (loading || deviceLoading) return "Loading...";
+  if (loading || deviceIsLoading) return "Loading...";
 
   return (
     <>
