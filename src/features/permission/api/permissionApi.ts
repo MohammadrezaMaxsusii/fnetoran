@@ -80,6 +80,6 @@ export const deletePermissionsOfRole = async (input: {
   role_ids: number[];
   permission_ids: string[];
 }) => {
-  const { data } = await api.post("/rolePermission/remove", input);
+  const { data } = await api.delete("/rolePermission/remove", { data: input });
   return data;
 };

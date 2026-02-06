@@ -7,7 +7,7 @@ export const usePermissionsOfRoleQuery = (id: number) => {
     isPending: permissionsOfRoleIsPending,
     error: permissionsOfRoleIsError,
   } = useQuery({
-    queryKey: ["permissions-of-role", id],
+    queryKey: ["permissions", id],
     queryFn: () => getPermissionsOfRole(id),
   });
 

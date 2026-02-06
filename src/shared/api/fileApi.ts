@@ -5,8 +5,8 @@ export const uploadFile = async (input: FormData) => {
   return data;
 };
 
-export const getFile = async (id: string, url: string) => {
-  const { data } = await api.get(url, {
+export const getFile = async (id: string) => {
+  const { data } = await api.get(`/files/${id}`, {
     responseType: "blob",
   });
   return data;

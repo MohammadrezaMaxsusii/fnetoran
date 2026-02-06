@@ -7,7 +7,7 @@ export const usePermissionsCategoryQuery = () => {
     isPending: permissionsCategoryIsPending,
     error: permissionsCategoryIsError,
   } = useQuery({
-    queryKey: ["permissions-category"],
+    queryKey: ["permissions"],
     queryFn: getPermissionsCategory,
   });
 
