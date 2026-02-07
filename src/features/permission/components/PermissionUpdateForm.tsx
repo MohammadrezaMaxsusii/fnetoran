@@ -50,6 +50,9 @@ interface Props {
   categoryOfPermission: Permission;
 }
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
   const [openModal, setOpenModal] = useState(false);
   const [errors, setErrors] = useState<{ message: string }[]>();

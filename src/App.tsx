@@ -13,6 +13,7 @@ import { IpManagementRoutes } from "./features/ipManagement/routes";
 import { DevicesScanRoutes } from "./features/devicesScan/routes";
 import { TerminalRoutes } from "./features/terminal/routes";
 import { BackupsRoutes } from "./features/backup/routes";
+import { AutoDiscoveryRoutes } from "./features/autoDiscovery/routes";
 
 export const App = () => {
   return (
@@ -35,6 +36,7 @@ export const App = () => {
           {DevicesScanRoutes}
           {TerminalRoutes}
           {BackupsRoutes}
+          {AutoDiscoveryRoutes}
         </Route>
       </Routes>
     </main>

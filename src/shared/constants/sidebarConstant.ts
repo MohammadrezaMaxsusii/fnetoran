@@ -32,6 +32,10 @@ export const sidebarItems = [
         title: "Backups",
         url: "/devices/backups",
       },
+      {
+        title: "Auto Discovery",
+        url: "/devices/auto-discovery",
+      },
     ],
   },
   {

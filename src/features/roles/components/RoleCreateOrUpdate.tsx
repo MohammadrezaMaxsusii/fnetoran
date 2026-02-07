@@ -72,6 +72,9 @@ interface Props {
   role?: Role;
 }
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 export const RoleCreateOrUpdate = ({ role }: Props) => {
   const [step, setStep] = useState(1);
   const [openModal, setOpenModal] = useState(false);

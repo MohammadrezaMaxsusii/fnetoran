@@ -40,6 +40,9 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 export const PermissionCreateForm = () => {
   const [openModal, setOpenModal] = useState(false);
   const [errors, setErrors] = useState<{ message: string }[]>();
