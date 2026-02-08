@@ -7,8 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import AddIcon from "@/shared/icons/plus.svg?react";
 import { Separator } from "@/components/ui/separator";
@@ -52,7 +50,7 @@ export const DeviceScanCreate = () => {
             <span className="text-primary text-sm font-bold ps-3">
               Discovery
             </span>
-            <Link to="#" className="flex items-center gap-2 border border-default hover:border-primary p-2.5 pe-6 rounded-lg group">
+            <Link to="/devices/new-scan/basic" className="flex items-center gap-2 border border-default hover:border-primary p-2.5 pe-6 rounded-lg group">
               <img
                 src="/images/radar.png"
                 alt="radar image"

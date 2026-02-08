@@ -1,33 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createDeviceScan, updateDeviceScan, deleteDeviceScan } from "../api";
+import { useMutation } from "@tanstack/react-query";
+import { createDeviceScan } from "../api";
+import { useNavigate } from "react-router";
 
 export const useDeviceScanActions = () => {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["devices-scan"],
-    });
-  };
-
-  const createDeviceScanAction = useMutation({
+  const createBasicDeviceScanAction = useMutation({
     mutationFn: createDeviceScan,
-    onSuccess,
-  });
-
-  const updateDeviceScanAction = useMutation({
-    mutationFn: updateDeviceScan,
-    onSuccess,
-  });
-
-  const deleteDeviceScanAction = useMutation({
-    mutationFn: deleteDeviceScan,
-    onSuccess,
+    onSuccess: () => {
+      navigate("/devices/scan")
+    },
   });
 
   return {
-    createDeviceScanAction,
-    updateDeviceScanAction,
-    deleteDeviceScanAction,
+    createBasicDeviceScanAction,
   };
 };

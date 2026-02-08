@@ -136,6 +136,10 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+
+  .react-flow__handle {
+    @apply opacity-0 pointer-events-none;
+  }
 }
 
 @theme {
