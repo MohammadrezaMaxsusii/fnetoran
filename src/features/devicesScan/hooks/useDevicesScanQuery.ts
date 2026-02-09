@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDevicesScan } from "../api";
 
-
 export const useDevicesScanQuery = (filters: Record<string, any> = {}) => {
   const {
     data: devicesScan,

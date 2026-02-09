@@ -43,14 +43,14 @@ export const BasicScanPage = () => {
     try {
       createBasicDeviceScanAction.mutate(input);
     } catch (error) {
-        console.log(error)
+      console.log("error", error)
       if (error instanceof Array) setErrors(error);
     }
   };
 
-  console.log(errors);
   return (
     <div className="w-full">
+      {/* Error handling */}
       {errors && (
         <Alert variant="destructive">
           <AlertCircleIcon />
@@ -66,6 +66,7 @@ export const BasicScanPage = () => {
           className="flex flex-col gap-8  w-full"
           onSubmit={form.handleSubmit(submitHandler)}
         >
+          {/* Name input */}
           <FormField
             name="name"
             render={({ field }) => (
@@ -88,6 +89,7 @@ export const BasicScanPage = () => {
             )}
           />
 
+          {/* Description input */}
           <FormField
             name="description"
             render={({ field }) => (
@@ -110,6 +112,7 @@ export const BasicScanPage = () => {
             )}
           />
 
+          {/* Target input */}
           <FormField
             name="range"
             render={({ field }) => (
@@ -132,6 +135,7 @@ export const BasicScanPage = () => {
             )}
           />
 
+          {/* Schedule input */}
           <FormField
             name="schedule_time"
             render={({ field }) => (

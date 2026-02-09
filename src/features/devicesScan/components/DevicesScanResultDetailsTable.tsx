@@ -42,40 +42,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { devicesScanTableItems } from "../constants";
-import { useDeviceScanActions, useDevicesScanFilters } from "../hooks";
+import {
+  devicesScanResultDetailsTableConstantItems,
+  devicesScanResultTableItems,
+} from "../constants";
+import {
+  useDeviceScanResultDetailsFilters,
+  useDeviceScanResultFilters,
+  useDevicesScanResultQuery,
+} from "../hooks";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { startOfDay } from "date-fns";
-import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import ViewIcon from "@/shared/icons/view.svg?react";
-import { TablePagination } from "@/components/TablePagination";
 import DevicesIcon from "@/shared/icons/devices.svg?react";
-import { useDevicesScanQuery } from "../hooks";
-import PlayIcon from "@/shared/icons/play.svg?react";
-import { DeviceScanCreate } from "./DeviceScanCreate";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router";
+import BackIcon from "@/shared/icons/back.svg?react";
+import { useNavigate, useParams } from "react-router";
+import { TablePagination } from "@/components/TablePagination";
+import { useDeviceScanResultDetailsQuery } from "../hooks/useDeviceScanResultDetailsQuery";
 
 type FilterFormValues = {
   createdAt?: string;
-  scan?: string;
+  port?: string;
   list_sort?: string;
   list_page?: number;
 };
 
-export const DevicesScanTable = () => {
-  const { filters, updateFilters } = useDevicesScanFilters();
-  const { devicesScan, devicesScanIsLoading } = useDevicesScanQuery(filters);
-  const { deleteBasicDeviceScanAction, createBasicScanStartAction } =
-    useDeviceScanActions();
+export const DevicesScanResultDetailsTable = () => {
+  const id = useParams().id as string;
+  const detailsId = useParams().detailsId as string;
+  const { filters, updateFilters } = useDeviceScanResultDetailsFilters();
+  const { devicesScanResultDetails, devicesScanResultDetailsIsLoading } =
+    useDeviceScanResultDetailsQuery(detailsId, filters);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
     defaultValues: {
       createdAt: filters.createdAt,
-      scan: filters.scan,
+      port: filters.port,
       list_sort: filters.list_sort,
       list_page: filters.list_page,
     },
@@ -89,8 +93,17 @@ export const DevicesScanTable = () => {
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
-        <span className="text-lg font-bold text-primary">Device All Scan</span>
-        <DeviceScanCreate />
+        <span className="text-lg font-bold text-primary">
+          Scan Result Details
+        </span>
+        <Button
+          variant="secondary"
+          className="border border-default p-3"
+          onClick={() => navigate(`/devices/scan/${id}`)}
+        >
+          <BackIcon className="size-5.5" />
+          Back to List
+        </Button>
       </div>
 
       <div className="px-7">
@@ -103,14 +116,14 @@ export const DevicesScanTable = () => {
           <form className="flex justify-between items-center w-full">
             <FormField
               control={form.control}
-              name="scan"
+              name="port"
               render={({ field }) => (
                 <FormItem className="flex items-center">
                   <FormLabel
-                    htmlFor="list_sort"
+                    htmlFor="port"
                     className="text-gray-lighter font-normal"
                   >
-                    Scan:
+                    Port:
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -236,8 +249,8 @@ export const DevicesScanTable = () => {
         </Form>
       </div>
 
-      {/* Scan table */}
-      {devicesScanIsLoading ? (
+      {/* Scan result details table */}
+      {devicesScanResultDetailsIsLoading ? (
         <section className="w-full bg-gray-darker rounded-2xl">
           <Table>
             <TableBody className="flex flex-col gap-1 px-7 pb-7">
@@ -268,7 +281,7 @@ export const DevicesScanTable = () => {
             </TableBody>
           </Table>
         </section>
-      ) : devicesScan?.data.length === 0 ? (
+      ) : devicesScanResultDetails?.data.details.length === 0 ? (
         <section className="w-full bg-gray-darker rounded-2xl space-y-2">
           {/* Empty section */}
           <Empty className="pt-3! pb-7! gap-2">
@@ -276,10 +289,10 @@ export const DevicesScanTable = () => {
               <EmptyMedia variant="icon">
                 <DevicesIcon className="size-5" />
               </EmptyMedia>
-              <EmptyTitle>Devices List Empty!</EmptyTitle>
+              <EmptyTitle>Scan Result Details List Empty!</EmptyTitle>
             </EmptyHeader>
             <EmptyContent className="text-sm text-muted-foreground">
-              Devices will appear here once they are added.
+              Scan Result Details will appear here once they are added.
             </EmptyContent>
           </Empty>
         </section>
@@ -289,121 +302,64 @@ export const DevicesScanTable = () => {
             {/* Table header */}
             <TableHeader>
               <TableRow className="hover:bg-secondary">
-                {devicesScanTableItems.map((devicesScanTableItem) => (
-                  <TableHead
-                    key={devicesScanTableItem}
-                    className="text-center text-sm text-gray-lighter"
-                  >
-                    {devicesScanTableItem}
-                  </TableHead>
-                ))}
+                {devicesScanResultDetailsTableConstantItems.map(
+                  (devicesScanResultDetailsTableConstantItem) => (
+                    <TableHead
+                      key={devicesScanResultDetailsTableConstantItem}
+                      className="text-center text-sm text-gray-lighter"
+                    >
+                      {devicesScanResultDetailsTableConstantItem}
+                    </TableHead>
+                  ),
+                )}
               </TableRow>
             </TableHeader>
 
             {/* Table body */}
             <TableBody>
-              {devicesScan?.data.map((deviceScan: any) => (
-                <TableRow
-                  key={deviceScan.id}
-                  className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
-                >
-                  <TableCell className="px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default">
-                    {deviceScan.id}
-                  </TableCell>
+              {devicesScanResultDetails?.data.details.map(
+                (deviceScanResultDetails: any) => (
+                  <TableRow
+                    key={deviceScanResultDetails.id}
+                    className="bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items"
+                  >
+                    <TableCell className="px-5 py-4 rounded-l-lg text-center font-bold border-y border-s border-default">
+                      {deviceScanResultDetails.id}
+                    </TableCell>
 
-                  {/* Device name */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {deviceScan.name}
-                  </TableCell>
+                    {/* Product section */}
+                    <TableCell className="px-4 py-4 text-center border-y border-default">
+                      {deviceScanResultDetails.product || "---"}
+                    </TableCell>
 
-                  {/* Device target */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {deviceScan.range}
-                  </TableCell>
+                    {/* Service section */}
+                    <TableCell className="px-4 py-4 text-center border-y border-default">
+                      {deviceScanResultDetails.service || "---"}
+                    </TableCell>
 
-                  {/* Device type */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default capitalize">
-                    {deviceScan.type}
-                  </TableCell>
+                    {/* Version section */}
+                    <TableCell className="px-4 py-4 text-center border-y border-default">
+                      {deviceScanResultDetails.version || "---"}
+                    </TableCell>
 
-                  {/* Schedule date */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {deviceScan.schedule_time ? (
-                      <>{getDate(deviceScan.schedule_time)}</>
-                    ) : (
-                      <span>---</span>
-                    )}
-                  </TableCell>
+                    {/* Port section */}
+                    <TableCell className="px-4 py-4 text-center border-y border-default">
+                      {deviceScanResultDetails.port || "---"}
+                    </TableCell>
 
-                  {/* Device created at */}
-                  <TableCell className="px-4 py-2 text-center border-y border-default">
-                    {getDate(deviceScan.createdAt)} |{" "}
-                    {getTime(deviceScan.createdAt)}
-                  </TableCell>
+                    {/* Info section */}
+                    <TableCell className="px-4 py-4 text-center border-y border-default">
+                      {deviceScanResultDetails.extrainfo || "---"}
+                    </TableCell>
 
-                  {/* Device status */}
-                  <TableCell className="px-4 py-2 text-start border-y border-default">
-                    {deviceScan.status && (
-                      <div className="flex items-center justify-center gap-1">
-                        <div
-                          className={cn(
-                            "w-3 h-3 rounded-full",
-                            deviceScan.status === "pending"
-                              ? "bg-yellow-500"
-                              : deviceScan.status === "running"
-                                ? "bg-primary"
-                                : "bg-green",
-                          )}
-                        />
-                        <span className="capitalize">{deviceScan.status}</span>
-                      </div>
-                    )}
-                  </TableCell>
-
-                  {/* Operation section */}
-                  <TableCell className="w-1/6 px-11 py-2 text-end rounded-r-lg space-x-1.5 border-y border-e border-default">
-                    {deviceScan.status === "success" && (
-                      <Button className="p-2.5!" onClick={() => navigate(`/devices/scan/${deviceScan.id}`)}>
-                        <ViewIcon className="size-5" />
-                      </Button>
-                    )}
-
-                    {/* Delete deviceScan */}
-                    <DeleteModal
-                      title="Device Scan"
-                      onClick={() =>
-                        deleteBasicDeviceScanAction.mutate(deviceScan.id, {
-                          onSuccess: () => {
-                            toast.success("Delete successfully.");
-                          },
-                          onError: (error: { message: string }[]) => {
-                            toast.error(error[0].message);
-                          },
-                        })
-                      }
-                    />
-
-                    {/* View deviceScan */}
-                    <Button
-                      className="p-2.5! bg-navy-blue hover:bg-navy-blue border border-primary text-primary"
-                      onClick={() =>
-                        createBasicScanStartAction.mutate(deviceScan.id, {
-                          onSuccess: () => {
-                            toast.success("Scan completed successfully.");
-                          },
-                          onError: (error: any[]) => {
-                            toast.error(error[0].message);
-                          },
-                        })
-                      }
-                      disabled={createBasicScanStartAction.isPending}
-                    >
-                      <PlayIcon className="size-5" />
-                      Run
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    {/* Created at section */}
+                    <TableCell className="w-1/6 px-4 py-4 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                      {getDate(deviceScanResultDetails.createdAt)} |{" "}
+                      {getTime(deviceScanResultDetails.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ),
+              )}
             </TableBody>
           </Table>
         </div>
@@ -411,7 +367,7 @@ export const DevicesScanTable = () => {
 
       {/* Pagination section */}
       <TablePagination
-        count={devicesScan?.count}
+        count={devicesScanResultDetails?.count}
         currentPage={filters.list_page}
         updateFilters={updateFilters}
       />

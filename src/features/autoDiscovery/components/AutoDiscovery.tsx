@@ -14,7 +14,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import dagre from "dagre";
-import { CustomNode, CustomZoomSlider, NodeSearch } from "../components";
+import { CustomNode, NodeSearch } from "../components";
 import { ZoomSlider } from "@/components/zoom-slider";
 import "@xyflow/react/dist/style.css";
 
@@ -25,76 +25,76 @@ const nodeTypes = {
   customNode: CustomNode,
 };
 
-export const initialNodes = [
+const initialNodes = [
   {
     id: "1",
-    data: { image: "/public/images/os/vmware.svg", ip: "192.168.22.11" },
+    data: { image: "/images/os/vmware.svg", ip: "192.168.22.11" },
     type: "customNode",
     position,
   },
   {
     id: "2",
-    data: { image: "/public/images/os/ubuntu.svg", ip: "192.168.33.11" },
+    data: { image: "/images/os/ubuntu.svg", ip: "192.168.33.11" },
     type: "customNode",
     position,
   },
   {
     id: "2a",
-    data: { image: "/public/images/os/tplink.svg", ip: "192.168.22.72" },
+    data: { image: "/images/os/tplink.svg", ip: "192.168.22.72" },
     type: "customNode",
     position,
   },
   {
     id: "2b",
-    data: { image: "/public/images/os/zyxel.svg", ip: "192.168.22.15" },
+    data: { image: "/images/os/zyxel.svg", ip: "192.168.22.15" },
     type: "customNode",
     position,
   },
   {
     id: "2c",
-    data: { image: "/public/images/os/tachyon.svg", ip: "192.168.57.38" },
+    data: { image: "/images/os/tachyon.svg", ip: "192.168.57.38" },
     type: "customNode",
     position,
   },
   {
     id: "2d",
-    data: { image: "/public/images/os/stormshield.svg", ip: "192.168.97.56" },
+    data: { image: "/images/os/stormshield.svg", ip: "192.168.97.56" },
     type: "customNode",
     position,
   },
   {
     id: "3",
-    data: { image: "/public/images/os/aviat.svg", ip: "192.168.22.43" },
+    data: { image: "/images/os/aviat.svg", ip: "192.168.22.43" },
     type: "customNode",
     position,
   },
   {
     id: "4",
-    data: { image: "/public/images/os/aviat.svg", ip: "192.168.85.41" },
+    data: { image: "/images/os/aviat.svg", ip: "192.168.85.41" },
     type: "customNode",
     position,
   },
   {
     id: "5",
-    data: { image: "/public/images/os/tplink.svg", ip: "192.168.99.99" },
+    data: { image: "/images/os/tplink.svg", ip: "192.168.99.99" },
     type: "customNode",
     position,
   },
   {
     id: "6",
-    data: { image: "/public/images/os/allworx.svg", ip: "192.168.39.94" },
+    data: { image: "/images/os/allworx.svg", ip: "192.168.39.94" },
     type: "customNode",
     position,
   },
   {
     id: "7",
-    data: { image: "/public/images/os/vmware.svg", ip: "192.168.49.80" },
+    data: { image: "/images/os/vmware.svg", ip: "192.168.49.80" },
     type: "customNode",
     position,
   },
 ];
 
-export const initialEdges = [
+const initialEdges = [
   { id: "e12", source: "1", target: "2", type: edgeType },
   { id: "e13", source: "1", target: "3", type: edgeType },
   { id: "e22a", source: "2", target: "2a", type: edgeType },

@@ -15,3 +15,24 @@ export const newScantItems = [
     image: "/images/barcodeTwo.png",
   },
 ];
+
+export const accordionItems = [
+  {
+    title: "Basic",
+    children: [
+      {
+        title: "General",
+        url: "/devices/new-scan/basic",
+      },
+    ],
+  },
+  {
+    title: "Discovery",
+    children: [
+      {
+        title: "adfadsfa",
+        url: "/devasdfices/sdf-fasdfasd/fd",
+      },
+    ],
+  },
+];

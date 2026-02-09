@@ -1,1 +1,1 @@
-export const devicesScanTableItems = ["Id", "Scan Name", "Schedule", "Date", "Load", "Operation"];
+export const devicesScanTableItems = ["Id", "Scan Name", "Target", "Type", "Schedule Date", "Date", "Operation"];
