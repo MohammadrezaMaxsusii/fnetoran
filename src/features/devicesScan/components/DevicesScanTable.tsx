@@ -57,6 +57,7 @@ import { DeviceScanCreate } from "./DeviceScanCreate";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router";
+import { Spinner } from "@/components/ui/spinner";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -66,6 +67,7 @@ type FilterFormValues = {
 };
 
 export const DevicesScanTable = () => {
+  const [loadingId, setLoadingId] = useState<number | null>(null);
   const { filters, updateFilters } = useDevicesScanFilters();
   const { devicesScan, devicesScanIsLoading } = useDevicesScanQuery(filters);
   const { deleteBasicDeviceScanAction, createBasicScanStartAction } =
@@ -363,12 +365,17 @@ export const DevicesScanTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/6 px-11 py-2 text-end rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {deviceScan.status === "success" && (
-                      <Button className="p-2.5!" onClick={() => navigate(`/devices/scan/${deviceScan.id}`)}>
+                      <Button
+                        className="p-2.5!"
+                        onClick={() =>
+                          navigate(`/devices/scan/${deviceScan.id}`)
+                        }
+                      >
                         <ViewIcon className="size-5" />
                       </Button>
                     )}
 
-                    {/* Delete deviceScan */}
+                    {/* Delete section */}
                     <DeleteModal
                       title="Device Scan"
                       onClick={() =>
@@ -376,29 +383,36 @@ export const DevicesScanTable = () => {
                           onSuccess: () => {
                             toast.success("Delete successfully.");
                           },
-                          onError: (error: { message: string }[]) => {
-                            toast.error(error[0].message);
+                          onError: (error: Error) => {
+                            if (error instanceof Array) toast.error(error[0].message);
                           },
                         })
                       }
                     />
 
-                    {/* View deviceScan */}
+                    {/* Run scan section */}
                     <Button
                       className="p-2.5! bg-navy-blue hover:bg-navy-blue border border-primary text-primary"
-                      onClick={() =>
+                      onClick={() => {
+                        setLoadingId(deviceScan.id);
                         createBasicScanStartAction.mutate(deviceScan.id, {
                           onSuccess: () => {
                             toast.success("Scan completed successfully.");
+                            setLoadingId(null);
                           },
-                          onError: (error: any[]) => {
-                            toast.error(error[0].message);
+                          onError: (error: Error) => {
+                            if (error instanceof Array) toast.error(error[0].message);
+                            setLoadingId(null);
                           },
-                        })
-                      }
-                      disabled={createBasicScanStartAction.isPending}
+                        });
+                      }}
+                      disabled={deviceScan.id === loadingId}
                     >
-                      <PlayIcon className="size-5" />
+                      {deviceScan.id === loadingId ? (
+                        <Spinner className="size-5" />
+                      ) : (
+                        <PlayIcon className="size-5" />
+                      )}
                       Run
                     </Button>
                   </TableCell>
