@@ -30,8 +30,8 @@ export const accordionItems = [
     title: "Discovery",
     children: [
       {
-        title: "adfadsfa",
-        url: "/devasdfices/sdf-fasdfasd/fd",
+        title: "Test",
+        url: "/devices/new-scan/test",
       },
     ],
   },

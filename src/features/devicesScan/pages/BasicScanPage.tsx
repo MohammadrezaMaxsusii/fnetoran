@@ -41,9 +41,8 @@ export const BasicScanPage = () => {
 
   const submitHandler = async (input: z.infer<typeof basicScanSchema>) => {
     try {
-      createBasicDeviceScanAction.mutate(input);
+      await createBasicDeviceScanAction.mutateAsync(input);
     } catch (error) {
-      console.log("error", error)
       if (error instanceof Array) setErrors(error);
     }
   };
@@ -52,7 +51,7 @@ export const BasicScanPage = () => {
     <div className="w-full">
       {/* Error handling */}
       {errors && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="mb-8">
           <AlertCircleIcon />
           <AlertTitle>Something went wrong!</AlertTitle>
           <AlertDescription>

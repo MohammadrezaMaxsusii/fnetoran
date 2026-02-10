@@ -7,7 +7,6 @@ interface Props {
 }
 
 export const UserAvatar = ({ profileId, className }: Props) => {
-  console.log(profileId)
   const { file } = useFileQuery(profileId);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
