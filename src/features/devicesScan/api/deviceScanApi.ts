@@ -10,7 +10,7 @@ export const createBasicDeviceScan = async (
 };
 
 export const deleteBasicDeviceScan = async (id: string) => {
-  const { data } = await api.delete(`/autoDiscovery/${id}`);
+  const { data } = await api.delete(`/autoDiscovery/delete-scan/${id}`);
   return data;
 };
 

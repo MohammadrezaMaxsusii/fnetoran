@@ -52,6 +52,7 @@ import { backupTableItems } from "../constants";
 import type { Backup } from "../types";
 import { TablePagination } from "@/components/TablePagination";
 import { api } from "@/shared/libs/axiosInstance";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -102,8 +103,9 @@ export const BackupsTable = () => {
 
       link.remove();
       window.URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      console.error("Download error:", error);
+      toast.success("download completed successfully.");
+    } catch (error: unknown) {
+      if (error instanceof Error) toast.error(error.message);
     }
   };
 
