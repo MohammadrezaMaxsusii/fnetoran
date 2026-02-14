@@ -59,6 +59,7 @@ import UsersIcon from "@/shared/icons/users.svg?react";
 import { DeleteModal } from "@/components/DeleteModal";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { UserAvatar } from "./UserAvatar";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   active?: boolean;
@@ -429,8 +430,20 @@ export const UserTable = () => {
                     {/* delete user */}
                     <DeleteModal
                       title="User"
+                      isLoading={deleteUserAction.isPending}
                       onClick={() =>
-                        deleteUserAction.mutate({ userId: user.id })
+                        deleteUserAction.mutate(
+                          { userId: user.id },
+                          {
+                            onSuccess: (data) => {
+                              toast.success(data.message);
+                            },
+                            onError: (error) => {
+                              if (error instanceof Array)
+                                toast.error(error[0].message);
+                            },
+                          },
+                        )
                       }
                     />
 

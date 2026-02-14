@@ -48,7 +48,6 @@ import { startOfDay } from "date-fns";
 import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import ViewIcon from "@/shared/icons/view.svg?react";
-import EditIcon from "@/shared/icons/edit.svg?react";
 import { usePermissionsFilters } from "../hooks/usePermissionsFilters";
 import { usePermissionsQuery } from "../hooks";
 import { permissionTableItems } from "../constants";
@@ -57,6 +56,7 @@ import { usePermissionsCategoryActions } from "../hooks/usePermissionsCategoryAc
 import type { Permission } from "../types";
 import { PermissionCreateForm } from "./PermissionCreateForm";
 import { PermissionUpdateForm } from "./PermissionUpdateForm";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -89,8 +89,6 @@ export const PermissionsTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Permissions List</span>
-        {/* <PermissionCreate /> */}
-        {/* <PermissionFormCreate /> */}
         <PermissionCreateForm />
       </div>
 
@@ -329,7 +327,24 @@ export const PermissionsTable = () => {
                     <PermissionUpdateForm categoryOfPermission={permission} />
 
                     {/* Delete permission */}
-                    <DeleteModal title="Permission" onClick={() => deletePermissionsCategoryAction.mutate({ id: permission.id })} />
+                    <DeleteModal
+                      title="Permission"
+                      isLoading={deletePermissionsCategoryAction.isPending}
+                      onClick={() =>
+                        deletePermissionsCategoryAction.mutate(
+                          { id: permission.id },
+                          {
+                            onSuccess: (data) => {
+                              toast.success(data.message);
+                            },
+                            onError: (error) => {
+                              if (error instanceof Array)
+                                toast.error(error[0].message);
+                            },
+                          },
+                        )
+                      }
+                    />
 
                     {/* view permission */}
                     <Button

@@ -59,12 +59,12 @@ export const TerminalInstance = ({ id }: Props) => {
     };
   }, [id]);
 
-  // --- Terminal prompt ---
+  // Terminal prompt
   function writePrompt(term: XTermTerminal) {
     term.write("\x1b[94m>\x1b[0m ");
   }
 
-  // --- WebSocket connection ---
+  // WebSocket connection
   function connect(term: XTermTerminal) {
     setStatus("connecting");
     term.writeln("\x1b[33mConnecting...\x1b[0m\r\n");
@@ -89,7 +89,7 @@ export const TerminalInstance = ({ id }: Props) => {
     };
   }
 
-  // --- Handle input: stream-based ---
+  // Handle input: stream-based
   useEffect(() => {
     const term = termRef.current;
     if (!term) return;
@@ -103,10 +103,6 @@ export const TerminalInstance = ({ id }: Props) => {
     };
 
     term.onData(onDataHandler);
-
-    // return () => {
-    //   term.offData(onDataHandler);
-    // };
   }, []);
 
   return (

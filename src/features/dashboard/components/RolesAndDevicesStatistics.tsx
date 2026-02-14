@@ -1,3 +1,5 @@
+// This feature is temporarily mocked because the backend API is not ready yet;
+
 export const RolesAndDevicesStatistics = () => {
   return (
     <section className="relative p-6 rounded-2xl bg-linear-to-r from-60% from-gray-darker/5 to-gray-darker/75">

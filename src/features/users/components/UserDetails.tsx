@@ -23,8 +23,6 @@ interface Props {
   user: User;
 }
 
-// To do dynamic
-
 export const UserDetails = ({ user }: Props) => {
   return (
     <Dialog>

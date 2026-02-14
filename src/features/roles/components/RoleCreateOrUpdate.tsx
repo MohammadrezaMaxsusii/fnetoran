@@ -39,13 +39,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getEndTime, getStartTime, isOnlyNumber } from "@/shared/utils";
 import { Spinner } from "@/components/ui/spinner";
 import type { PermissionsOfRole, Role } from "../types";
-import type {
-  CategoryOfPermissions,
-  Permission,
-} from "@/features/permission/types";
+import type { CategoryOfPermissions } from "@/features/permission/types";
 import {
   usePermissionsCategoryQuery,
-  usePermissionsOfRoleQuery,
   usePremissionsOfRoleActions,
 } from "@/features/permission/hooks";
 import { Input } from "@/components/ui/input";
@@ -67,6 +63,7 @@ import { dayItems } from "@/features/dashboard/constants";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/ui/field";
 import { usePermissionsCategoryActions } from "@/features/permission/hooks/usePermissionsCategoryActions";
+import { toast } from "sonner";
 
 interface Props {
   role?: Role;
@@ -86,15 +83,8 @@ export const RoleCreateOrUpdate = ({ role }: Props) => {
   const [search, setSearch] = useState("");
   const { createPermissionsOfRoleAction, deletePermissionsOfRoleAction } =
     usePremissionsOfRoleActions();
-  const {
-    createPermissionOfPermissionCategoryAction,
-    deletePermissionOfPermissionCategoryAction,
-  } = usePermissionsCategoryActions();
-  // const { permissionsOfRole } = usePermissionsOfRoleQuery(role.id);
-  // const permissionIds = permissionsOfRole?.data[0].permissions.map(
-  //   (item: Permission) => String(item.id),
-  // );
-  const isEdit = !!role;
+  const { createPermissionOfPermissionCategoryAction } =
+    usePermissionsCategoryActions();
 
   const roleForm = useForm({
     resolver: zodResolver(roleFormSchema),
@@ -104,6 +94,14 @@ export const RoleCreateOrUpdate = ({ role }: Props) => {
       workingTimeLimitStart: "01:00:00",
       workingTimeLimitEnd: "23:30:00",
       workingDayLimit: [0, 1, 2, 3, 4, 5, 6],
+    },
+  });
+
+  const permissionsOfRoleForm = useForm({
+    resolver: zodResolver(permissionsOfRoleFormSchema),
+    defaultValues: {
+      role_ids: [],
+      permission_ids: [],
     },
   });
 
@@ -118,13 +116,7 @@ export const RoleCreateOrUpdate = ({ role }: Props) => {
     }
   }, [role]);
 
-  const permissionsOfRoleForm = useForm({
-    resolver: zodResolver(permissionsOfRoleFormSchema),
-    defaultValues: {
-      role_ids: [],
-      permission_ids: [],
-    },
-  });
+  const isEdit = !!role;
 
   const maxRequestPerMinute = roleForm.watch("maxRequestPerMinute");
 
@@ -241,17 +233,22 @@ export const RoleCreateOrUpdate = ({ role }: Props) => {
           permission_ids: checkedChildren,
           role_ids: [role.id],
         });
-        await createPermissionsOfRoleAction.mutateAsync({
-          role_ids: [role.id],
-          permission_ids: checkedChildren,
-        });
+        toast.success("Updated successfully.");
+      } else {
+        toast.success("Created successfully.");
       }
+      await createPermissionsOfRoleAction.mutateAsync({
+        role_ids: permissionsOfRoleForm.getValues("role_ids"),
+        permission_ids: checkedChildren,
+      });
 
       setOpenModal(false);
       permissionsOfRoleForm.reset();
+      roleForm.reset();
       setCheckedParents([]);
       setCheckedChildren([]);
       setSearch("");
+      setStep(1);
     } catch (error) {
       if (Array.isArray(error)) setErrors(error);
     }
@@ -398,7 +395,7 @@ export const RoleCreateOrUpdate = ({ role }: Props) => {
                         type="multiple"
                         className="flex flex-wrap gap-2 grow border border-default p-2 text-white *:rounded-md! *:bg-gray-items *:hover:bg-gray-items *:hover:text-foreground *:data-[state=on]:bg-blue-darkest *:data-[state=on]:text-blue-darker *:data-[state=on]:border *:data-[state=on]:border-primary"
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value.map((item: number) => String(item))}
                       >
                         {dayItems.map(({ item, value }) => (
                           <ToggleGroupItem key={item} value={String(item)}>

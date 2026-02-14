@@ -9,6 +9,7 @@ export const createBasicDeviceScan = async (
   return data;
 };
 
+// This backend endpoint currently has issues; functionality may not work as expected.
 export const deleteBasicDeviceScan = async (id: string) => {
   const { data } = await api.delete(`/autoDiscovery/delete-scan/${id}`);
   return data;

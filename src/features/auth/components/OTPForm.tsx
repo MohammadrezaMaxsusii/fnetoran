@@ -22,6 +22,9 @@ import { useEffect, useState } from "react";
 import BackIcon from "@/shared/icons/back.svg?react";
 import ResendIcon from "@/shared/icons/resend.svg?react";
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 interface Props {
   setMode: (mode: "otp" | "password") => void;
   form: UseFormReturn<z.infer<typeof recoverySchema>>;

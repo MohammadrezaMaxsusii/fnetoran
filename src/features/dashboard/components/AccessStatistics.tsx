@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/chart";
 import { accessChartItems } from "../constants";
 
+// This feature is temporarily mocked because the backend API is not ready yet;
+
 const chartConfig = {
   counts: {
     label: "counts",

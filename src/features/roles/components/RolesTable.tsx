@@ -53,10 +53,10 @@ import { DeleteModal } from "@/components/DeleteModal";
 import { Input } from "@/components/ui/input";
 import RolesIcon from "@/shared/icons/roles.svg?react";
 import ViewIcon from "@/shared/icons/view.svg?react";
-import EditIcon from "@/shared/icons/edit.svg?react";
 import { TablePagination } from "@/components/TablePagination";
 import { RoleCreateOrUpdate } from "./RoleCreateOrUpdate";
 import { RoleUpdate } from "./RoleUpdate";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -326,7 +326,24 @@ export const RolesTable = () => {
                     <RoleUpdate role={role} />
 
                     {/* Delete role */}
-                    <DeleteModal title="Role" onClick={() => deleteRoleAction.mutate({ roleId: role.id })} />
+                    <DeleteModal
+                      title="Role"
+                      isLoading={deleteRoleAction.isPending}
+                      onClick={() =>
+                        deleteRoleAction.mutate(
+                          { roleId: role.id },
+                          {
+                            onSuccess: (data) => {
+                              toast.success(data.message);
+                            },
+                            onError: (error) => {
+                              if (error instanceof Array)
+                                toast.error(error[0].message);
+                            },
+                          },
+                        )
+                      }
+                    />
 
                     {/* view role */}
                     <Button

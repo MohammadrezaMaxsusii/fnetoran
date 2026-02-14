@@ -73,6 +73,8 @@ export const DeviceScanCreate = () => {
             <span className="text-primary text-sm font-bold ps-3">
               Vulnerabilities
             </span>
+
+            {/* This feature is temporarily mocked because the backend API is not ready yet */}
             {newScantItems.map((newScanItem) => (
               <Link
                 to="#"

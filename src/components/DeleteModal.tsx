@@ -10,13 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import DeleteIcon from "@/shared/icons/delete.svg?react";
+import { Spinner } from "./ui/spinner";
 
 interface Props {
   title: string;
+  isLoading?: boolean;
   onClick: () => void;
 }
 
-export const DeleteModal = ({ onClick, title }: Props) => {
+export const DeleteModal = ({ onClick, title, isLoading }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,8 +50,19 @@ export const DeleteModal = ({ onClick, title }: Props) => {
               Later
             </Button>
           </DialogClose>
-          <Button className="bg-red hover:bg-red/75 py-4" onClick={onClick}>
-            Yes, Delete
+          <Button
+            className="bg-red hover:bg-red/75 py-4"
+            onClick={onClick}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Spinner />
+                Deleting...
+              </>
+            ) : (
+              <span>Yes, Delete</span>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

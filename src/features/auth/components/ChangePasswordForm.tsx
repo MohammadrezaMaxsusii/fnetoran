@@ -25,6 +25,9 @@ import { cn } from "@/lib/utils";
 import ErrorIcon from "@/shared/icons/error.svg?react";
 import BackIcon from "@/shared/icons/back.svg?react";
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 interface Props {
   setMode: (mode: "otp" | "password") => void;
   form: UseFormReturn<z.infer<typeof recoverySchema>>;

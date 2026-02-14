@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,7 @@ import { AlertCircleIcon, Search } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import type { CategoryOfPermissions } from "@/features/permission/types";
-import type { PermissionsOfRole } from "@/features/roles/types";
 import PermissionIcon from "@/shared/icons/permission.svg?react";
-
 import { usePermissionsCategoryQuery } from "@/features/permission/hooks";
 import { permissionCreateSchema } from "@/features/permission/schemas/permissionCreateOrUpdateSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,16 +37,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-
-// This implementation follows the current (problematic) API behavior.
-// Component must be adjusted after the API is corrected.
+import { toast } from "sonner";
+import { useCheckboxTree } from "../hooks/useCheckboxTree";
 
 export const PermissionCreateForm = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [errors, setErrors] = useState<{ message: string }[]>();
-  const [checkedParents, setCheckedParents] = useState<string[]>([]);
-  const [checkedChildren, setCheckedChildren] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
+  const [errors, setErrors] = useState<{ message: string }[] | undefined>(undefined);
 
   const { permissionsCategory } = usePermissionsCategoryQuery();
   const {
@@ -60,108 +54,46 @@ export const PermissionCreateForm = () => {
     resolver: zodResolver(permissionCreateSchema),
     defaultValues: {
       name: "",
-      permission_ids: [],
+      permissionIds: [],
     },
   });
 
-  // Filtered permissions based on search
-  const filteredData = useMemo(() => {
-    if (!search) return permissionsCategory?.data;
+  const {
+    checkedChildren,
+    search,
+    setSearch,
+    filterData,
+    handleParentChange,
+    handleChildChange,
+    isParentChecked,
+    setCheckedChildren,
+    setCheckedParents,
+  } = useCheckboxTree(form);
 
-    return permissionsCategory?.data
-      .map((category: CategoryOfPermissions) => {
-        const filteredPermissions = category.permissions.filter((permission) =>
-          permission.text.toLowerCase().includes(search.toLowerCase()),
-        );
+  const filteredData = filterData(permissionsCategory?.data);
 
-        if (filteredPermissions.length === 0) return null;
-
-        return {
-          ...category,
-          permissions: filteredPermissions,
-        };
-      })
-      .filter(Boolean) as CategoryOfPermissions[];
-  }, [permissionsCategory?.data, search]);
-
-  // Handlers
-  const handleParentChange = (
-    category: CategoryOfPermissions,
-    isChecked: boolean,
-  ) => {
-    let newCheckedChildren: string[] = [];
-
-    if (isChecked) {
-      setCheckedParents((prev) => Array.from(new Set([...prev, category.id])));
-      newCheckedChildren = Array.from(
-        new Set([...checkedChildren, ...category.permissions.map((p) => p.id)]),
-      );
-    } else {
-      setCheckedParents((prev) => prev.filter((id) => id !== category.id));
-      newCheckedChildren = checkedChildren.filter(
-        (id) => !category.permissions.some((p) => p.id === id),
-      );
-    }
-
-    setCheckedChildren(newCheckedChildren);
-    form.setValue("permission_ids", newCheckedChildren, {
-      shouldValidate: true,
-    });
-  };
-
-  const handleChildChange = (
-    category: CategoryOfPermissions,
-    permission: PermissionsOfRole,
-    isChecked: boolean,
-  ) => {
-    let newCheckedChildren: string[] = [];
-    if (isChecked) {
-      newCheckedChildren = Array.from(
-        new Set([...checkedChildren, permission.id]),
-      );
-      if (!checkedParents.includes(category.id)) {
-        setCheckedParents((prev) => [...prev, category.id]);
-      }
-    } else {
-      newCheckedChildren = checkedChildren.filter((id) => id !== permission.id);
-
-      const siblingsChecked = category.permissions.some(
-        (p) => checkedChildren.includes(p.id) && p.id !== permission.id,
-      );
-
-      if (!siblingsChecked) {
-        setCheckedParents((prev) => prev.filter((id) => id !== category.id));
-      }
-    }
-
-    setCheckedChildren(newCheckedChildren);
-    form.setValue("permission_ids", newCheckedChildren, {
-      shouldValidate: true,
-    });
-  };
-
-  const isParentChecked = (category: CategoryOfPermissions) =>
-    checkedParents.includes(category.id);
-
-  const isChildChecked = (permission: PermissionsOfRole) =>
-    checkedChildren.includes(permission.id);
-
-  // Submit
   const submitHandler = async () => {
     try {
       const values = form.getValues();
+
       const res = await createPremissionsCategoryAction.mutateAsync({
         name: values.name,
       });
+
       await createPermissionOfPermissionCategoryAction.mutateAsync({
         categoryId: res.data.id,
-        permissionIds: checkedChildren,
+        permissionIds: form
+          .getValues("permissionIds")
+          .map((item) => String(item)),
       });
+
       form.reset();
-      setCheckedParents([]);
       setCheckedChildren([]);
+      setCheckedParents([]);
       setSearch("");
       setOpenModal(false);
+      setErrors(undefined);
+      toast.success("Created successfully.");
     } catch (error) {
       if (error instanceof Array) setErrors(error);
     }
@@ -177,7 +109,7 @@ export const PermissionCreateForm = () => {
       </DialogTrigger>
 
       <DialogContent className="bg-background-default text-white p-8 max-h-11/12 max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8">
-        {/* Dialog header */}
+        {/* Header */}
         <DialogHeader>
           <DialogTitle className="text-lg font-bold flex items-center">
             Create a New Permission Category
@@ -196,7 +128,7 @@ export const PermissionCreateForm = () => {
           )}
         </DialogHeader>
 
-        {/* Main content */}
+        {/* Form */}
         <Form {...form}>
           <form
             className="flex flex-col gap-4"
@@ -246,18 +178,16 @@ export const PermissionCreateForm = () => {
             <div className="flex flex-col gap-3 border border-default p-4 rounded-md h-100 overflow-y-auto">
               {filteredData?.map((category: CategoryOfPermissions) => (
                 <div key={category.id} className="flex flex-col gap-2">
-                  {/* Parent checkbox */}
                   <div className="flex items-center gap-2">
                     <Checkbox
                       checked={isParentChecked(category)}
-                      onCheckedChange={(checked) => {
-                        handleParentChange(category, checked === true);
-                      }}
+                      onCheckedChange={(checked) =>
+                        handleParentChange(category, checked === true)
+                      }
                     />
                     <span className="text-primary">{category.name}</span>
                   </div>
 
-                  {/* Children checkbox */}
                   <div className="flex flex-col gap-1">
                     {category.permissions.map((permission) => (
                       <div
@@ -266,17 +196,28 @@ export const PermissionCreateForm = () => {
                       >
                         <FormField
                           control={form.control}
-                          name="permission_ids"
+                          name="permissionIds"
                           render={() => (
                             <FormItem className="flex items-center gap-2">
                               <FormControl>
                                 <Checkbox
-                                  checked={isChildChecked(permission)}
+                                  checked={checkedChildren.includes(
+                                    permission.id,
+                                  )}
                                   onCheckedChange={(checked) => {
                                     handleChildChange(
                                       category,
                                       permission,
                                       checked === true,
+                                    );
+                                    form.setValue(
+                                      "permissionIds",
+                                      checkedChildren,
+                                      {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                        shouldTouch: true,
+                                      },
                                     );
                                   }}
                                 />
@@ -297,20 +238,19 @@ export const PermissionCreateForm = () => {
                 </span>
               )}
             </div>
-            {form.formState.errors.permission_ids && (
+            {form.formState.errors.permissionIds && (
               <FormMessage>
-                {form.formState.errors.permission_ids.message}
+                {form.formState.errors.permissionIds.message}
               </FormMessage>
             )}
 
-            {/* Dialog footer */}
+            {/* Footer */}
             <DialogFooter className="grid grid-cols-2 gap-3">
               <DialogClose asChild>
                 <Button variant="secondary">Close</Button>
               </DialogClose>
 
               <Button
-                // onClick={submitHandler}
                 type="submit"
                 className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
               >

@@ -59,15 +59,15 @@ export const FeedDetails = ({ feed }: Props) => {
             </ItemTitle>
             <ItemDescription className="font-normal text-white capitalize">
               {feed.active ? (
-                <div className="flex items-center justify-center gap-1">
-                  <div className="w-3 h-3 bg-green rounded-full" />
+                <span className="flex items-center justify-center gap-1">
+                  <span className="inline-block w-3 h-3 bg-green rounded-full" />
                   <span>Active</span>
-                </div>
+                </span>
               ) : (
-                <div className="flex items-center justify-center gap-1">
-                  <div className="w-3 h-3 bg-red rounded-full" />
+                <span className="flex items-center justify-center gap-1">
+                  <span className="inline-block w-3 h-3 bg-red rounded-full" />
                   <span>Inactive</span>
-                </div>
+                </span>
               )}
             </ItemDescription>
           </ItemContent>

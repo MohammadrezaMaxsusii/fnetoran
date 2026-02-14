@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -20,13 +20,10 @@ import {
 import { AlertCircleIcon, Search } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
-import type {
-  CategoryOfPermissions,
-  Permission,
-} from "@/features/permission/types";
-import type { PermissionsOfRole } from "@/features/roles/types";
+import type { CategoryOfPermissions, Permission } from "@/features/permission/types";
 import PermissionIcon from "@/shared/icons/permission.svg?react";
-
+import EditIcon from "@/shared/icons/edit.svg?react";
+import { toast } from "sonner";
 import {
   usePermissionsCategoryQuery,
   usePermissionsOfPermissionCategoryQuery,
@@ -40,163 +37,100 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import EditIcon from "@/shared/icons/edit.svg?react";
+import { useCheckboxTree } from "../hooks/useCheckboxTree";
 
 interface Props {
   categoryOfPermission: Permission;
 }
 
-// This implementation follows the current (problematic) API behavior.
-// Component must be adjusted after the API is corrected.
-
 export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
   const [openModal, setOpenModal] = useState(false);
-  const [errors, setErrors] = useState<{ message: string }[]>();
-  const [checkedParents, setCheckedParents] = useState<string[]>([]);
-  const [checkedChildren, setCheckedChildren] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
-
+  const [errors, setErrors] = useState<{ message: string }[] | undefined>(undefined);
   const { permissionsCategory } = usePermissionsCategoryQuery();
+  const { permissionsOfPermissionCateogory } =
+    usePermissionsOfPermissionCategoryQuery(categoryOfPermission.id);
   const {
     updatePremissionsCategoryAction,
     createPermissionOfPermissionCategoryAction,
     deletePermissionOfPermissionCategoryAction,
   } = usePermissionsCategoryActions();
-  const { permissionsOfPermissionCateogory } =
-    usePermissionsOfPermissionCategoryQuery(categoryOfPermission.id);
 
   const form = useForm({
     resolver: zodResolver(permissionUpdateSchema),
+    defaultValues: { name: "", permissionIds: [] },
   });
 
-  const permissionIds =
-    permissionsOfPermissionCateogory?.data[0].permissions.map(
-      (item: Permission) => String(item.id),
+  const initialPermissionIds =
+    permissionsOfPermissionCateogory?.data[0]?.permissions.map((p: Permission) =>
+      String(p.id),
     );
 
+  const {
+    checkedChildren,
+    search,
+    setSearch,
+    filterData,
+    handleParentChange,
+    handleChildChange,
+    isParentChecked,
+    isChildChecked,
+    setCheckedChildren,
+    setCheckedParents,
+  } = useCheckboxTree(form);
+
   useEffect(() => {
-    if (!permissionsOfPermissionCateogory?.data || !permissionsCategory?.data)
+    if (!permissionsCategory?.data || !permissionsOfPermissionCateogory?.data)
       return;
 
-    const newCheckedParents = permissionsCategory.data
-      .filter((category: CategoryOfPermissions) =>
-        category.permissions.every((p) => permissionIds.includes(String(p.id))),
-      )
-      .map((category: CategoryOfPermissions) => category.id);
+    const initialPermissionIds =
+      permissionsOfPermissionCateogory.data[0].permissions.map((p: Permission) => p.id);
+
+    if (checkedChildren.length === 0) {
+      const newCheckedParents = permissionsCategory.data
+        .filter((category: CategoryOfPermissions) =>
+          category.permissions.every((p) =>
+            initialPermissionIds.includes(p.id),
+          ),
+        )
+        .map((category: CategoryOfPermissions) => category.id);
+
+      setCheckedChildren(initialPermissionIds);
+      setCheckedParents(newCheckedParents);
+    }
 
     form.reset({
       name: categoryOfPermission.name,
-      permissionIds,
+      permissionIds: initialPermissionIds,
     });
-
-    setCheckedChildren(permissionIds);
-    setCheckedParents(newCheckedParents);
   }, [
-    permissionsOfPermissionCateogory,
     permissionsCategory?.data,
+    permissionsOfPermissionCateogory?.data,
     categoryOfPermission.name,
+    checkedChildren.length,
+    setCheckedChildren,
+    setCheckedParents,
     form,
   ]);
 
-  const filteredData = useMemo(() => {
-    if (!search) return permissionsCategory?.data;
-
-    return permissionsCategory?.data
-      ?.map((category: CategoryOfPermissions) => {
-        const filteredPermissions = category.permissions.filter((permission) =>
-          permission.text.toLowerCase().includes(search.toLowerCase()),
-        );
-
-        if (filteredPermissions.length === 0) return null;
-
-        return { ...category, permissions: filteredPermissions };
-      })
-      .filter(Boolean) as CategoryOfPermissions[];
-  }, [permissionsCategory?.data, search]);
-
-  const handleParentChange = (
-    category: CategoryOfPermissions,
-    isChecked: boolean,
-  ) => {
-    let newCheckedChildren: string[] = [];
-
-    if (isChecked) {
-      setCheckedParents((prev) => Array.from(new Set([...prev, category.id])));
-      newCheckedChildren = Array.from(
-        new Set([
-          ...checkedChildren,
-          ...category.permissions.map((p) => String(p.id)),
-        ]),
-      );
-    } else {
-      setCheckedParents((prev) => prev.filter((id) => id !== category.id));
-      newCheckedChildren = checkedChildren.filter(
-        (id) => !category.permissions.some((p) => String(p.id) === id),
-      );
-    }
-
-    setCheckedChildren(newCheckedChildren);
-    form.setValue("permissionIds", newCheckedChildren, {
-      shouldValidate: true,
-    });
-  };
-
-  const handleChildChange = (
-    category: CategoryOfPermissions,
-    permission: PermissionsOfRole,
-    isChecked: boolean,
-  ) => {
-    let newCheckedChildren: string[] = [];
-    const permissionId = String(permission.id);
-
-    if (isChecked) {
-      newCheckedChildren = Array.from(
-        new Set([...checkedChildren, permissionId]),
-      );
-      if (!checkedParents.includes(category.id)) {
-        setCheckedParents((prev) => [...prev, category.id]);
-      }
-    } else {
-      newCheckedChildren = checkedChildren.filter((id) => id !== permissionId);
-
-      const siblingsChecked = category.permissions.some(
-        (p) =>
-          checkedChildren.includes(String(p.id)) &&
-          String(p.id) !== permissionId,
-      );
-
-      if (!siblingsChecked) {
-        setCheckedParents((prev) => prev.filter((id) => id !== category.id));
-      }
-    }
-
-    setCheckedChildren(newCheckedChildren);
-    form.setValue("permissionIds", newCheckedChildren, {
-      shouldValidate: true,
-    });
-  };
-
-  const isParentChecked = (category: CategoryOfPermissions) =>
-    checkedParents.includes(category.id);
-
-  const isChildChecked = (permission: PermissionsOfRole) =>
-    checkedChildren.includes(String(permission.id));
+  const filteredData = filterData(permissionsCategory?.data);
 
   const submitHandler = async () => {
     try {
       const values = form.getValues();
+
       const res = await updatePremissionsCategoryAction.mutateAsync({
         id: categoryOfPermission.id,
         name: values.name,
       });
+
       await deletePermissionOfPermissionCategoryAction.mutateAsync({
         categoryId: categoryOfPermission.id,
-        permissionIds: permissionIds,
+        permissionIds: initialPermissionIds,
       });
+
       await createPermissionOfPermissionCategoryAction.mutateAsync({
         categoryId: res.data.id,
         permissionIds: checkedChildren,
@@ -204,9 +138,9 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
 
       setOpenModal(false);
       form.reset();
-      setCheckedParents([]);
-      setCheckedChildren([]);
       setSearch("");
+      setErrors(undefined);
+      toast.success("Updated successfully.");
     } catch (error) {
       if (Array.isArray(error)) setErrors(error);
     }
@@ -247,6 +181,7 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
           >
             <span className="text-sm text-orange">Select Permissions</span>
 
+            {/* Permission Name */}
             <FormField
               control={form.control}
               name="name"
@@ -272,6 +207,7 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
               )}
             />
 
+            {/* Search */}
             <InputGroup className="bg-gray-darker">
               <InputGroupInput
                 placeholder="Search your access..."
@@ -283,8 +219,9 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
               </InputGroupAddon>
             </InputGroup>
 
+            {/* Checkbox Tree */}
             <div className="flex flex-col gap-3 border border-default p-4 rounded-md h-100 overflow-y-auto">
-              {filteredData?.map((category: CategoryOfPermissions) => (
+              {filteredData?.map((category) => (
                 <div key={category.id} className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Checkbox
@@ -302,27 +239,17 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
                         key={permission.id}
                         className="flex items-center gap-2 bg-gray-darker p-2 rounded-md"
                       >
-                        <FormField
-                          control={form.control}
-                          name="permissionIds"
-                          render={() => (
-                            <FormItem className="flex items-center gap-2">
-                              <FormControl>
-                                <Checkbox
-                                  checked={isChildChecked(permission)}
-                                  onCheckedChange={(checked) =>
-                                    handleChildChange(
-                                      category,
-                                      permission,
-                                      checked === true,
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                              <FormLabel>{permission.text}</FormLabel>
-                            </FormItem>
-                          )}
+                        <Checkbox
+                          checked={isChildChecked(permission)}
+                          onCheckedChange={(checked) =>
+                            handleChildChange(
+                              category,
+                              permission,
+                              checked === true,
+                            )
+                          }
                         />
+                        <span>{permission.text}</span>
                       </div>
                     ))}
                   </div>

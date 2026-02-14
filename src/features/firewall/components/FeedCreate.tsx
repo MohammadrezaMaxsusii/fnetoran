@@ -47,13 +47,14 @@ import { useFeedsQuery } from "../hooks";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { FieldError } from "@/components/ui/field";
+import { toast } from "sonner";
 
 export const FeedCreate = () => {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [errors, setErros] = useState<{ message: string }[]>();
   const { createFeedAction } = useFeedActions();
-  const { feeds, feedsIsPending, feedsError } = useFeedsQuery();
+  const { feeds } = useFeedsQuery();
   const form = useForm({
     resolver: zodResolver(feedCreateSchema),
     defaultValues: {
@@ -69,10 +70,11 @@ export const FeedCreate = () => {
 
   const submitHandler = async (input: z.infer<typeof feedCreateSchema>) => {
     try {
-      await createFeedAction.mutateAsync(input);
+      const result = await createFeedAction.mutateAsync(input);
+      toast.success(result.message);
       form.reset();
       setOpenModal(false);
-      setErros(undefined)
+      setErros(undefined);
     } catch (error) {
       if (error instanceof Array) setErros(error);
     }
@@ -99,7 +101,7 @@ export const FeedCreate = () => {
               <AlertCircleIcon />
               <AlertTitle>Something went wrong!</AlertTitle>
               <AlertDescription>
-                <FieldError errors={errors}/>
+                <FieldError errors={errors} />
               </AlertDescription>
             </Alert>
           )}

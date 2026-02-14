@@ -378,13 +378,15 @@ export const DevicesScanTable = () => {
                     {/* Delete section */}
                     <DeleteModal
                       title="Device Scan"
+                      isLoading={deleteBasicDeviceScanAction.isPending}
                       onClick={() =>
                         deleteBasicDeviceScanAction.mutate(deviceScan.id, {
-                          onSuccess: () => {
-                            toast.success("Delete successfully.");
+                          onSuccess: (data) => {
+                            toast.success(data.message);
                           },
-                          onError: (error: Error) => {
-                            if (error instanceof Array) toast.error(error[0].message);
+                          onError: (error) => {
+                            if (error instanceof Array)
+                              toast.error(error[0].message);
                           },
                         })
                       }
@@ -401,7 +403,8 @@ export const DevicesScanTable = () => {
                             setLoadingId(null);
                           },
                           onError: (error: Error) => {
-                            if (error instanceof Array) toast.error(error[0].message);
+                            if (error instanceof Array)
+                              toast.error(error[0].message);
                             setLoadingId(null);
                           },
                         });

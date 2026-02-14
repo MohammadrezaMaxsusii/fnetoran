@@ -10,49 +10,35 @@ import {
 export const usePermissionsCategoryActions = () => {
   const queryClient = useQueryClient();
 
+  const onSuccess = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["permissions"],
+    });
+  };
+
   const createPremissionsCategoryAction = useMutation({
     mutationFn: createPermissionsCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["permissions"],
-      });
-    },
+    onSuccess,
   });
 
   const updatePremissionsCategoryAction = useMutation({
     mutationFn: updatePermissionsCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["permissions"],
-      });
-    },
+    onSuccess,
   });
 
   const deletePermissionsCategoryAction = useMutation({
     mutationFn: deletePermissionsCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["permissions"],
-      });
-    },
+    onSuccess,
   });
 
   const createPermissionOfPermissionCategoryAction = useMutation({
     mutationFn: createPermissionOfPermissionCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["permissions"],
-      });
-    },
+    onSuccess,
   });
 
   const deletePermissionOfPermissionCategoryAction = useMutation({
     mutationFn: deletePermissionOfPermissionCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["permissions"],
-      });
-    },
+    onSuccess,
   });
 
   return {

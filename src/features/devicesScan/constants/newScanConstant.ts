@@ -26,6 +26,7 @@ export const accordionItems = [
       },
     ],
   },
+  // This is mock until API is ready.
   {
     title: "Discovery",
     children: [

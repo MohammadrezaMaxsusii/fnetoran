@@ -23,6 +23,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Redirecting to login because token refresh cannot be performed: required cookies are not set, backend endpoint not ready yet.
     if (error.response?.status === 401) {
       window.location.href = "/login";
     }

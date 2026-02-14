@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   Background,
+  MiniMap,
   ReactFlow,
   addEdge,
   ConnectionLineType,
@@ -17,6 +18,12 @@ import dagre from "dagre";
 import { CustomNode, NodeSearch } from "../components";
 import { ZoomSlider } from "@/components/zoom-slider";
 import "@xyflow/react/dist/style.css";
+import { Button } from "@/components/ui/button";
+import { CustomMiniMapNode } from "./CustomMiniMapNode";
+import ReloadIcon from "@/shared/icons/reload.svg?react";
+import FitIcon from "@/shared/icons/fit.svg?react";
+
+// This feature is temporarily mocked because the backend API is not ready yet;
 
 const position = { x: 0, y: 0 };
 const edgeType = "smoothstep";
@@ -111,6 +118,7 @@ const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 225;
 const nodeHeight = 225;
 
+// Layout handler
 const getLayoutedElements = (
   nodes: Node[],
   edges: Edge[],
@@ -155,6 +163,7 @@ const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
 export const AutoDiscovery = () => {
   const [nodes, _, onNodesChange] = useNodesState(layoutedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  const { fitView } = useReactFlow();
 
   const onConnect: OnConnect = useCallback(
     (params) =>
@@ -166,6 +175,7 @@ export const AutoDiscovery = () => {
 
   const { getNode, setCenter } = useReactFlow();
 
+  // Search handler
   const handleSearch = useCallback(
     (nodeId: string) => {
       const node = getNode(nodeId);
@@ -200,17 +210,52 @@ export const AutoDiscovery = () => {
         },
       }}
     >
+      {/* Search section */}
       <Panel position="top-right">
         <NodeSearch onSelect={handleSearch} />
       </Panel>
-      {/* <Panel position="bottom-right">
-        <CustomZoomSlider />
-      </Panel> */}
-      <ZoomSlider
-        className="bg-gray-darker"
-        position="bottom-right"
-        orientation="horizontal"
-      />
+
+      <Panel position="bottom-right" className="flex items-end gap-3">
+        {/* Refresh button */}
+        <Button
+          variant="secondary"
+          className="border-2 border-default text-gray-lighter px-4! h-11 gap-1.5"
+          onClick={() => window.location.reload()}
+        >
+          <ReloadIcon className="size-4.5 mb-0.5" />
+          Refresh
+        </Button>
+
+        {/* Fit button */}
+        <Button
+          variant="secondary"
+          className="border-2 border-default text-gray-lighter px-4! h-11 gap-1.5"
+          onClick={() => fitView({ duration: 300 })}
+        >
+          <FitIcon className="size-4.5 mb-0.5" />
+          Fit to Screen
+        </Button>
+
+        {/* Zoom controller */}
+        <ZoomSlider className="bg-gray-darker" orientation="horizontal" />
+
+        {/* Minimap section */}
+        <MiniMap
+          nodeComponent={CustomMiniMapNode}
+          pannable
+          zoomable
+          maskColor="transparent"
+          maskStrokeColor="#ffffff"
+          maskStrokeWidth={1}
+          bgColor="#252525"
+          className="rounded-md border-2 border-default m-0!"
+          style={{
+            position: "unset",
+          }}
+        />
+      </Panel>
+
+      {/* Dotted background */}
       <Background size={4} color="#222222" />
     </ReactFlow>
   );

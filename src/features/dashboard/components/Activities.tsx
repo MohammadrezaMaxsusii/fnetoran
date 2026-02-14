@@ -10,6 +10,8 @@ import {
 } from "@/shared/utils";
 import dayjs from "dayjs";
 
+// This feature is temporarily mocked because the backend API is not ready yet;
+
 export const Activities = () => {
   const { user } = useUserQuery();
   const date = dayjs();

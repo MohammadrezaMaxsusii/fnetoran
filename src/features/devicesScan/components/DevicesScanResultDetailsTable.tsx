@@ -44,17 +44,13 @@ import {
 } from "@/components/ui/select";
 import {
   devicesScanResultDetailsTableConstantItems,
-  devicesScanResultTableItems,
 } from "../constants";
 import {
   useDeviceScanResultDetailsFilters,
-  useDeviceScanResultFilters,
-  useDevicesScanResultQuery,
 } from "../hooks";
 import { formatLocalDate } from "@/shared/utils/fromatLocalDate";
 import { startOfDay } from "date-fns";
 import { Input } from "@/components/ui/input";
-import ViewIcon from "@/shared/icons/view.svg?react";
 import DevicesIcon from "@/shared/icons/devices.svg?react";
 import BackIcon from "@/shared/icons/back.svg?react";
 import { useNavigate, useParams } from "react-router";

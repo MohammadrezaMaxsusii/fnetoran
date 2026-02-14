@@ -46,6 +46,7 @@ import type { Feed } from "../types/feedType";
 import { useFeedActions } from "../hooks/useFeedActions";
 import { FeedDetails } from "./FeedDetails";
 import { TablePagination } from "@/components/TablePagination";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   feed?: string;
@@ -86,9 +87,9 @@ export const FeedsTable = () => {
       </div>
 
       {/* Filter section */}
-      <div className="p-7 flex items-center justify-between">
+      <div className="p-7">
         <Form {...form}>
-          <form className="flex justify-between items-center w-full">
+          <form className="flex gap-4 justify-between items-center w-full overflow-x-auto text-nowrap">
             <FormField
               control={form.control}
               name="feed"
@@ -102,7 +103,7 @@ export const FeedsTable = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="bg-muted"
+                      className="bg-muted w-45"
                       placeholder="Search..."
                       value={field.value}
                       onChange={field.onChange}
@@ -361,17 +362,22 @@ export const FeedsTable = () => {
                   </TableCell>
 
                   {/* Operation section */}
-                  <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
-                    {/* edit feed */}
-                    <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-                      <EditIcon className="size-5 text-blue-darker" />
-                      Edit Feed
-                    </Button>
-
+                  <TableCell className="w-1/7 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* Delete feed */}
                     <DeleteModal
                       title="Feed"
-                      onClick={() => deleteFeedAction.mutateAsync(feed.id)}
+                      isLoading={deleteFeedAction.isPending}
+                      onClick={() =>
+                        deleteFeedAction.mutate(feed.id, {
+                          onSuccess: (data) => {
+                            toast.success(data.message);
+                          },
+                          onError: (error) => {
+                            if (error instanceof Array)
+                              toast.error(error[0].message);
+                          },
+                        })
+                      }
                     />
 
                     {/* View feed */}

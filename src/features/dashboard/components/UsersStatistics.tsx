@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/chart";
 import { usersChartItems } from "../constants";
 
+// This feature is temporarily mocked because the backend API is not ready yet;
+
 const chartConfig = {
   date: {
     label: "date",

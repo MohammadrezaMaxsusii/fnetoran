@@ -69,7 +69,6 @@ export const UserCreateOrUpdatePage = () => {
   const navigate = useNavigate();
   const isEdit = !!id;
 
-  // To do fetch user and replace it and create schema
   const form = useForm({
     resolver: zodResolver(userCreateOrUpdateSchema),
     defaultValues: {

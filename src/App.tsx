@@ -17,6 +17,8 @@ import { AutoDiscoveryRoutes } from "./features/autoDiscovery/routes";
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 import { Error } from "./components/Error";
 
+// UI is not responsive and currently only designed for large screen sizes; adjustments for smaller screens depend on future enhancements.
+
 export const App = () => {
   const location = useLocation();
 
