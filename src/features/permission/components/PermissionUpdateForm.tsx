@@ -20,7 +20,10 @@ import {
 import { AlertCircleIcon, Search } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
-import type { CategoryOfPermissions, Permission } from "@/features/permission/types";
+import type {
+  CategoryOfPermissions,
+  Permission,
+} from "@/features/permission/types";
 import PermissionIcon from "@/shared/icons/permission.svg?react";
 import EditIcon from "@/shared/icons/edit.svg?react";
 import { toast } from "sonner";
@@ -46,9 +49,12 @@ interface Props {
   categoryOfPermission: Permission;
 }
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
   const [openModal, setOpenModal] = useState(false);
-  const [errors, setErrors] = useState<{ message: string }[] | undefined>(undefined);
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const { permissionsCategory } = usePermissionsCategoryQuery();
   const { permissionsOfPermissionCateogory } =
     usePermissionsOfPermissionCategoryQuery(categoryOfPermission.id);
@@ -64,10 +70,11 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
   });
 
   const initialPermissionIds =
-    permissionsOfPermissionCateogory?.data[0]?.permissions.map((p: Permission) =>
-      String(p.id),
+    permissionsOfPermissionCateogory?.data[0]?.permissions.map(
+      (p: Permission) => String(p.id),
     );
 
+  // Check box tree hook
   const {
     checkedChildren,
     search,
@@ -79,19 +86,33 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
     isChildChecked,
     setCheckedChildren,
     setCheckedParents,
-  } = useCheckboxTree(form);
+  } = useCheckboxTree(form, "permissionIds");
 
+  // Set initial permission
   useEffect(() => {
-    if (!permissionsCategory?.data || !permissionsOfPermissionCateogory?.data)
-      return;
+    const categories = permissionsCategory?.data;
+    const permissionCategoryData = permissionsOfPermissionCateogory?.data;
 
-    const initialPermissionIds =
-      permissionsOfPermissionCateogory.data[0].permissions.map((p: Permission) => p.id);
+    if (
+      !categories ||
+      !permissionCategoryData ||
+      permissionCategoryData.length === 0
+    ) {
+      return;
+    }
+
+    const firstItem = permissionCategoryData[0];
+
+    if (!firstItem?.permissions) return;
+
+    const initialPermissionIds = firstItem.permissions.map(
+      (p: Permission) => p.id,
+    );
 
     if (checkedChildren.length === 0) {
-      const newCheckedParents = permissionsCategory.data
+      const newCheckedParents = categories
         .filter((category: CategoryOfPermissions) =>
-          category.permissions.every((p) =>
+          category.permissions?.every((p) =>
             initialPermissionIds.includes(p.id),
           ),
         )
@@ -109,10 +130,6 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
     permissionsCategory?.data,
     permissionsOfPermissionCateogory?.data,
     categoryOfPermission.name,
-    checkedChildren.length,
-    setCheckedChildren,
-    setCheckedParents,
-    form,
   ]);
 
   const filteredData = filterData(permissionsCategory?.data);
@@ -269,6 +286,7 @@ export const PermissionUpdateForm = ({ categoryOfPermission }: Props) => {
               </FormMessage>
             )}
 
+            {/* Dialog footer */}
             <DialogFooter className="grid grid-cols-2 gap-3">
               <DialogClose asChild>
                 <Button variant="secondary">Close</Button>

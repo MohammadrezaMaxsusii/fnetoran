@@ -13,7 +13,7 @@ export const NodeSearch = ({ onSelect }: NodeSearchProps) => {
   return (
     <InputGroup className="bg-gray-darker">
       <InputGroupInput
-        placeholder="Search Device..."
+        placeholder="Search Device Id..."
         className="rounded px-2 py-1 text-sm w-100"
         onKeyDown={(e) => {
           if (e.key === "Enter") {

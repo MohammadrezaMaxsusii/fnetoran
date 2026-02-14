@@ -40,10 +40,12 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useCheckboxTree } from "../hooks/useCheckboxTree";
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 export const PermissionCreateForm = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [errors, setErrors] = useState<{ message: string }[] | undefined>(undefined);
-
+  const [errors, setErrors] = useState<{ message: string }[]>();
   const { permissionsCategory } = usePermissionsCategoryQuery();
   const {
     createPremissionsCategoryAction,
@@ -58,6 +60,7 @@ export const PermissionCreateForm = () => {
     },
   });
 
+  // Check box tree hook
   const {
     checkedChildren,
     search,
@@ -68,10 +71,11 @@ export const PermissionCreateForm = () => {
     isParentChecked,
     setCheckedChildren,
     setCheckedParents,
-  } = useCheckboxTree(form);
+  } = useCheckboxTree(form, "permissionIds");
 
   const filteredData = filterData(permissionsCategory?.data);
 
+  // Submit handler
   const submitHandler = async () => {
     try {
       const values = form.getValues();
