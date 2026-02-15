@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { PaginationItem, PaginationLink } from "./ui/pagination";
+import ArrowIcon from "@/shared/icons/blueArrow.svg?react";
 
 interface Props {
   disable: boolean;
@@ -16,11 +17,7 @@ export const CustomPaginationPrevious = ({ disable, onClick }: Props) => {
           !disable && "cursor-pointer"
         )}
       >
-        <img
-          src="/icons/blueArrow.svg"
-          alt="left arrow icon"
-          className="size-4"
-        />
+        <ArrowIcon className="size-4" />
       </PaginationLink>
     </PaginationItem>
   );
