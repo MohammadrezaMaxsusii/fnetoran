@@ -9,6 +9,7 @@ export const useFileQuery = (id: string) => {
   } = useQuery({
     queryKey: ["file", id],
     queryFn: () => getFile(id),
+    retry: false
   });
 
   return {

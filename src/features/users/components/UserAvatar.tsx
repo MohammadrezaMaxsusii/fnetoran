@@ -20,12 +20,10 @@ export const UserAvatar = ({ profileId, className }: Props) => {
   }, [file]);
 
   return (
-    <div className="border-2 border-orange rounded-full size-8">
-      <img
-        src={imageUrl ?? "/icons/user.svg"}
-        alt="profile image"
-        className={`size-full rounded-full object-cover ${className}`}
-      />
-    </div>
+    <img
+      src={imageUrl ?? "/icons/user.svg"}
+      alt="profile image"
+      className={`size-full rounded-full object-cover ${className}`}
+    />
   );
 };

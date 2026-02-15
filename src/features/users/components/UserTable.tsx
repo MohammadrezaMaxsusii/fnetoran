@@ -381,7 +381,17 @@ export const UserTable = () => {
                   {/* User info */}
                   <TableCell className="px-4 py-2 border-y border-default">
                     <div className="flex items-center gap-4">
-                      <UserAvatar profileId={user.profileId} />
+                      <div className="border-2 border-orange rounded-full size-8">
+                        {user.profileId ? (
+                          <UserAvatar profileId={user.profileId} />
+                        ) : (
+                          <img
+                            src="/icons/user.svg"
+                            alt="profile image"
+                            className="size-full rounded-full object-cover"
+                          />
+                        )}
+                      </div>
 
                       <div className="flex flex-col">
                         <span className="text-sm font-bold capitalize">
