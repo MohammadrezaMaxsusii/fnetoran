@@ -1,6 +1,8 @@
 import { useLocation } from "react-router";
 import { Profile } from "./Profile";
 
+// This feature is temporarily mocked because the backend API is not ready yet;
+
 export const AppHeader = () => {
   const location = useLocation();
   const title = location.pathname.split("/")[1];
