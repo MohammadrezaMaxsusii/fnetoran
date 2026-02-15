@@ -1,2 +1,3 @@
 export * from "./RolesTable";
-export * from "./RoleCreateOrUpdate";
+export * from "./RoleCreate";
+export * from "./RoleUpdate";

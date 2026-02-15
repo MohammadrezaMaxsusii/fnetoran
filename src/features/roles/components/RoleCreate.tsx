@@ -72,7 +72,7 @@ interface Props {
 // This implementation follows the current (problematic) API behavior.
 // Component must be adjusted after the API is corrected.
 
-export const RoleCreateOrUpdate = ({ role }: Props) => {
+export const RoleCreate = ({ role }: Props) => {
   const [step, setStep] = useState(1);
   const [openModal, setOpenModal] = useState(false);
   const [errors, setErrors] = useState<{ message: string }[]>();

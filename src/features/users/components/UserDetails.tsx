@@ -18,12 +18,15 @@ import {
 import { genderItems } from "../constants";
 import { getDate, getEndTime, getTime } from "@/shared/utils";
 import type { User } from "../types";
+import { useNavigate } from "react-router";
 
 interface Props {
   user: User;
 }
 
 export const UserDetails = ({ user }: Props) => {
+  const navigate = useNavigate();
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -229,7 +232,7 @@ export const UserDetails = ({ user }: Props) => {
 
         {/* Dialog footer */}
         <DialogFooter className="grid grid-cols-2 gap-3">
-          <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker">
+          <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker" onClick={() => navigate(`/users/update/${user.id}`)}>
             <img src="/icons/edit.svg" alt="edit icon" className="size-5" />
             Edit User
           </Button>

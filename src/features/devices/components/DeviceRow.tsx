@@ -146,7 +146,7 @@ export const DeviceRow = ({ device }) => {
           )}
         >
           <div className="flex items-center gap-4">
-            <div className="border-2 border-orange rounded-full size-12 bg-white">
+            <div className="border-2 border-orange rounded-full size-8 bg-white">
               {/* To do fetch user profile */}
               <img
                 src={`/images/os/${device.vendor}.svg`}

@@ -54,7 +54,7 @@ import { Input } from "@/components/ui/input";
 import RolesIcon from "@/shared/icons/roles.svg?react";
 import ViewIcon from "@/shared/icons/view.svg?react";
 import { TablePagination } from "@/components/TablePagination";
-import { RoleCreateOrUpdate } from "./RoleCreateOrUpdate";
+import { RoleCreate } from "./RoleCreate";
 import { RoleUpdate } from "./RoleUpdate";
 import { toast } from "sonner";
 
@@ -89,7 +89,7 @@ export const RolesTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Roles List</span>
-        <RoleCreateOrUpdate />
+        <RoleCreate />
       </div>
 
       <div className="px-7">
@@ -326,6 +326,9 @@ export const RolesTable = () => {
                     <RoleUpdate role={role} />
 
                     {/* Delete role */}
+                    {/* This implementation follows the current (problematic) API behavior.
+                      Component must be adjusted after the API is corrected.
+                    */}
                     <DeleteModal
                       title="Role"
                       isLoading={deleteRoleAction.isPending}

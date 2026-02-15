@@ -61,6 +61,9 @@ import EditIcon from "@/shared/icons/edit.svg?react";
 import { UserAvatar } from "./UserAvatar";
 import { toast } from "sonner";
 
+// This implementation follows the current (problematic) API behavior.
+// Component must be adjusted after the API is corrected.
+
 type FilterFormValues = {
   active?: boolean;
   createdAt?: string;
@@ -419,6 +422,9 @@ export const UserTable = () => {
                   {/* Operation section */}
                   <TableCell className="w-1/5 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* edit user */}
+                    {/* This implementation follows the current (problematic) API behavior.
+                        Component must be adjusted after the API is corrected.
+                    */}
                     <Button
                       className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6"
                       onClick={() => navigate(`/users/update/${user.id}`)}

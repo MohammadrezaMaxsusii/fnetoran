@@ -130,7 +130,7 @@ export const TerminalInstance = ({ id }: Props) => {
 
       {/* Terminal container */}
       <div className="size-full bg-[#0f1115] p-4">
-        <div ref={containerRef} className="h-full text-sm focus:outline-none"
+        <div ref={containerRef} className="h-[calc(100vh-230px)] text-sm focus:outline-none"
              onClick={() => containerRef.current?.querySelector("textarea")?.focus()} />
       </div>
     </>
