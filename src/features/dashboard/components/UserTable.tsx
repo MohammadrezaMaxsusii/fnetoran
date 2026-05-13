@@ -12,7 +12,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { UserAvatar } from "@/features/users/components";
+import { Avatar } from "@/features/users/components";
 
 export const UserTable = () => {
   const { users, usersIsLoading } = useUsersQuery({ list_limit: "3" });
@@ -116,7 +116,7 @@ export const UserTable = () => {
                 <div className="flex items-center gap-4">
                   <div className="border-2 border-orange rounded-full size-8">
                     {user.profileId ? (
-                      <UserAvatar profileId={user.profileId} />
+                      <Avatar avatarId={user.profileId} />
                     ) : (
                       <img
                         src="/icons/user.svg"

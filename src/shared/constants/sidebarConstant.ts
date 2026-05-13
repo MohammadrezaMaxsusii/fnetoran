@@ -61,5 +61,16 @@ export const sidebarItems = [
       },
     ],
   },
+  {
+    title: "Adminstration",
+    url: "/adminstration",
+    icon: "/icons/adminstration.svg",
+    children: [
+      {
+        title: "Organization",
+        url: "/adminstration/organization",
+      },
+    ],
+  },
   // { title: "Retrofit", url: "/retrofit", icon: "/icons/retrofit.svg" },
 ];

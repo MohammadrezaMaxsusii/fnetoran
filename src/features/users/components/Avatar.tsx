@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useFileQuery } from "@/shared/hooks/useFileQuery";
 
 interface Props {
-  profileId: string;
+  avatarId: string;
   className?: string;
 }
 
-export const UserAvatar = ({ profileId, className }: Props) => {
-  const { file } = useFileQuery(profileId);
+export const Avatar = ({ avatarId, className }: Props) => {
+  const { file } = useFileQuery(avatarId);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
