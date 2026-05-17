@@ -70,6 +70,10 @@ export const sidebarItems = [
         title: "Organization",
         url: "/adminstration/organization",
       },
+      {
+        title: "Assets",
+        url: "/adminstration/assets",
+      },
     ],
   },
   // { title: "Retrofit", url: "/retrofit", icon: "/icons/retrofit.svg" },
