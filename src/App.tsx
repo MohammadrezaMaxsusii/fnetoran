@@ -18,6 +18,7 @@ import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 import { Error } from "./components/Error";
 import { OrganizationsRoutes } from "./features/organization/routes";
 import { AssetsRoutes } from "./features/assets/routes";
+import { LocationsRoutes } from "./features/locations/routes";
 
 // UI is not responsive and currently only designed for large screen sizes; adjustments for smaller screens depend on future enhancements.
 
@@ -51,6 +52,7 @@ export const App = () => {
             {AutoDiscoveryRoutes}
             {OrganizationsRoutes}
             {AssetsRoutes}
+            {LocationsRoutes}
           </Route>
         </Routes>
       </ErrorBoundary>

@@ -74,6 +74,10 @@ export const sidebarItems = [
         title: "Assets",
         url: "/adminstration/assets",
       },
+      {
+        title: "Locations",
+        url: "/adminstration/locations",
+      },
     ],
   },
   // { title: "Retrofit", url: "/retrofit", icon: "/icons/retrofit.svg" },
