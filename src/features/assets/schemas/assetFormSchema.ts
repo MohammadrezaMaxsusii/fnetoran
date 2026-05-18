@@ -1,0 +1,26 @@
+import { z } from "zod";
+
+export const assetFormSchema = z.object({
+  asset_type_id: z.number(),
+  name: z.string(),
+  asset_tag: z.string().optional(),
+  serial_number: z.string().optional(),
+  vendor_id: z.number().optional(),
+  model: z.string().optional(),
+  series: z.string().optional(),
+  hostname: z.string().optional(),
+  ip_address: z.string().optional(),
+  mac_address: z.string().optional(),
+  status: z.string().optional(),
+  condition: z.string().optional(),
+  location_id: z.number().optional(),
+  department_id: z.number().optional(),
+  assigned_to_user_id: z.number().optional(),
+  purchase_date: z.string().optional(),
+  purchase_price: z.number().optional(),
+  warranty_expiry: z.string().optional(),
+  is_active: z.stringbool().optional(),
+  //   specifications: {},
+  description: z.string().optional(),
+  notes: z.string().optional(),
+});

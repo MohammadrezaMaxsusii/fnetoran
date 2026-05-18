@@ -1,8 +1,9 @@
 import { Route } from "react-router";
-import { AssetTypesPage } from "./pages";
+import { AssetsPage, AssetTypesPage } from "./pages";
 
 export const AssetsRoutes = (
-    <Route path="adminstration/assets">
-        <Route index element={<AssetTypesPage />} />
-    </Route>
-)
+  <Route path="adminstration/assets">
+    <Route index element={<AssetTypesPage />} />
+    <Route path=":id" element={<AssetsPage />} />
+  </Route>
+);

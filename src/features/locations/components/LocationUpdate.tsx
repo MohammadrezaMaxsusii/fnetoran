@@ -66,7 +66,7 @@ export const LocationUpdate = ({ location }: Props) => {
   return (
     <Dialog open={openModal} onOpenChange={setOpenModal}>
       <DialogTrigger asChild>
-        <span className="inline-block size-full p-2 cursor-pointer">Update</span>
+        <span className="inline-block size-full p-2 cursor-pointer">Update location</span>
       </DialogTrigger>
 
       <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8">

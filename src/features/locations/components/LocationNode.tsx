@@ -52,7 +52,7 @@ export const LocationNode = ({ location }: Props) => {
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="max-w-50">
               <DropdownMenuItem asChild>
                 <LocationCreate parentId={location.id} />
               </DropdownMenuItem>
@@ -65,7 +65,7 @@ export const LocationNode = ({ location }: Props) => {
                 className="inline-block size-full p-2 cursor-pointer text-base text-red-500 hover:text-white! hover:bg-red-500!"
                 onClick={handleDelete}
               >
-                Delete
+                Delete location
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
