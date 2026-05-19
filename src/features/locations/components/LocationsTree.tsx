@@ -3,8 +3,8 @@ import { LocationNode } from "./LocationNode";
 import { useLocationsQuery } from "../hooks";
 import type { LocationTree } from "../types";
 import { LocationCreate } from "./LocationCreate";
-import { Button } from "@headlessui/react";
 import AddIcon from "@/shared/icons/plus.svg?react";
+import { Button } from "@/components/ui/button";
 
 // To do refactor
 
@@ -35,11 +35,11 @@ export const LocationsTree = () => {
       </TreeNode>
     );
   };
-  
+
   if (!treeData.length) {
     return (
-      <Button className="bg-primary rounded-md flex items-center ms-auto text-sm">
-        <AddIcon className="text-foreground ms-2" />
+      <Button className="flex items-center p-0 ms-auto">
+        <AddIcon className="text-foreground" />
         <LocationCreate />
       </Button>
     );

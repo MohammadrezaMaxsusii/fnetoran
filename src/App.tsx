@@ -19,6 +19,7 @@ import { Error } from "./components/Error";
 import { OrganizationsRoutes } from "./features/organization/routes";
 import { AssetsRoutes } from "./features/assets/routes";
 import { LocationsRoutes } from "./features/locations/routes";
+import { DepartmentsRoutes } from "./features/departments/routes";
 
 // UI is not responsive and currently only designed for large screen sizes; adjustments for smaller screens depend on future enhancements.
 
@@ -53,6 +54,7 @@ export const App = () => {
             {OrganizationsRoutes}
             {AssetsRoutes}
             {LocationsRoutes}
+            {DepartmentsRoutes}
           </Route>
         </Routes>
       </ErrorBoundary>

@@ -1,0 +1,5 @@
+export * from "./DepartmentsTree";
+export * from "./DepartmentCreate";
+export * from "./DepartmentUpdate";
+export * from "./DepartmentDetails";
+export * from "./DepartmentNode";

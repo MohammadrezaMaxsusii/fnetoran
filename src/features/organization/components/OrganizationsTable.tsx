@@ -58,6 +58,8 @@ import { OrganizationCreate } from "./OrganizationCreate";
 import { OrganizationUpdate } from "./OrganizationUpdate";
 import { toast } from "sonner";
 import { Avatar } from "@/features/users/components";
+import ViewIcon from "@/shared/icons/view.svg?react";
+import { useNavigate } from "react-router";
 
 type FilterFormValues = {
   createdAt: string;
@@ -67,6 +69,7 @@ type FilterFormValues = {
 };
 
 export const OrganizationsTable = () => {
+  const navigate = useNavigate();
   const { filters, updateFilters } = useOrganizationsFilters();
   const { organizations, organizationsIsLoading } =
     useOrganizationsQuery(filters);
@@ -365,7 +368,7 @@ export const OrganizationsTable = () => {
                   </TableCell>
 
                   {/* Operation section */}
-                  <TableCell className="w-1/5 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                  <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* Edit organization */}
                     <OrganizationUpdate organization={organization} />
 
@@ -385,6 +388,14 @@ export const OrganizationsTable = () => {
                         })
                       }
                     />
+
+                    {/* Departments of organization */}
+                    <Button
+                      className="p-2.5!"
+                      onClick={() => navigate(`/adminstration/departments/${organization.id}`)}
+                    >
+                      <ViewIcon className="size-5" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
