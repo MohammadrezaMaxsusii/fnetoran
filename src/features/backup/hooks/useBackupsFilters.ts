@@ -20,7 +20,7 @@ export const useBackupsFilters = () => {
     if (list_sort) params.list_sort = list_sort;
     if (list_page) params.list_page = list_page;
 
-    setSearchParams(params);
+    setSearchParams(params, { replace: true });
   }, [createdAt, backups, list_sort, list_page]);
 
   const updateFilters = (next: Partial<typeof filters>) => {

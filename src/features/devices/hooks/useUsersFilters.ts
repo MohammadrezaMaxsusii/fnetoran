@@ -8,8 +8,8 @@ export const useUsersFilters = () => {
       searchParams.get("active") === "true"
         ? true
         : searchParams.get("active") === "false"
-        ? false
-        : undefined,
+          ? false
+          : undefined,
     createdAt: searchParams.get("createdAt") || "",
     roleId: searchParams.get("roleId") || "",
     type: searchParams.get("type") || "",
@@ -30,7 +30,7 @@ export const useUsersFilters = () => {
     if (list_sort) params.list_sort = list_sort;
     if (list_page) params.list_page = list_page;
 
-    setSearchParams(params);
+    setSearchParams(params, { replace: true });
   }, [active, createdAt, roleId, type, list_sort, list_page]);
 
   const updateFilters = (next: Partial<typeof filters>) => {
