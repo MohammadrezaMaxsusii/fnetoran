@@ -346,8 +346,7 @@ export const AssetsTable = () => {
                   <TableCell className="px-4 py-2 text-center border-y border-default">
                     {asset.purchase_date ? (
                       <span>
-                        {getDate(asset.purchase_date)} |{" "}
-                        {getTime(asset.purchase_date)}
+                        {asset.purchase_date}
                       </span>
                     ) : (
                       <span>---</span>
