@@ -57,6 +57,7 @@ import { useAssetActions, useAssetsFilters, useAssetsQuery } from "../hooks";
 import type { Asset } from "../types";
 import AddIcon from "@/shared/icons/plus.svg?react";
 import { useNavigate, useParams } from "react-router";
+import { AssetDetails } from "./AssetDetails";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -399,12 +400,7 @@ export const AssetsTable = () => {
                     /> */}
 
                     {/* View asset */}
-                    {/* <Button
-                      className="p-2.5!"
-                      onClick={() => navigate(`/assets/${asset.id}`)}
-                    >
-                      <ViewIcon className="size-5" />
-                    </Button> */}
+                    <AssetDetails asset={asset}/>
                   </TableCell>
                 </TableRow>
               ))}
