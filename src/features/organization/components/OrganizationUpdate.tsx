@@ -100,7 +100,6 @@ export const OrganizationUpdate = ({ organization }: Props) => {
     }
   }, [organization]);
 
-  console.log(form.getValues());
   const submitHandler = async (
     input: z.infer<typeof organizationUpdateFormSchema>,
   ) => {

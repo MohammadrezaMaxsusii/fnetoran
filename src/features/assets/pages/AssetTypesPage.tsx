@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Empty,
@@ -10,17 +10,24 @@ import {
 } from "@/components/ui/empty";
 import DeviceIcon from "@/shared/icons/devices.svg?react";
 import { useAssetTypesQuery } from "../hooks/useAssetTypesQuery";
+import AddIcon from "@/shared/icons/plus.svg?react";
+import { Button } from "@/components/ui/button";
 
 export const AssetTypesPage = () => {
+  const navigate = useNavigate();
   const { assetTypes, assetTypesIsLoading } = useAssetTypesQuery();
 
   return (
     <section className="w-full pe-6 pb-6">
       <div className="bg-gray-darker rounded-2xl">
         {/* Header of section */}
-        <span className="text-lg font-bold text-primary p-7 inline-block">
-          Asset Types
-        </span>
+        <div className="flex items-center justify-between p-7">
+          <span className="text-lg font-bold text-primary">Assets List</span>
+          <Button onClick={() => navigate("/adminstration/assets/create/10")}>
+            <AddIcon className="text-foreground" />
+            Add asset
+          </Button>
+        </div>
 
         <div className="px-7">
           <Separator className="bg-default" />
@@ -74,7 +81,7 @@ export const AssetTypesPage = () => {
                         {name}
                       </Link>
                     </li>
-                  )
+                  ),
                 )}
               </ul>
             </>

@@ -55,7 +55,8 @@ import { TablePagination } from "@/components/TablePagination";
 // import { toast } from "sonner";
 import { useAssetActions, useAssetsFilters, useAssetsQuery } from "../hooks";
 import type { Asset } from "../types";
-import { useParams } from "react-router";
+import AddIcon from "@/shared/icons/plus.svg?react";
+import { useNavigate, useParams } from "react-router";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -68,6 +69,7 @@ type FilterFormValues = {
 export const AssetsTable = () => {
   const { id } = useParams();
   const { filters, updateFilters } = useAssetsFilters();
+  const navigate = useNavigate();
   const { assets, assetsIsLoading } = useAssetsQuery({
     ...filters,
     asset_type_id: id,
@@ -93,7 +95,12 @@ export const AssetsTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Assets List</span>
-        {/* <AssetCreate /> */}
+        <Button
+          onClick={() => navigate(`/adminstration/assets/create/${id}`)}
+        >
+          <AddIcon className="text-foreground" />
+          Add asset
+        </Button>
       </div>
 
       <div className="px-7">

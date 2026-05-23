@@ -16,3 +16,8 @@ export const deleteAsset = async (id: number) => {
   const { data } = await api.delete(`/assets/assets/delete/${id}`);
   return data;
 };
+
+export const getAssetFields = async (id: string) => {
+  const { data } = await api.get(`/asset-fields/by-type/${id}`);
+  return data;
+};
