@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { getDate, getTime } from "@/shared/utils";
 import {
   Empty,
   EmptyContent,
@@ -53,11 +52,18 @@ import { TablePagination } from "@/components/TablePagination";
 // import { AssetCreate } from "./AssetCreate";
 // import { AssetUpdate } from "./AssetUpdate";
 // import { toast } from "sonner";
-import { useAssetActions, useAssetsFilters, useAssetsQuery } from "../hooks";
-import type { Asset } from "../types";
+import {
+  useAssetActions,
+  useAssetsFilters,
+  useAssetsQuery,
+  useAssetTypesQuery,
+} from "../hooks";
+import type { Asset, AssetType } from "../types";
 import AddIcon from "@/shared/icons/plus.svg?react";
 import { useNavigate, useParams } from "react-router";
 import { AssetDetails } from "./AssetDetails";
+import { DeleteModal } from "@/components/DeleteModal";
+import { toast } from "sonner";
 
 type FilterFormValues = {
   createdAt?: string;
@@ -65,16 +71,15 @@ type FilterFormValues = {
   is_active?: string;
   list_sort?: string;
   list_page?: number;
+  asset_type_id?: string;
 };
 
 export const AssetsTable = () => {
   const { id } = useParams();
   const { filters, updateFilters } = useAssetsFilters();
   const navigate = useNavigate();
-  const { assets, assetsIsLoading } = useAssetsQuery({
-    ...filters,
-    asset_type_id: id,
-  });
+  const { assetTypes } = useAssetTypesQuery();
+  const { assets, assetsIsLoading } = useAssetsQuery(filters);
   const { deleteAssetAction } = useAssetActions();
   const [open, setOpen] = useState(false);
   const form = useForm<FilterFormValues>({
@@ -96,9 +101,7 @@ export const AssetsTable = () => {
       {/* Header of table */}
       <div className="flex items-center justify-between p-7">
         <span className="text-lg font-bold text-primary">Assets List</span>
-        <Button
-          onClick={() => navigate(`/adminstration/assets/create/${id}`)}
-        >
+        <Button onClick={() => navigate(`/adminstration/assets/create/10`)}>
           <AddIcon className="text-foreground" />
           Add asset
         </Button>
@@ -130,6 +133,44 @@ export const AssetsTable = () => {
                       value={field.value}
                       onChange={field.onChange}
                     />
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="asset_type_id"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormLabel
+                    htmlFor="asset_type_id"
+                    className="text-gray-lighter font-normal"
+                  >
+                    Asset type:
+                  </FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="asset_type_id"
+                        className="w-45 bg-muted border-default opacity-100! [&_svg:not([class*='text-'])]:text-foreground [&_svg:not([class*='text-'])]:opacity-100"
+                      >
+                        <SelectValue placeholder="Select asset type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {assetTypes?.data.map((assetType: AssetType) => (
+                          <SelectItem
+                            key={assetType.id}
+                            value={String(assetType.id)}
+                            className="hover:bg-primary! hover:text-foreground! [&_svg:not([class*='text-'])]:text-forground"
+                          >
+                            {assetType.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormDescription />
                   <FormMessage />
@@ -346,9 +387,7 @@ export const AssetsTable = () => {
                   {/* Asset purchase date */}
                   <TableCell className="px-4 py-2 text-center border-y border-default">
                     {asset.purchase_date ? (
-                      <span>
-                        {asset.purchase_date}
-                      </span>
+                      <span>{asset.purchase_date}</span>
                     ) : (
                       <span>---</span>
                     )}
@@ -375,17 +414,17 @@ export const AssetsTable = () => {
                   </TableCell>
 
                   {/* Operation section */}
-                  <TableCell className="w-1/4 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
+                  <TableCell className="w-1/11 px-4 py-2 text-center rounded-r-lg space-x-1.5 border-y border-e border-default">
                     {/* Edit asset */}
                     {/* <AssetUpdate asset={asset} /> */}
 
                     {/* Delete asset */}
-                    {/* <DeleteModal
+                    <DeleteModal
                       title="Asset"
                       isLoading={deleteAssetAction.isPending}
                       onClick={() =>
-                        deleteRoleAction.mutate(
-                          { assetId: asset.id },
+                        deleteAssetAction.mutate(
+                          asset.id,
                           {
                             onSuccess: (data) => {
                               toast.success(data.message);
@@ -397,10 +436,10 @@ export const AssetsTable = () => {
                           },
                         )
                       }
-                    /> */}
+                    />
 
                     {/* View asset */}
-                    <AssetDetails asset={asset}/>
+                    <AssetDetails asset={asset} />
                   </TableCell>
                 </TableRow>
               ))}
