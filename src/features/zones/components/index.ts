@@ -1,3 +1,3 @@
-export * from "./ZonesTable";
-export * from "./ZoneCreate";
-export * from "./ZoneUpdate";
+export * from './ZonesTable'
+export * from './ZoneCreate'
+export * from './ZoneUpdate'

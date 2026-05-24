@@ -1,149 +1,153 @@
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertCircleIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog'
+import { FieldError } from '@/components/ui/field'
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { zoneCreateSchema } from "../schemas";
-import { AlertCircleIcon } from "lucide-react";
-import { useState } from "react";
-import { z } from "zod";
-import { useZoneActions } from "../hooks";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import EditIcon from "@/shared/icons/edit.svg?react";
-import type { Zone } from "../types/zoneType";
-import { FieldError } from "@/components/ui/field";
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import EditIcon from '@/shared/icons/edit.svg?react'
+
+import { useZoneActions } from '../hooks'
+import { zoneCreateSchema } from '../schemas'
+import type { Zone } from '../types/zoneType'
 
 export const ZoneUpdate = ({ currentZone }: { currentZone: Zone }) => {
-  const [openModal, setOpenModal] = useState(false);
-  const [errors, setErrors] = useState<{ message: string }[]>();
-  const { updateZoneAction } = useZoneActions();
-  const form = useForm({
-    resolver: zodResolver(zoneCreateSchema),
-    defaultValues: {
-      name: currentZone?.name,
-      description: currentZone?.description,
-    },
-  });
+	const [openModal, setOpenModal] = useState(false)
+	const [errors, setErrors] = useState<{ message: string }[]>()
+	const { updateZoneAction } = useZoneActions()
+	const form = useForm({
+		resolver: zodResolver(zoneCreateSchema),
+		defaultValues: {
+			name: currentZone?.name,
+			description: currentZone?.description
+		}
+	})
 
-  const submitHandler = async (input: z.infer<typeof zoneCreateSchema>) => {
-    try {
-      await updateZoneAction.mutateAsync({ id: currentZone.id, input });
-      form.reset();
-      setOpenModal(false);
-      setErrors(undefined);
-    } catch (error) {
-      if (error instanceof Array) setErrors(error);
-    }
-  };
+	const submitHandler = async (input: z.infer<typeof zoneCreateSchema>) => {
+		try {
+			await updateZoneAction.mutateAsync({ id: currentZone.id, input })
+			form.reset()
+			setOpenModal(false)
+			setErrors(undefined)
+		} catch (error) {
+			if (error instanceof Array) setErrors(error)
+		}
+	}
 
-  return (
-    <Dialog open={openModal} onOpenChange={setOpenModal}>
-      <DialogTrigger asChild>
-        <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-          <EditIcon className="size-5 text-blue-darker" />
-          Edit Zone
-        </Button>
-      </DialogTrigger>
+	return (
+		<Dialog open={openModal} onOpenChange={setOpenModal}>
+			<DialogTrigger asChild>
+				<Button className='bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6'>
+					<EditIcon className='size-5 text-blue-darker' />
+					Edit Zone
+				</Button>
+			</DialogTrigger>
 
-      <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8">
-        {/* Dialog header */}
-        <DialogHeader className="gap-4">
-          <DialogTitle className="text-lg font-bold">Add zone</DialogTitle>
-          <DialogDescription className="hidden">
-            Add another feed
-          </DialogDescription>
-          {errors && (
-            <Alert variant="destructive">
-              <AlertCircleIcon />
-              <AlertTitle>Something went wrong!</AlertTitle>
-              <AlertDescription>
-                <FieldError errors={errors} />
-              </AlertDescription>
-            </Alert>
-          )}
-        </DialogHeader>
+			<DialogContent className='bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:end-8'>
+				{/* Dialog header */}
+				<DialogHeader className='gap-4'>
+					<DialogTitle className='text-lg font-bold'>
+						Add zone
+					</DialogTitle>
+					<DialogDescription className='hidden'>
+						Add another feed
+					</DialogDescription>
+					{errors && (
+						<Alert variant='destructive'>
+							<AlertCircleIcon />
+							<AlertTitle>Something went wrong!</AlertTitle>
+							<AlertDescription>
+								<FieldError errors={errors} />
+							</AlertDescription>
+						</Alert>
+					)}
+				</DialogHeader>
 
-        <Form {...form}>
-          <form
-            className="flex flex-col gap-8 py-4 w-full"
-            onSubmit={form.handleSubmit(submitHandler)}
-          >
-            <FormField
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    htmlFor="name"
-                    className="text-gray-lighter font-normal ps-0.5"
-                  >
-                    Name:
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+				<Form {...form}>
+					<form
+						className='flex flex-col gap-8 py-4 w-full'
+						onSubmit={form.handleSubmit(submitHandler)}
+					>
+						<FormField
+							name='name'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel
+										htmlFor='name'
+										className='text-gray-lighter font-normal ps-0.5'
+									>
+										Name:
+									</FormLabel>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your name'
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    htmlFor="description"
-                    className="text-gray-lighter font-normal ps-0.5"
-                  >
-                    Description:
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+						<FormField
+							name='description'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel
+										htmlFor='description'
+										className='text-gray-lighter font-normal ps-0.5'
+									>
+										Description:
+									</FormLabel>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your description'
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            {/* Dialog footer */}
-            <DialogFooter className="grid grid-cols-2 gap-3">
-              <Button
-                type="submit"
-                className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
-              >
-                Update
-              </Button>
-              <DialogClose asChild>
-                <Button variant="secondary">Close</Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-};
+						{/* Dialog footer */}
+						<DialogFooter className='grid grid-cols-2 gap-3'>
+							<Button
+								type='submit'
+								className='bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker'
+							>
+								Update
+							</Button>
+							<DialogClose asChild>
+								<Button variant='secondary'>Close</Button>
+							</DialogClose>
+						</DialogFooter>
+					</form>
+				</Form>
+			</DialogContent>
+		</Dialog>
+	)
+}

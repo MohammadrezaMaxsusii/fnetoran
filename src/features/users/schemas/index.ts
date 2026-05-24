@@ -1,1 +1,1 @@
-export * from "./userCreateOrUpdateSchema";
+export * from './userCreateOrUpdateSchema'

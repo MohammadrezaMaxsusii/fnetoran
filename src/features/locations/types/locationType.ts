@@ -1,8 +1,9 @@
-import { z } from "zod";
-import type { locationFormSchema } from "../schemas";
+import { z } from 'zod'
 
-export type Location = z.infer<typeof locationFormSchema>;
+import type { locationFormSchema } from '../schemas'
+
+export type Location = z.infer<typeof locationFormSchema>
 
 export type LocationTree = Location & {
-  children: LocationTree[];
-};
+	children: LocationTree[]
+}

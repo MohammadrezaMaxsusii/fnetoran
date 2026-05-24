@@ -1,32 +1,34 @@
-import { api } from "@/shared/libs/axiosInstance";
-import z from "zod";
-import type { deviceCreateSchema } from "../schemas";
+import z from 'zod'
+
+import { api } from '@/shared/libs/axiosInstance'
+
+import type { deviceCreateSchema } from '../schemas'
 
 export const getDevice = async (id: string) => {
-  const { data } = await api.get(`/devices/info/${id}`);
-  return data;
-};
+	const { data } = await api.get(`/devices/info/${id}`)
+	return data
+}
 
 export const deleteDevice = async (id: number) => {
-  const { data } = await api.delete(`/devices/delete/${id}`);
-  return data;
-};
+	const { data } = await api.delete(`/devices/delete/${id}`)
+	return data
+}
 
 export const createDevice = async (
-  input: z.infer<typeof deviceCreateSchema>,
+	input: z.infer<typeof deviceCreateSchema>
 ) => {
-  const { data } = await api.post("/devices/create", input);
-  return data;
-};
+	const { data } = await api.post('/devices/create', input)
+	return data
+}
 
 export const createDeviceCredential = async (
-  input: z.infer<typeof deviceCreateSchema>,
+	input: z.infer<typeof deviceCreateSchema>
 ) => {
-  const { data } = await api.post("/devicesCredential/create", input);
-  return data;
-};
+	const { data } = await api.post('/devicesCredential/create', input)
+	return data
+}
 
 export const registerForFirewall = async (id: number) => {
-  const { data } = await api.post(`/devices/firewall/ip_block/register/${id}`);
-  return data;
-};
+	const { data } = await api.post(`/devices/firewall/ip_block/register/${id}`)
+	return data
+}

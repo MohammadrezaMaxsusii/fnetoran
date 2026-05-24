@@ -1,41 +1,42 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router'
+
 import {
-  createBasicDeviceScan,
-  createBasicDeviceScanStart,
-  deleteBasicDeviceScan,
-} from "../api";
-import { useNavigate } from "react-router";
+	createBasicDeviceScan,
+	createBasicDeviceScanStart,
+	deleteBasicDeviceScan
+} from '../api'
 
 export const useDeviceScanActions = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
+	const queryClient = useQueryClient()
+	const navigate = useNavigate()
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["devices-scan"],
-    });
-  };
+	const onSuccess = () => {
+		queryClient.invalidateQueries({
+			queryKey: ['devices-scan']
+		})
+	}
 
-  const createBasicDeviceScanAction = useMutation({
-    mutationFn: createBasicDeviceScan,
-    onSuccess: () => {
-      navigate("/devices/scan");
-    },
-  });
+	const createBasicDeviceScanAction = useMutation({
+		mutationFn: createBasicDeviceScan,
+		onSuccess: () => {
+			navigate('/devices/scan')
+		}
+	})
 
-  const createBasicScanStartAction = useMutation({
-    mutationFn: createBasicDeviceScanStart,
-    onSuccess,
-  });
+	const createBasicScanStartAction = useMutation({
+		mutationFn: createBasicDeviceScanStart,
+		onSuccess
+	})
 
-  const deleteBasicDeviceScanAction = useMutation({
-    mutationFn: deleteBasicDeviceScan,
-    onSuccess,
-  });
+	const deleteBasicDeviceScanAction = useMutation({
+		mutationFn: deleteBasicDeviceScan,
+		onSuccess
+	})
 
-  return {
-    createBasicDeviceScanAction,
-    deleteBasicDeviceScanAction,
-    createBasicScanStartAction,
-  };
-};
+	return {
+		createBasicDeviceScanAction,
+		deleteBasicDeviceScanAction,
+		createBasicScanStartAction
+	}
+}

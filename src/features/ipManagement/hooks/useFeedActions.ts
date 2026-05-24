@@ -1,33 +1,38 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteFeed } from "../api";
-import type z from "zod";
-import { api } from "@/shared/libs/axiosInstance";
-import type { apiCreateSchema } from "../schemas";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type z from 'zod'
+
+import { api } from '@/shared/libs/axiosInstance'
+
+import { deleteFeed } from '../api'
+import type { apiCreateSchema } from '../schemas'
 
 export const useFeedActions = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient()
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["apis"],
-    });
-  };
+	const onSuccess = () => {
+		queryClient.invalidateQueries({
+			queryKey: ['apis']
+		})
+	}
 
-  const createFeedAction = useMutation({
-    mutationFn: async (input: z.infer<typeof apiCreateSchema>) => {
-      const { data } = await api.post("/devices/firewall/ip_block/request", input);
-      return data;
-    },
-    onSuccess,
-  });
+	const createFeedAction = useMutation({
+		mutationFn: async (input: z.infer<typeof apiCreateSchema>) => {
+			const { data } = await api.post(
+				'/devices/firewall/ip_block/request',
+				input
+			)
+			return data
+		},
+		onSuccess
+	})
 
-  const deleteFeedAction = useMutation({
-    mutationFn: deleteFeed,
-    onSuccess,
-  });
+	const deleteFeedAction = useMutation({
+		mutationFn: deleteFeed,
+		onSuccess
+	})
 
-  return {
-    createFeedAction,
-    deleteFeedAction,
-  };
-};
+	return {
+		createFeedAction,
+		deleteFeedAction
+	}
+}

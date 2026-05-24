@@ -1,6 +1,7 @@
-import { Route } from "react-router";
-import { AutoDiscoveryPage } from "./pages";
+import { Route } from 'react-router'
+
+import { AutoDiscoveryPage } from './pages'
 
 export const AutoDiscoveryRoutes = (
-  <Route path="devices/auto-discovery" element={<AutoDiscoveryPage />} />
-);
+	<Route path='devices/auto-discovery' element={<AutoDiscoveryPage />} />
+)

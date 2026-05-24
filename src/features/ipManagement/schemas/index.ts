@@ -1,1 +1,1 @@
-export * from "./apiCreateSchema";
+export * from './apiCreateSchema'

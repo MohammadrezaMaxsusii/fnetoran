@@ -1,3 +1,3 @@
-export * from "./OrganizationsTable";
-export * from "./OrganizationCreate";
-export * from "./OrganizationUpdate";
+export * from './OrganizationsTable'
+export * from './OrganizationCreate'
+export * from './OrganizationUpdate'

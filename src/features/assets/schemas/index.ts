@@ -1,1 +1,1 @@
-export * from "./assetFormSchema";
+export * from './assetFormSchema'

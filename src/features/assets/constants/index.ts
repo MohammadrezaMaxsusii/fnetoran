@@ -1,1 +1,1 @@
-export * from "./assetTableConstat";
+export * from './assetTableConstat'

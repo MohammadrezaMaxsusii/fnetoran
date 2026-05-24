@@ -1,2 +1,2 @@
-export * from "./AssetsPage";
-export * from "./AssetCreatePage";
+export * from './AssetsPage'
+export * from './AssetCreatePage'

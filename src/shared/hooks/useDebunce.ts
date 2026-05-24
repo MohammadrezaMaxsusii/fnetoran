@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 interface Props {
-  value: string;
-  delay: number;
+	value: string
+	delay: number
 }
 
 export const useDebunce = ({ value, delay = 500 }: Props) => {
-  const [debuncedValue, setDebuncedValue] = useState("");
+	const [debuncedValue, setDebuncedValue] = useState('')
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebuncedValue(value), delay);
+	useEffect(() => {
+		const timer = setTimeout(() => setDebuncedValue(value), delay)
 
-    () => clearTimeout(timer);
-  }, []);
+		;() => clearTimeout(timer)
+	}, [])
 
-  return {
-    debuncedValue,
-  };
-};
+	return {
+		debuncedValue
+	}
+}

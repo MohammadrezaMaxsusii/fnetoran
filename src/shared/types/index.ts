@@ -1,3 +1,3 @@
-export * from "./weekDayType";
-export * from "./methodType";
-export * from "./dynamicFieldType";
+export * from './weekDayType'
+export * from './methodType'
+export * from './dynamicFieldType'

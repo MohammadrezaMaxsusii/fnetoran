@@ -1,1 +1,1 @@
-export * from "./backupTableConstant";
+export * from './backupTableConstant'

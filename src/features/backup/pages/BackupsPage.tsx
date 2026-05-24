@@ -1,9 +1,9 @@
-import { BackupsTable } from "../components";
+import { BackupsTable } from '../components'
 
 export const BackupsPage = () => {
-  return (
-    <div className="w-full pe-5">
-      <BackupsTable />
-    </div>
-  );
-};
+	return (
+		<div className='w-full pe-5'>
+			<BackupsTable />
+		</div>
+	)
+}

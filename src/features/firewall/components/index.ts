@@ -1,3 +1,3 @@
-export * from "./FeedsTable";
-export * from "./FeedCreate";
-export * from "./FeedDetails";
+export * from './FeedsTable'
+export * from './FeedCreate'
+export * from './FeedDetails'

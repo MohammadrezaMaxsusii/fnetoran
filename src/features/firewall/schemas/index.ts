@@ -1,1 +1,1 @@
-export * from "./feedCreateSchema";
+export * from './feedCreateSchema'

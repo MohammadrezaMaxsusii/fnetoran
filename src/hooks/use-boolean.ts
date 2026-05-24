@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 // ----------------------------------------------------------------------
 
 export const useBoolean = (defaultValue = false) => {
-  const [value, setValue] = useState(defaultValue);
+	const [value, setValue] = useState(defaultValue)
 
-  const onTrue = () => setValue(true);
+	const onTrue = () => setValue(true)
 
-  const onFalse = () => setValue(false);
+	const onFalse = () => setValue(false)
 
-  return {
-    value,
-    onTrue,
-    onFalse,
-  };
-};
+	return {
+		value,
+		onTrue,
+		onFalse
+	}
+}

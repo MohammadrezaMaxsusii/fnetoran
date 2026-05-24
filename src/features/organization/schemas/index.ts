@@ -1,1 +1,1 @@
-export * from "./organizationSchema";
+export * from './organizationSchema'

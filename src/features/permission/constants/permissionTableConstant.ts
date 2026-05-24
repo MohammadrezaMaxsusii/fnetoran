@@ -1,1 +1,1 @@
-export const permissionTableItems = ["Id", "Name", "Date", "Operation"];
+export const permissionTableItems = ['Id', 'Name', 'Date', 'Operation']

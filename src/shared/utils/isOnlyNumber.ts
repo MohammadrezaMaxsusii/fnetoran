@@ -1,3 +1,3 @@
 export const isOnlyNumber = (value: string) => {
-  return /^\d*$/.test(value);
-};
+	return /^\d*$/.test(value)
+}

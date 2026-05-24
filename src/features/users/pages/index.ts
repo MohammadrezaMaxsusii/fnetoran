@@ -1,2 +1,2 @@
-export * from "./UsersPage";
-export * from "./UserCreateOrUpdatePage";
+export * from './UsersPage'
+export * from './UserCreateOrUpdatePage'

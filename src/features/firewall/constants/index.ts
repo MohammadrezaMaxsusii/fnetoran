@@ -1,1 +1,1 @@
-export * from "./feedTableConstant";
+export * from './feedTableConstant'

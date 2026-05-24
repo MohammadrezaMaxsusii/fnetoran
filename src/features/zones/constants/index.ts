@@ -1,1 +1,1 @@
-export * from "./zoneTableConstant";
+export * from './zoneTableConstant'

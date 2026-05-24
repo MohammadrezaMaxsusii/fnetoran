@@ -1,80 +1,81 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  addToZone,
-  fetchAssets,
-  fetchCis,
-  fetchHistory,
-  get,
-  loadAssets,
-} from "../api";
-import { toast } from "sonner";
-import { useParams } from "react-router";
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router'
+import { toast } from 'sonner'
 
-export * from "./useUsersFilters";
-export * from "./useDevicesQuery";
-export * from "./useDeviceActions";
-export * from "./useDeviceTypesQuery";
-export * from "./useDeviceQuery";
+import {
+	addToZone,
+	fetchAssets,
+	fetchCis,
+	fetchHistory,
+	get,
+	loadAssets
+} from '../api'
+
+export * from './useUsersFilters'
+export * from './useDevicesQuery'
+export * from './useDeviceActions'
+export * from './useDeviceTypesQuery'
+export * from './useDeviceQuery'
 
 export const useAddToZone = () => {
-  return useMutation({
-    mutationFn: addToZone,
-    onSuccess: () => toast.success("Device added to zone"),
-  });
-};
+	return useMutation({
+		mutationFn: addToZone,
+		onSuccess: () => toast.success('Device added to zone')
+	})
+}
 
 export const useLoadAssetsQuery = (deviceId: string) => {
-  const { isSuccess, isFetching } = useQuery({
-    queryKey: ["load-assets", deviceId],
-    queryFn: () => loadAssets(deviceId),
-    enabled: !!deviceId,
-  });
+	const { isSuccess, isFetching } = useQuery({
+		queryKey: ['load-assets', deviceId],
+		queryFn: () => loadAssets(deviceId),
+		enabled: !!deviceId
+	})
 
-  return {
-    assetsSuccess: isSuccess,
-    assetsFetching: isFetching,
-  };
-};
+	return {
+		assetsSuccess: isSuccess,
+		assetsFetching: isFetching
+	}
+}
 
 export const useAssetsQuery = () => {
-  const { deviceId } = useParams();
+	const { deviceId } = useParams()
 
-  const { data, isPending } = useQuery({
-    queryKey: ["assets", deviceId],
-    queryFn: () => fetchAssets(deviceId),
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['assets', deviceId],
+		queryFn: () => fetchAssets(deviceId)
+	})
 
-  return {
-    assets: data,
-    assetsLoading: isPending,
-  };
-};
+	return {
+		assets: data,
+		assetsLoading: isPending
+	}
+}
 
 export const useCisQuery = () => {
-  const { data, isPending } = useQuery({
-    queryKey: ["cis"],
-    queryFn: fetchCis,
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['cis'],
+		queryFn: fetchCis
+	})
 
-  return {
-    cis: data,
-    cisLoading: isPending,
-  };
-};
+	return {
+		cis: data,
+		cisLoading: isPending
+	}
+}
 
 export const useHistoryQuery = () => {
-  const { deviceId } = useParams();
+	const { deviceId } = useParams()
 
-  const { data, isPending } = useQuery({
-    queryKey: ["history", deviceId],
-    queryFn: () => fetchHistory(deviceId),
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['history', deviceId],
+		queryFn: () => fetchHistory(deviceId)
+	})
 
-  return {
-    history: data,
-    historyLoading: isPending,
-  };
-};
+	return {
+		history: data,
+		historyLoading: isPending
+	}
+}
 
 // export const useDeviceQuery = () => {
 //   const { deviceId } = useParams();

@@ -1,9 +1,9 @@
-import { Terminal } from "../components";
+import { Terminal } from '../components'
 
 export const TerminalPage = () => {
-  return (
-    <div className="size-full pe-5">
-      <Terminal />
-    </div>
-  );
-};
+	return (
+		<div className='size-full pe-5'>
+			<Terminal />
+		</div>
+	)
+}

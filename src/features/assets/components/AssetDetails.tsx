@@ -1,87 +1,79 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog'
 import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item";
-import ViewIcon from "@/shared/icons/view.svg?react";
-import type { Asset } from "../types";
+	Item,
+	ItemContent,
+	ItemDescription,
+	ItemTitle
+} from '@/components/ui/item'
+import ViewIcon from '@/shared/icons/view.svg?react'
+
+import type { Asset } from '../types'
 
 interface Props {
-  asset: Asset;
+	asset: Asset
 }
 
 export const AssetDetails = ({ asset }: Props) => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="p-2.5!">
-          <ViewIcon className="size-5" />
-        </Button>
-      </DialogTrigger>
+	return (
+		<Dialog>
+			<DialogTrigger asChild>
+				<Button className='p-2.5!'>
+					<ViewIcon className='size-5' />
+				</Button>
+			</DialogTrigger>
 
-      <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8">
-        {/* Dialog header */}
-        <DialogHeader>
-          <DialogTitle className="text-lg font-bold">
-            View Asset Details
-          </DialogTitle>
-          <DialogDescription className="hidden">
-            Asset information overview
-          </DialogDescription>
-        </DialogHeader>
+			<DialogContent className='bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8'>
+				{/* Dialog header */}
+				<DialogHeader>
+					<DialogTitle className='text-lg font-bold'>
+						View Asset Details
+					</DialogTitle>
+					<DialogDescription className='hidden'>
+						Asset information overview
+					</DialogDescription>
+				</DialogHeader>
 
-        {/* Dialog content */}
-        {Object.entries(asset).map(([key, value]) => (
-          <Item key={key} className="py-1 px-0">
-            <ItemContent className="flex flex-row justify-between">
-              <ItemTitle className="font-normal text-gray-lighter">
-                {key}:
-              </ItemTitle>
+				{/* Dialog content */}
+				{Object.entries(asset).map(([key, value]) => (
+					<Item key={key} className='py-1 px-0'>
+						<ItemContent className='flex flex-row justify-between'>
+							<ItemTitle className='font-normal text-gray-lighter'>
+								{key}:
+							</ItemTitle>
 
-              <ItemDescription className="font-normal text-white capitalize">
-                {value == null || value === ""
-                  ? "---"
-                  : typeof value === "object"
-                    ? JSON.stringify(value, null, 2)
-                    : String(value)}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        ))}
+							<ItemDescription className='font-normal text-white capitalize'>
+								{value == null || value === ''
+									? '---'
+									: typeof value === 'object'
+										? JSON.stringify(value, null, 2)
+										: String(value)}
+							</ItemDescription>
+						</ItemContent>
+					</Item>
+				))}
 
-        {/* Dialog footer */}
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="secondary" className="w-full">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-
-
-
-
-
-
-
-
+				{/* Dialog footer */}
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button variant='secondary' className='w-full'>
+							Close
+						</Button>
+					</DialogClose>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	)
+}
 
 // import { Button } from "@/components/ui/button";
 // import {

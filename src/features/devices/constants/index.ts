@@ -1,1 +1,1 @@
-export * from "./deviceTableConstant";
+export * from './deviceTableConstant'

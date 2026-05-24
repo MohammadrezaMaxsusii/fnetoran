@@ -1,19 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/features/users/api";
+import { useQuery } from '@tanstack/react-query'
+
+import { getUsers } from '@/features/users/api'
 
 export const useUsersQuery = (filters: Record<string, any> = {}) => {
-  const {
-    data: users,
-    isLoading: usersIsLoading,
-    isError: usersIsError,
-  } = useQuery({
-    queryKey: ["users", filters],
-    queryFn: () => getUsers(filters),
-  });
+	const {
+		data: users,
+		isLoading: usersIsLoading,
+		isError: usersIsError
+	} = useQuery({
+		queryKey: ['users', filters],
+		queryFn: () => getUsers(filters)
+	})
 
-  return {
-    users,
-    usersIsLoading,
-    usersIsError,
-  };
-};
+	return {
+		users,
+		usersIsLoading,
+		usersIsError
+	}
+}

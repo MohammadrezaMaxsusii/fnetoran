@@ -36,11 +36,9 @@
 // import type { Organization } from "../types";
 // import EditIcon from "@/shared/icons/edit.svg?react";
 // import { useFileQuery } from "@/shared/hooks/useFileQuery";
-
 // interface Props {
 //   organization: Organization;
 // }
-
 // export const OrganizationUpdate = ({ organization }: Props) => {
 //   const { file } = useFileQuery(organization.logo);
 //   const [openModal, setOpenModal] = useState(false);
@@ -55,7 +53,6 @@
 //       name: "",
 //     },
 //   });
-
 //   const onDrop = useCallback((acceptedFiles: File[], fileRejection: any[]) => {
 //     if (fileRejection.length > 0) {
 //       setErrorUpload(true);
@@ -63,14 +60,11 @@
 //       return;
 //     }
 //     const file = acceptedFiles[0];
-
 //     if (file) {
 //       setPreviewFile(URL.createObjectURL(file));
 //       setErrorUpload(false);
-
 //       const formData = new FormData();
 //       formData.append("file", acceptedFiles[0]);
-
 //       uploadFileAction.mutate(formData, {
 //         onSuccess: (data) => {
 //           toast.success("File upload successfully.");
@@ -82,7 +76,6 @@
 //       });
 //     }
 //   }, []);
-
 //   const { getRootProps, getInputProps } = useDropzone({
 //     accept: {
 //       "image/jpeg": [],
@@ -93,7 +86,6 @@
 //     multiple: false,
 //     onDrop,
 //   });
-
 //   useEffect(() => {
 //     if (organization) {
 //       form.reset({
@@ -101,10 +93,8 @@
 //         logo: URL.createObjectURL(file)
 //       });
 //     }
-
 //     return () => URL.revokeObjectURL(file)
 //   }, [organization]);
-
 //   const submitHandler = async (
 //     input: z.infer<typeof organizationUpdateFormSchema>,
 //   ) => {
@@ -118,7 +108,6 @@
 //       if (error instanceof Array) setErros(error);
 //     }
 //   };
-
 //   return (
 //     <Dialog open={openModal} onOpenChange={setOpenModal}>
 //       <DialogTrigger asChild>
@@ -127,7 +116,6 @@
 //           Edit Organization
 //         </Button>
 //       </DialogTrigger>
-
 //       <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8">
 //         {/* Dialog header */}
 //         <DialogHeader className="gap-4">
@@ -147,7 +135,6 @@
 //             </Alert>
 //           )}
 //         </DialogHeader>
-
 //         <Form {...form}>
 //           <form
 //             className="flex flex-col gap-8 py-4 w-full"
@@ -169,7 +156,6 @@
 //                     </FormItem>
 //                   )}
 //                 />
-
 //                 {previewFile ? (
 //                   <img
 //                     src={previewFile}
@@ -179,7 +165,6 @@
 //                 ) : (
 //                   <OrganizationsIcon className="size-1/2 absolute top-1/2 inset-s-1/2 -translate-x-1/2 -translate-y-1/2" />
 //                 )}
-
 //                 <img
 //                   src="/icons/bluePlus.svg"
 //                   alt="plus icon"
@@ -201,7 +186,6 @@
 //                 </p>
 //               </div>
 //             </div>
-
 //             <FormField
 //               name="name"
 //               render={({ field }) => (
@@ -224,7 +208,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="code"
 //               render={({ field }) => (
@@ -247,7 +230,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="national_id"
 //               render={({ field }) => (
@@ -270,7 +252,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="phone"
 //               render={({ field }) => (
@@ -293,7 +274,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="email"
 //               render={({ field }) => (
@@ -316,7 +296,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="address"
 //               render={({ field }) => (
@@ -339,7 +318,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             <FormField
 //               name="website"
 //               render={({ field }) => (
@@ -362,7 +340,6 @@
 //                 </FormItem>
 //               )}
 //             />
-
 //             {/* Dialog footer */}
 //             <DialogFooter className="grid grid-cols-2 gap-3">
 //               <Button
@@ -381,403 +358,407 @@
 //     </Dialog>
 //   );
 // };
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertCircleIcon } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog'
+import { FieldError } from '@/components/ui/field'
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { organizationUpdateFormSchema } from "../schemas";
-import { AlertCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { z } from "zod";
-import { useOrganizationActions } from "../hooks/useOrganizationActions";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import { FieldError } from "@/components/ui/field";
-import { toast } from "sonner";
-import { useFileActions } from "@/shared/hooks/useFileActions";
-import { useDropzone } from "react-dropzone";
-import OrganizationsIcon from "@/shared/icons/organizations.svg?react";
-import type { Organization } from "../types";
-import EditIcon from "@/shared/icons/edit.svg?react";
-import { useFileQuery } from "@/shared/hooks/useFileQuery";
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
+import { useFileActions } from '@/shared/hooks/useFileActions'
+import { useFileQuery } from '@/shared/hooks/useFileQuery'
+import EditIcon from '@/shared/icons/edit.svg?react'
+import OrganizationsIcon from '@/shared/icons/organizations.svg?react'
+
+import { useOrganizationActions } from '../hooks/useOrganizationActions'
+import { organizationUpdateFormSchema } from '../schemas'
+import type { Organization } from '../types'
 
 interface Props {
-  organization: Organization;
+	organization: Organization
 }
 
 export const OrganizationUpdate = ({ organization }: Props) => {
-  const { file } = useFileQuery(organization.logo);
-  const [openModal, setOpenModal] = useState(false);
-  const [errors, setErros] = useState<{ message: string }[]>();
-  const [errorUpload, setErrorUpload] = useState(false);
-  const [previewFile, setPreviewFile] = useState<string>("");
-  const [serverImage, setServerImage] = useState<string>("");
-  const { uploadFileAction } = useFileActions();
-  const { updateOrganizationAction } = useOrganizationActions();
+	const { file } = useFileQuery(organization.logo)
+	const [openModal, setOpenModal] = useState(false)
+	const [errors, setErros] = useState<{ message: string }[]>()
+	const [errorUpload, setErrorUpload] = useState(false)
+	const [previewFile, setPreviewFile] = useState<string>('')
+	const [serverImage, setServerImage] = useState<string>('')
+	const { uploadFileAction } = useFileActions()
+	const { updateOrganizationAction } = useOrganizationActions()
 
-  const form = useForm({
-    resolver: zodResolver(organizationUpdateFormSchema),
+	const form = useForm({
+		resolver: zodResolver(organizationUpdateFormSchema),
 
-    defaultValues: {
-      name: "",
-    },
-  });
+		defaultValues: {
+			name: ''
+		}
+	})
 
-  useEffect(() => {
-    if (!file) return;
+	useEffect(() => {
+		if (!file) return
 
-    const objectUrl = URL.createObjectURL(file);
+		const objectUrl = URL.createObjectURL(file)
 
-    setServerImage(objectUrl);
+		setServerImage(objectUrl)
 
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [file]);
+		return () => {
+			URL.revokeObjectURL(objectUrl)
+		}
+	}, [file])
 
-  useEffect(() => {
-    if (organization) {
-      form.reset({
-        ...organization,
-      });
-    }
-  }, [organization, form]);
+	useEffect(() => {
+		if (organization) {
+			form.reset({
+				...organization
+			})
+		}
+	}, [organization, form])
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[], fileRejection: any[]) => {
-      if (fileRejection.length > 0) {
-        setErrorUpload(true);
-        setPreviewFile("");
-        return;
-      }
+	const onDrop = useCallback(
+		(acceptedFiles: File[], fileRejection: any[]) => {
+			if (fileRejection.length > 0) {
+				setErrorUpload(true)
+				setPreviewFile('')
+				return
+			}
 
-      const selectedFile = acceptedFiles[0];
+			const selectedFile = acceptedFiles[0]
 
-      if (!selectedFile) return;
+			if (!selectedFile) return
 
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setPreviewFile(previewUrl);
-      setErrorUpload(false);
+			const previewUrl = URL.createObjectURL(selectedFile)
+			setPreviewFile(previewUrl)
+			setErrorUpload(false)
 
-      const formData = new FormData();
-      formData.append("file", selectedFile);
+			const formData = new FormData()
+			formData.append('file', selectedFile)
 
-      uploadFileAction.mutate(formData, {
-        onSuccess: (data) => {
-          toast.success("File upload successfully.");
+			uploadFileAction.mutate(formData, {
+				onSuccess: data => {
+					toast.success('File upload successfully.')
 
-          form.setValue("logo", String(data?.data.id));
-        },
+					form.setValue('logo', String(data?.data.id))
+				},
 
-        onError: () => {
-          toast.error("File upload failed.");
-        },
-      });
-    },
-    [form, uploadFileAction],
-  );
+				onError: () => {
+					toast.error('File upload failed.')
+				}
+			})
+		},
+		[form, uploadFileAction]
+	)
 
-  useEffect(() => {
-    return () => {
-      if (previewFile) {
-        URL.revokeObjectURL(previewFile);
-      }
-    };
-  }, [previewFile]);
+	useEffect(() => {
+		return () => {
+			if (previewFile) {
+				URL.revokeObjectURL(previewFile)
+			}
+		}
+	}, [previewFile])
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-      "image/jpg": [],
-    },
-    maxSize: 200 * 1024,
-    multiple: false,
-    onDrop,
-  });
+	const { getRootProps, getInputProps } = useDropzone({
+		accept: {
+			'image/jpeg': [],
+			'image/png': [],
+			'image/jpg': []
+		},
+		maxSize: 200 * 1024,
+		multiple: false,
+		onDrop
+	})
 
-  const imageSrc = useMemo(() => {
-    return previewFile || serverImage;
-  }, [previewFile, serverImage]);
+	const imageSrc = useMemo(() => {
+		return previewFile || serverImage
+	}, [previewFile, serverImage])
 
-  const submitHandler = async (
-    input: z.infer<typeof organizationUpdateFormSchema>,
-  ) => {
-    try {
-      const result = await updateOrganizationAction.mutateAsync(input);
-      toast.success(result.message);
+	const submitHandler = async (
+		input: z.infer<typeof organizationUpdateFormSchema>
+	) => {
+		try {
+			const result = await updateOrganizationAction.mutateAsync(input)
+			toast.success(result.message)
 
-      form.reset();
-      setOpenModal(false);
-      setErros(undefined);
-    } catch (error) {
-      if (error instanceof Array) {
-        setErros(error);
-      }
-    }
-  };
+			form.reset()
+			setOpenModal(false)
+			setErros(undefined)
+		} catch (error) {
+			if (error instanceof Array) {
+				setErros(error)
+			}
+		}
+	}
 
-  return (
-    <Dialog open={openModal} onOpenChange={setOpenModal}>
-      <DialogTrigger asChild>
-        <Button className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6">
-          <EditIcon className="size-5 text-blue-darker" />
-          Edit Organization
-        </Button>
-      </DialogTrigger>
+	return (
+		<Dialog open={openModal} onOpenChange={setOpenModal}>
+			<DialogTrigger asChild>
+				<Button className='bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker px-6'>
+					<EditIcon className='size-5 text-blue-darker' />
+					Edit Organization
+				</Button>
+			</DialogTrigger>
 
-      <DialogContent className="bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8">
-        <DialogHeader className="gap-4">
-          <DialogTitle className="text-lg font-bold">
-            Edit organization
-          </DialogTitle>
+			<DialogContent className='bg-background-default text-white p-8 max-h-11/12 overflow-y-auto max-w-115! **:last:data-[slot=dialog-close]:top-9 **:last:data-[slot=dialog-close]:inset-e-8'>
+				<DialogHeader className='gap-4'>
+					<DialogTitle className='text-lg font-bold'>
+						Edit organization
+					</DialogTitle>
 
-          <DialogDescription className="hidden">
-            Edit organization
-          </DialogDescription>
+					<DialogDescription className='hidden'>
+						Edit organization
+					</DialogDescription>
 
-          {errors && (
-            <Alert variant="destructive">
-              <AlertCircleIcon />
+					{errors && (
+						<Alert variant='destructive'>
+							<AlertCircleIcon />
 
-              <AlertTitle>Something went wrong!</AlertTitle>
+							<AlertTitle>Something went wrong!</AlertTitle>
 
-              <AlertDescription>
-                <FieldError errors={errors} />
-              </AlertDescription>
-            </Alert>
-          )}
-        </DialogHeader>
+							<AlertDescription>
+								<FieldError errors={errors} />
+							</AlertDescription>
+						</Alert>
+					)}
+				</DialogHeader>
 
-        <Form {...form}>
-          <form
-            className="flex flex-col gap-8 py-4 w-full"
-            onSubmit={form.handleSubmit(submitHandler)}
-          >
-            <div className="flex items-center gap-4">
-              <div
-                {...getRootProps()}
-                className="relative shrink-0 size-22 rounded-full border-2 border-dashed border-blue-lighter cursor-pointer"
-              >
-                <FormField
-                  name="logo_url"
-                  render={() => (
-                    <FormItem>
-                      <FormControl autoFocus>
-                        <Input {...getInputProps()} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+				<Form {...form}>
+					<form
+						className='flex flex-col gap-8 py-4 w-full'
+						onSubmit={form.handleSubmit(submitHandler)}
+					>
+						<div className='flex items-center gap-4'>
+							<div
+								{...getRootProps()}
+								className='relative shrink-0 size-22 rounded-full border-2 border-dashed border-blue-lighter cursor-pointer'
+							>
+								<FormField
+									name='logo_url'
+									render={() => (
+										<FormItem>
+											<FormControl autoFocus>
+												<Input {...getInputProps()} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
 
-                {imageSrc ? (
-                  <img
-                    src={imageSrc}
-                    alt="logo image"
-                    className="size-full rounded-full p-1 absolute inset-0"
-                  />
-                ) : (
-                  <OrganizationsIcon className="size-1/2 absolute top-1/2 inset-s-1/2 -translate-x-1/2 -translate-y-1/2" />
-                )}
+								{imageSrc ? (
+									<img
+										src={imageSrc}
+										alt='logo image'
+										className='size-full rounded-full p-1 absolute inset-0'
+									/>
+								) : (
+									<OrganizationsIcon className='size-1/2 absolute top-1/2 inset-s-1/2 -translate-x-1/2 -translate-y-1/2' />
+								)}
 
-                <img
-                  src="/icons/bluePlus.svg"
-                  alt="plus icon"
-                  className="size-6 absolute bottom-2.5 inset-e-1 translate-y-1/2"
-                />
-              </div>
-              <div>
-                <span className="font-bold text-sm">Add Organization Logo</span>
-                <p
-                  className={cn(
-                    "text-xs text-gray-light",
-                    errorUpload && "text-red",
-                  )}
-                >
-                  Use a square aspect ratio and JPEG, PNG, or JPG format. The
-                  minimum image dimensions are 100 x 100 pixels and the maximum
-                  image dimensions are 500 x 500 pixels. The image size should
-                  not exceed 200 KB.
-                </p>
-              </div>
-            </div>
+								<img
+									src='/icons/bluePlus.svg'
+									alt='plus icon'
+									className='size-6 absolute bottom-2.5 inset-e-1 translate-y-1/2'
+								/>
+							</div>
+							<div>
+								<span className='font-bold text-sm'>
+									Add Organization Logo
+								</span>
+								<p
+									className={cn(
+										'text-xs text-gray-light',
+										errorUpload && 'text-red'
+									)}
+								>
+									Use a square aspect ratio and JPEG, PNG, or
+									JPG format. The minimum image dimensions are
+									100 x 100 pixels and the maximum image
+									dimensions are 500 x 500 pixels. The image
+									size should not exceed 200 KB.
+								</p>
+							</div>
+						</div>
 
-            <FormField
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name:</FormLabel>
+						<FormField
+							name='name'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your name"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your name'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Code:</FormLabel>
+						<FormField
+							name='code'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Code:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your code"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your code'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="national_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>National Id:</FormLabel>
+						<FormField
+							name='national_id'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>National Id:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your national id"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your national id'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone:</FormLabel>
+						<FormField
+							name='phone'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Phone:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your phone"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your phone'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email:</FormLabel>
+						<FormField
+							name='email'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your email"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your email'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address:</FormLabel>
+						<FormField
+							name='address'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Address:</FormLabel>
 
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter your address"
-                      className="bg-muted"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Textarea
+											placeholder='Enter your address'
+											className='bg-muted'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <FormField
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website:</FormLabel>
+						<FormField
+							name='website'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Website:</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      className="bg-muted"
-                      placeholder="Enter your website"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
+									<FormControl>
+										<Input
+											className='bg-muted'
+											placeholder='Enter your website'
+											{...field}
+											value={field.value ?? ''}
+										/>
+									</FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-            <DialogFooter className="grid grid-cols-2 gap-3">
-              <Button
-                type="submit"
-                className="bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker"
-              >
-                Update
-              </Button>
+						<DialogFooter className='grid grid-cols-2 gap-3'>
+							<Button
+								type='submit'
+								className='bg-navy-blue hover:bg-navy-blue text-blue-darker border border-blue-darker'
+							>
+								Update
+							</Button>
 
-              <DialogClose asChild>
-                <Button variant="secondary">Close</Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-};
+							<DialogClose asChild>
+								<Button variant='secondary'>Close</Button>
+							</DialogClose>
+						</DialogFooter>
+					</form>
+				</Form>
+			</DialogContent>
+		</Dialog>
+	)
+}

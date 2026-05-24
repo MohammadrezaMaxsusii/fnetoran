@@ -1,1 +1,1 @@
-export * from "./basicScanSchema";
+export * from './basicScanSchema'

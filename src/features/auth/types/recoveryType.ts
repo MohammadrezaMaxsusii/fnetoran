@@ -1,5 +1,5 @@
 export interface Recovery {
-  newPassword: string;
-  uuid: string;
-  otp: string;
+	newPassword: string
+	uuid: string
+	otp: string
 }

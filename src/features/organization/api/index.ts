@@ -1,2 +1,2 @@
-export * from "./organizationsApi";
-export * from "./organizationApi";
+export * from './organizationsApi'
+export * from './organizationApi'

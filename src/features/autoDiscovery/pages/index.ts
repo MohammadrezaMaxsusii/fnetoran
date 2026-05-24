@@ -1,1 +1,1 @@
-export * from "./AutoDiscoveryPage";
+export * from './AutoDiscoveryPage'

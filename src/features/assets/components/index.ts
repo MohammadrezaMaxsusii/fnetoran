@@ -1,3 +1,3 @@
-export * from "./AssetsTable";
-export * from "./AssetCreateForm";
-export * from "./AssetDetails";
+export * from './AssetsTable'
+export * from './AssetCreateForm'
+export * from './AssetDetails'

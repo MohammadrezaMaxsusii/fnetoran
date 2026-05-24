@@ -1,3 +1,3 @@
 export interface UserInfo {
-  forgetPasswordField: string;
+	forgetPasswordField: string
 }

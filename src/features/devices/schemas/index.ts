@@ -1,2 +1,2 @@
-export * from "./deviceCreateSchema";
-export * from "./addToZoneSchema";
+export * from './deviceCreateSchema'
+export * from './addToZoneSchema'

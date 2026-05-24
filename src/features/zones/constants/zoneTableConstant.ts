@@ -1,7 +1,1 @@
-export const zoneTableItems = [
-  "ID",
-  "Name",
-  "Description",
-  "Date",
-  "Operation",
-];
+export const zoneTableItems = ['ID', 'Name', 'Description', 'Date', 'Operation']

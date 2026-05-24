@@ -1,1 +1,1 @@
-export * from "./zoneCreateSchema";
+export * from './zoneCreateSchema'

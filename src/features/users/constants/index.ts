@@ -1,2 +1,2 @@
-export * from "./userTableConstant";
-export * from "./userDetailsConstant";
+export * from './userTableConstant'
+export * from './userDetailsConstant'

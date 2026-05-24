@@ -1,7 +1,5 @@
-import { Development } from "@/components/Development";
+import { Development } from '@/components/Development'
 
 export const PermissionCreateOrUpdate = () => {
-  return (
-    <Development />
-  );
-};
+	return <Development />
+}

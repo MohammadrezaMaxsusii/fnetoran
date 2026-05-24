@@ -1,1 +1,1 @@
-export * from "./RetrofitPage";
+export * from './RetrofitPage'

@@ -1,2 +1,2 @@
-export * from "./feedsApi";
-export * from "./feedApi";
+export * from './feedsApi'
+export * from './feedApi'

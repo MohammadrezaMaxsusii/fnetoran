@@ -1,4 +1,7 @@
-import { z } from "zod";
-import type { organizationFormSchema } from "../schemas";
+import { z } from 'zod'
 
-export type Organization = z.infer<typeof organizationFormSchema> & { id: number };
+import type { organizationFormSchema } from '../schemas'
+
+export type Organization = z.infer<typeof organizationFormSchema> & {
+	id: number
+}

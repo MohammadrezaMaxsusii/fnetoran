@@ -1,3 +1,3 @@
-export * from "./recoverySchema";
-export * from "./userInfoSchema";
-export * from "./loginSchema";
+export * from './recoverySchema'
+export * from './userInfoSchema'
+export * from './loginSchema'

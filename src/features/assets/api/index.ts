@@ -1,3 +1,3 @@
-export * from "./assetTypesApi";
-export * from "./assetsApi";
-export * from "./assetApi";
+export * from './assetTypesApi'
+export * from './assetsApi'
+export * from './assetApi'

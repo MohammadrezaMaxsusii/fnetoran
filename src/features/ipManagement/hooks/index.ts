@@ -1,78 +1,79 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  approveIp,
-  getApis,
-  getExecuteApis,
-  getPendingApis,
-  rejectIp,
-} from "../api";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export * from "./useFeedsFilters";
-export * from "./useApisQuery";
-export * from "./useAttackTypesQuery";
+import {
+	approveIp,
+	getApis,
+	getExecuteApis,
+	getPendingApis,
+	rejectIp
+} from '../api'
+
+export * from './useFeedsFilters'
+export * from './useApisQuery'
+export * from './useAttackTypesQuery'
 
 export const useGetApis = () => {
-  const { data, isPending } = useQuery({
-    queryKey: ["apis"],
-    queryFn: getApis,
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['apis'],
+		queryFn: getApis
+	})
 
-  return {
-    apis: data,
-    apisLoading: isPending,
-  };
-};
+	return {
+		apis: data,
+		apisLoading: isPending
+	}
+}
 
 export const useGetPendingApis = () => {
-  const { data, isPending } = useQuery({
-    queryKey: ["pending-apis"],
-    queryFn: getPendingApis,
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['pending-apis'],
+		queryFn: getPendingApis
+	})
 
-  return {
-    pendingApis: data,
-    pendingApisLoading: isPending,
-  };
-};
+	return {
+		pendingApis: data,
+		pendingApisLoading: isPending
+	}
+}
 
 export const useGetExecuteApis = () => {
-  const { data, isPending } = useQuery({
-    queryKey: ["execute-apis"],
-    queryFn: getExecuteApis,
-  });
+	const { data, isPending } = useQuery({
+		queryKey: ['execute-apis'],
+		queryFn: getExecuteApis
+	})
 
-  return {
-    executeApis: data,
-    executeApisLoading: isPending,
-  };
-};
+	return {
+		executeApis: data,
+		executeApisLoading: isPending
+	}
+}
 
 export const useApproveIp = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient()
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["pending-apis"],
-    });
-  };
+	const onSuccess = () => {
+		queryClient.invalidateQueries({
+			queryKey: ['pending-apis']
+		})
+	}
 
-  return useMutation({
-    mutationFn: approveIp,
-    onSuccess,
-  });
-};
+	return useMutation({
+		mutationFn: approveIp,
+		onSuccess
+	})
+}
 
 export const useRejectIp = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient()
 
-  const onSuccess = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["pending-apis"],
-    });
-  };
+	const onSuccess = () => {
+		queryClient.invalidateQueries({
+			queryKey: ['pending-apis']
+		})
+	}
 
-  return useMutation({
-    mutationFn: rejectIp,
-    onSuccess,
-  });
-};
+	return useMutation({
+		mutationFn: rejectIp,
+		onSuccess
+	})
+}

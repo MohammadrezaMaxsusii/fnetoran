@@ -1,9 +1,9 @@
-import { RolesTable } from "../components";
+import { RolesTable } from '../components'
 
 export const RolesPage = () => {
-  return (
-    <div className="w-full pe-5">
-      <RolesTable />
-    </div>
-  );
-};
+	return (
+		<div className='w-full pe-5'>
+			<RolesTable />
+		</div>
+	)
+}

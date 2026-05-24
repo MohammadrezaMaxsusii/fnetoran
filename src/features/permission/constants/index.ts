@@ -1,1 +1,1 @@
-export * from "./permissionTableConstant";
+export * from './permissionTableConstant'

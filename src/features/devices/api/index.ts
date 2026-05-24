@@ -1,38 +1,38 @@
-import { api } from "@/shared/libs/axiosInstance";
+import { api } from '@/shared/libs/axiosInstance'
 
-export * from "./deviceApi";
-export * from "./devicesApi";
+export * from './deviceApi'
+export * from './devicesApi'
 
-export const addToZone = async (input) => {
-  const { data } = await api.post("/device/zone/assign", input);
-  return data;
-};
+export const addToZone = async input => {
+	const { data } = await api.post('/device/zone/assign', input)
+	return data
+}
 
 export const loadAssets = async (deviceId: string) => {
-  const { data } = await api.get(`/devices/fetchAssets/${deviceId}`);
-  return data;
-};
+	const { data } = await api.get(`/devices/fetchAssets/${deviceId}`)
+	return data
+}
 
 export const fetchAssets = async (deviceId: string) => {
-  const response = await api.get(`/devices/assetList/${deviceId}`);
+	const response = await api.get(`/devices/assetList/${deviceId}`)
 
-  return response.data;
-};
+	return response.data
+}
 
 export const fetchCis = async () => {
-  const response = await api.get("/cis/list");
+	const response = await api.get('/cis/list')
 
-  return response.data.data;
-};
+	return response.data.data
+}
 
-export const fetchHistory = async (deviceId) => {
-  const response = await api.get(`/hardeningResults/history/${deviceId}`);
+export const fetchHistory = async deviceId => {
+	const response = await api.get(`/hardeningResults/history/${deviceId}`)
 
-  return response.data.data;
-};
+	return response.data.data
+}
 
-export const get = async (deviceId) => {
-  const response = await api.get(`/devices/info/${deviceId}`);
+export const get = async deviceId => {
+	const response = await api.get(`/devices/info/${deviceId}`)
 
-  return response.data.data;
-};
+	return response.data.data
+}

@@ -1,1 +1,1 @@
-export * from "./locationSchema";
+export * from './locationSchema'
