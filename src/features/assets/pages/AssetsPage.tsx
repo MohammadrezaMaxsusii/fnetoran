@@ -2,7 +2,7 @@ import { AssetsTable } from "../components";
 
 export const AssetsPage = () => {
   return (
-    <div className="w-full pe-5">
+    <div className="w-full pe-5 pb-5">
       <AssetsTable />
     </div>
   );

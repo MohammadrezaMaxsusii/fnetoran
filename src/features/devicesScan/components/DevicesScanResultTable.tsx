@@ -83,6 +83,8 @@ export const DevicesScanResultTable = () => {
     updateFilters(values);
   });
 
+  console.log(devicesScanResult?.data.results)
+
   return (
     <section className="w-full bg-gray-darker rounded-2xl">
       {/* Header of table */}
