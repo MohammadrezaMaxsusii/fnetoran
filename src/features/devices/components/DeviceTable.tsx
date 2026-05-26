@@ -1,17 +1,10 @@
 import { startOfDay } from 'date-fns'
-import { ChevronDownIcon, FunnelX, EllipsisIcon } from 'lucide-react'
+import { ChevronDownIcon, FunnelX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { DeleteModal } from '@/components/DeleteModal'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
 import {
 	Empty,
 	EmptyContent,
@@ -61,9 +54,7 @@ import {
 } from '../hooks'
 import { useUsersFilters } from '../hooks/useUsersFilters'
 
-import { DeviceCreate } from './DeviceCreate'
 import { DeviceRow } from './DeviceRow'
-import { SelectZoneDialog } from './SelectZoneDialog'
 
 type FilterFormValues = {
 	type?: string
@@ -110,7 +101,7 @@ export const DeviceTable = () => {
 					<span className='text-lg font-bold text-primary'>
 						Devices List
 					</span>
-					<DeviceCreate />
+					{/* <DeviceCreate /> */}
 				</div>
 
 				<div className='px-7'>

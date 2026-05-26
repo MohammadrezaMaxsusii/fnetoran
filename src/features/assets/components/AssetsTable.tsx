@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 
 import { DeleteModal } from '@/components/DeleteModal'
-// import AssetsIcon from "@/shared/icons/assets.svg?react";
+import AssetIcon from "@/shared/icons/asset.svg?react";
 // import ViewIcon from "@/shared/icons/view.svg?react";
 import { TablePagination } from '@/components/TablePagination'
 import { Button } from '@/components/ui/button'
@@ -98,8 +98,6 @@ export const AssetsTable = () => {
 	form.watch(values => {
 		updateFilters(values)
 	})
-
-	console.log(assets)
 
 	return (
 		<section className='w-full bg-gray-darker rounded-2xl'>
@@ -359,7 +357,7 @@ export const AssetsTable = () => {
 					<Empty className='pt-3! pb-7! gap-2'>
 						<EmptyHeader>
 							<EmptyMedia variant='icon'>
-								{/* <AssetsIcon className="size-5" /> */}
+								<AssetIcon className="size-5" />
 							</EmptyMedia>
 							<EmptyTitle>Assets List Empty!</EmptyTitle>
 						</EmptyHeader>

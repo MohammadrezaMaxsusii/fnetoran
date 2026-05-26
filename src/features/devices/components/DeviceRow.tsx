@@ -1,276 +1,154 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { startOfDay } from 'date-fns'
-import {
-	ChevronDownIcon,
-	FunnelX,
-	EllipsisIcon,
-	RefreshCcwIcon
-} from 'lucide-react'
+import { EllipsisIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
-import { DeleteModal } from '@/components/DeleteModal'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuPortal,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
 	DropdownMenuSub,
 	DropdownMenuSubContent,
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {
-	Empty,
-	EmptyContent,
-	EmptyHeader,
-	EmptyMedia,
-	EmptyTitle
-} from '@/components/ui/empty'
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage
-} from '@/components/ui/form'
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger
-} from '@/components/ui/popover'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow
-} from '@/components/ui/table'
-import { useBackupActions } from '@/features/backup/hooks'
-import { cn } from '@/lib/utils'
-import UsersIcon from '@/shared/icons/users.svg?react'
-import { formatLocalDate } from '@/shared/utils/fromatLocalDate'
+import { TableCell, TableRow } from '@/components/ui/table'
 
-import { deviceTableItems } from '../constants'
+import { useBackupActions } from '@/features/backup/hooks'
+import { useFileQuery } from '@/shared/hooks/useFileQuery'
+
 import {
 	useDeviceActions,
-	useDevicesQuery,
-	useDeviceTypesQuery,
 	useLoadAssetsQuery
 } from '../hooks'
-import { useUsersFilters } from '../hooks/useUsersFilters'
 
-import { DeviceCreate } from './DeviceCreate'
 import { SelectZoneDialog } from './SelectZoneDialog'
+import { useVendorQuery } from '@/features/vendor/hooks/useVendorQuery'
 
-type FilterFormValues = {
-	type?: string
-	list_sort?: string
-	list_page?: number
+type DeviceRowProps = {
+	device: any
 }
 
-export const DeviceRow = ({ device }) => {
-	//   const { filters, updateFilters } = useUsersFilters();
-	//   const { devices, devicesIsLoading } = useDevicesQuery(filters);
-	const { deleteDeviceAction, registerForFirewallAction } = useDeviceActions()
-	const [deviceId, setDeviceId] = useState('')
-	//   const { deviceTypes, deviceTypesIsPending } = useDeviceTypesQuery();
-	const [open, setOpen] = useState(false)
+export const DeviceRow = ({ device }: DeviceRowProps) => {
 	const navigate = useNavigate()
+	const queryClient = useQueryClient()
+
+	const [deviceId, setDeviceId] = useState('')
+	const [vendorImage, setVendorImage] = useState('')
+	const [open, setOpen] = useState(false)
+
+	const { deleteDeviceAction, registerForFirewallAction } =
+		useDeviceActions()
+
 	const { createBackupAction } = useBackupActions()
-	//   const [openDialog, setOpenDialog] = useState(false);
-	//   const form = useForm<FilterFormValues>({
-	//     defaultValues: {
-	//       type: filters.type,
-	//       list_sort: filters.list_sort,
-	//       list_page: filters.list_page,
-	//     },
-	//   });
-	const { assetsSuccess, assetsFetching } = useLoadAssetsQuery(deviceId)
+
+	const { assetsSuccess, assetsFetching } =
+		useLoadAssetsQuery(deviceId)
+
+	const { vendor } = useVendorQuery(device.id)
+
+	console.log(vendor)
+
+	const { file } = useFileQuery(vendor?.data?.logo_id)
+
+	useEffect(() => {
+		if (assetsSuccess) {
+			queryClient.invalidateQueries({
+				queryKey: ['devices']
+			})
+		}
+	}, [assetsSuccess, queryClient])
+
+	useEffect(() => {
+		if (file) {
+			const imgSrc = URL.createObjectURL(file)
+			setVendorImage(imgSrc)
+
+			return () => URL.revokeObjectURL(imgSrc)
+		}
+	}, [file])
 
 	const handleRegisterForFirewall = async (id: number) => {
 		try {
 			await registerForFirewallAction.mutateAsync(id)
-		} catch (error) {
-			toast.error(error.detail)
+
+			toast.success('Device registered for firewall')
+		} catch (error: any) {
+			toast.error(error?.detail || 'Something went wrong')
 		}
 	}
 
-	const queryClient = useQueryClient()
-
-	useEffect(() => {
-		if (assetsSuccess) {
-			queryClient.invalidateQueries({ queryKey: ['devices'] })
-		}
-	}, [assetsSuccess, queryClient])
+	const handleBackup = (
+		type: 'running' | 'startup'
+	) => {
+		createBackupAction.mutate(
+			{
+				device_id: device.id,
+				backup_type: type
+			},
+			{
+				onSuccess: () => {
+					toast.success('Backup successfully')
+				},
+				onError: () => {
+					toast.error('Backup failed.')
+				}
+			}
+		)
+	}
 
 	return (
 		<>
-			<TableRow
-				key={device.id}
-				className={cn(
-					'bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items',
-					!device.fetchedAsset &&
-						'bg-[#2C0D11] odd:bg-[#2C0D11] hover:bg-[#2C0D11] odd:hover:bg-[#2C0D11]'
-				)}
-			>
-				<TableCell
-					className={cn(
-						'px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
+			<TableRow className='bg-gray-darker hover:bg-gray-darker odd:bg-gray-items odd:hover:bg-gray-items'>
+				<TableCell className='px-5 py-2 rounded-l-lg text-center font-bold border-y border-s border-default'>
 					{device.id}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
+				<TableCell className='px-4 py-2 border-y border-default'>
 					<div className='flex items-center gap-4'>
-						<div className='border-2 border-orange rounded-full size-8 bg-white'>
-							{/* To do fetch user profile */}
+						<div className='border-2 border-orange rounded-full size-8 bg-white overflow-hidden'>
 							<img
-								src={`/images/os/${device.vendor}.svg`}
-								// alt="profile image"
-								className='size-full rounded-full'
+								src={vendorImage}
+								alt={
+									vendor?.data?.name ||
+									'vendor logo'
+								}
+								className='size-full rounded-full object-cover'
 							/>
 						</div>
 
 						<div className='flex flex-col'>
 							<span className='text-sm font-bold capitalize'>
-								{device.vendor}
+								{vendor?.data?.name || '---'}
 							</span>
 						</div>
 					</div>
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.type}
+				<TableCell className='px-4 py-2 text-center border-y border-default'>
+					{device.model || '---'}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.model || '-'}
+				<TableCell className='px-4 py-2 text-center border-y border-default'>
+					{device.ip || '---'}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.ip}
+				<TableCell className='px-4 py-2 text-center border-y border-default'>
+					{device.portCount ?? '---'}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.portCount ?? '-'}
+				<TableCell className='px-4 py-2 text-center border-y border-default'>
+					{device.hostname ?? '---'}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.hostname ?? '-'}
+				<TableCell className='px-4 py-2 text-center border-y border-default'>
+					{device.series ?? '---'}
 				</TableCell>
 
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					{device.series ?? '-'}
-				</TableCell>
-
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center border-y border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
-					<div className='flex items-center gap-x-1.5 justify-center'>
-						{!device.fetchedAsset && (
-							<Button
-								variant='destructive'
-								onClick={() => setDeviceId(device.id)}
-								disabled={assetsFetching}
-							>
-								<RefreshCcwIcon />
-								Sync
-							</Button>
-						)}
-
-						<Button className='bg-navy-blue hover:bg-navy-blue border text-blue-darker border-blue-darker p-2.5!'>
-							<img
-								src='/icons/edit.svg'
-								alt='edit icon'
-								className='size-5'
-							/>
-						</Button>
-
-						<DeleteModal
-							title='Device'
-							onClick={() => deleteDeviceAction.mutate(device.id)}
-						/>
-
-						{device.fetchedAsset && (
-							<Button asChild className='p-2.5!'>
-								<Link to={`/device/${device.id}`}>
-									<img
-										src='/icons/view.svg'
-										alt='edit icon'
-										className='size-5'
-									/>
-								</Link>
-							</Button>
-						)}
-					</div>
-				</TableCell>
-
-				<TableCell
-					className={cn(
-						'px-4 py-2 text-center rounded-r-lg border-y border-e border-default',
-						!device.fetchedAsset && 'border-red-600'
-					)}
-				>
+				<TableCell className='px-4 py-2 text-center rounded-r-lg border-y border-e border-default'>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button
@@ -285,19 +163,25 @@ export const DeviceRow = ({ device }) => {
 						<DropdownMenuContent>
 							<DropdownMenuItem
 								onClick={() =>
-									handleRegisterForFirewall(device.id)
+									handleRegisterForFirewall(
+										device.id
+									)
 								}
 							>
 								Register for firewall
 							</DropdownMenuItem>
 
-							<DropdownMenuItem onClick={() => setOpen(true)}>
+							<DropdownMenuItem
+								onClick={() => setOpen(true)}
+							>
 								Add to zone
 							</DropdownMenuItem>
 
 							<DropdownMenuItem
 								onClick={() =>
-									navigate(`/devices/terminal/${device.id}`)
+									navigate(
+										`/devices/terminal/${device.id}`
+									)
 								}
 							>
 								Terminal
@@ -307,27 +191,13 @@ export const DeviceRow = ({ device }) => {
 								<DropdownMenuSubTrigger>
 									Backup
 								</DropdownMenuSubTrigger>
+
 								<DropdownMenuPortal>
 									<DropdownMenuSubContent>
 										<DropdownMenuItem
 											onClick={() =>
-												createBackupAction.mutate(
-													{
-														device_id: device.id,
-														backup_type: 'running'
-													},
-													{
-														onSuccess: () => {
-															toast.success(
-																'Backup successfully'
-															)
-														},
-														onError: () => {
-															toast.error(
-																'Backup faild.'
-															)
-														}
-													}
+												handleBackup(
+													'running'
 												)
 											}
 										>
@@ -336,23 +206,8 @@ export const DeviceRow = ({ device }) => {
 
 										<DropdownMenuItem
 											onClick={() =>
-												createBackupAction.mutate(
-													{
-														device_id: device.id,
-														backup_type: 'startup'
-													},
-													{
-														onSuccess: () => {
-															toast.success(
-																'Backup successfully'
-															)
-														},
-														onError: () => {
-															toast.error(
-																'Backup faild.'
-															)
-														}
-													}
+												handleBackup(
+													'startup'
 												)
 											}
 										>
@@ -361,6 +216,26 @@ export const DeviceRow = ({ device }) => {
 									</DropdownMenuSubContent>
 								</DropdownMenuPortal>
 							</DropdownMenuSub>
+
+							<DropdownMenuItem
+								onClick={() =>
+									setDeviceId(device.id)
+								}
+								disabled={assetsFetching}
+							>
+								Automate sync
+							</DropdownMenuItem>
+
+							<DropdownMenuItem
+								onClick={() =>
+									deleteDeviceAction.mutate(
+										device.id
+									)
+								}
+								className='text-red-500 focus:text-red-500'
+							>
+								Delete
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</TableCell>
